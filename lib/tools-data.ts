@@ -1,0 +1,149 @@
+/** Filter tabs shown above the grid (Indian = exam-portal / ID tooling). */
+export const TOOL_TAB_IDS = ["all", "pdf", "image", "ai", "utility", "indian"] as const;
+
+export type ToolTabId = (typeof TOOL_TAB_IDS)[number];
+
+export type ToolCategory = Exclude<ToolTabId, "all">;
+
+export type ToolIconId =
+  | "layers"
+  | "file-archive"
+  | "file-image"
+  | "wand-sparkles"
+  | "image-down"
+  | "refresh-cw"
+  | "contact"
+  | "id-card"
+  | "qr-code"
+  | "scan-text";
+
+export type ToolDefinition = {
+  slug: string;
+  name: string;
+  description: string;
+  category: ToolCategory;
+  is_pro: boolean;
+  icon: ToolIconId;
+};
+
+export const MVP_TOOLS: ToolDefinition[] = [
+  {
+    slug: "merge-pdf",
+    name: "Merge PDF",
+    description: "Combine multiple PDFs into one clean document.",
+    category: "pdf",
+    is_pro: false,
+    icon: "layers",
+  },
+  {
+    slug: "compress-pdf",
+    name: "Compress PDF",
+    description: "Shrink PDF size for faster uploads to portals.",
+    category: "pdf",
+    is_pro: false,
+    icon: "file-archive",
+  },
+  {
+    slug: "image-to-pdf",
+    name: "Image to PDF",
+    description: "Turn JPG or PNG pages into a single PDF.",
+    category: "pdf",
+    is_pro: false,
+    icon: "file-image",
+  },
+  {
+    slug: "ai-background-remover",
+    name: "AI Background Remover",
+    description: "Remove backgrounds from portraits and product shots.",
+    category: "ai",
+    is_pro: true,
+    icon: "wand-sparkles",
+  },
+  {
+    slug: "image-compressor",
+    name: "Image Compressor",
+    description: "Reduce image weight without leaving your browser.",
+    category: "image",
+    is_pro: false,
+    icon: "image-down",
+  },
+  {
+    slug: "format-converter",
+    name: "Format Converter",
+    description: "Switch between PNG, JPG, WebP, and more.",
+    category: "image",
+    is_pro: false,
+    icon: "refresh-cw",
+  },
+  {
+    slug: "passport-photo-maker",
+    name: "Passport Photo Maker",
+    description: "India-standard layouts for passport and visa photos.",
+    category: "indian",
+    is_pro: true,
+    icon: "contact",
+  },
+  {
+    slug: "id-resizer",
+    name: "Aadhar / PAN Card Resizer",
+    description: "Resize scans for Indian exam and application portals.",
+    category: "indian",
+    is_pro: false,
+    icon: "id-card",
+  },
+  {
+    slug: "qr-generator",
+    name: "QR Code Generator",
+    description: "Encode URLs or text into a scannable QR image.",
+    category: "utility",
+    is_pro: false,
+    icon: "qr-code",
+  },
+  {
+    slug: "image-to-text-ocr",
+    name: "Image to Text OCR",
+    description: "Pull editable text from screenshots and scans.",
+    category: "ai",
+    is_pro: true,
+    icon: "scan-text",
+  },
+];
+
+const TAB_LABELS: Record<ToolTabId, string> = {
+  all: "All",
+  pdf: "PDF",
+  image: "Image",
+  ai: "AI",
+  utility: "Utility",
+  indian: "Indian",
+};
+
+export function getTabLabel(tab: ToolTabId): string {
+  return TAB_LABELS[tab];
+}
+
+export function getToolBySlug(slug: string): ToolDefinition | undefined {
+  return MVP_TOOLS.find((t) => t.slug === slug);
+}
+
+export const MVP_TOOL_SLUGS = MVP_TOOLS.map((t) => t.slug);
+
+export function toolMatchesSearch(tool: ToolDefinition, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  const categoryLabel = TAB_LABELS[tool.category].toLowerCase();
+  const extras =
+    tool.category === "indian"
+      ? "indian specials india exam portal aadhar pan passport"
+      : "";
+  const haystack = [
+    tool.name.toLowerCase(),
+    tool.description.toLowerCase(),
+    tool.slug.replace(/-/g, " "),
+    categoryLabel,
+    extras,
+  ]
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes(q);
+}
