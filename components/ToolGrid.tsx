@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 
 import {
@@ -26,6 +27,7 @@ import {
   TOOL_TAB_IDS,
   toolMatchesSearch,
 } from "@/lib/tools-data";
+import { getToolCardIconSrc } from "@/lib/tool-card-icons";
 
 const ICONS: Record<ToolIconId, LucideIcon> = {
   layers: Layers,
@@ -135,30 +137,43 @@ export function ToolGrid() {
             >
               {visible.map((tool) => {
                 const Icon = ICONS[tool.icon];
+                const cardIconSrc = getToolCardIconSrc(tool.slug);
                 return (
                   <motion.li key={tool.slug} variants={cardVariants} layout className="list-none">
-                    <Link href={`/tools/${tool.slug}`} className="block h-full min-h-[140px]">
+                    <Link href={`/tools/${tool.slug}`} className="block h-full min-h-[120px]">
                       <motion.div
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.99 }}
                         transition={{ type: "spring", stiffness: 420, damping: 26 }}
-                        className="relative flex h-full flex-col rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                        className="relative flex h-full flex-row items-start gap-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
                       >
                         {tool.is_pro ? (
                           <span className="absolute right-4 top-4 rounded-md border border-amber-200/80 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-900">
                             Pro
                           </span>
                         ) : null}
-                        <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-slate-900">
-                          <Icon className="h-5 w-5" aria-hidden />
+                        <div className="flex h-28 w-28 shrink-0 items-center justify-center sm:h-32 sm:w-32">
+                          {cardIconSrc ? (
+                            <Image
+                              src={cardIconSrc}
+                              alt=""
+                              width={128}
+                              height={128}
+                              className="max-h-full max-w-full object-contain object-center"
+                              sizes="(max-width: 768px) 112px, 128px"
+                              aria-hidden
+                            />
+                          ) : (
+                            <Icon className="h-14 w-14 shrink-0 text-slate-800 sm:h-16 sm:w-16" aria-hidden />
+                          )}
                         </div>
-                        <h3 className="pr-14 text-base font-semibold text-black">{tool.name}</h3>
-                        <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">
-                          {tool.description}
-                        </p>
-                        <p className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
-                          {getTabLabel(tool.category)}
-                        </p>
+                        <div className={`flex min-w-0 flex-1 flex-col ${tool.is_pro ? "pr-16" : ""}`}>
+                          <h3 className="text-base font-semibold text-black">{tool.name}</h3>
+                          <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{tool.description}</p>
+                          <p className="mt-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+                            {getTabLabel(tool.category)}
+                          </p>
+                        </div>
                       </motion.div>
                     </Link>
                   </motion.li>
