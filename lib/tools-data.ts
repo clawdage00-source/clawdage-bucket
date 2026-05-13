@@ -100,11 +100,11 @@ export const MVP_TOOLS: ToolDefinition[] = [
     icon: "qr-code",
   },
   {
-    slug: "image-to-text-ocr",
+    slug: "ocr",
     name: "Image to Text OCR",
     description: "Pull editable text from screenshots and scans.",
     category: "ai",
-    is_pro: true,
+    is_pro: false,
     icon: "scan-text",
   },
 ];

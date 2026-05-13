@@ -11,6 +11,7 @@ export const TOOL_CARD_ICON_BY_SLUG: Record<string, string> = {
   "passport-photo-maker": "/tools-icon/passport-photo-maker.png",
   "id-resizer": "/tools-icon/aadhar-pancard-resizer.png",
   "qr-generator": "/tools-icon/qrcode-generator.png",
+  "ocr": "/tools-icon/image-to-text.png",
   "image-to-text-ocr": "/tools-icon/image-to-text.png",
 };
 

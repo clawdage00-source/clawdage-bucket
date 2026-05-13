@@ -60,8 +60,11 @@ export default async function RootLayout({
   const headerUser = sessionUser ? toHeaderUser(sessionUser) : null;
 
   return (
-    <html lang="en" className="h-full">
-      <body className={`flex min-h-screen flex-col antialiased ${inter.className}`}>
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body
+        className={`flex min-h-screen flex-col antialiased ${inter.className}`}
+        suppressHydrationWarning
+      >
         <Header user={headerUser} />
         <main className="flex-1">{children}</main>
       </body>
