@@ -1,5 +1,7 @@
 import { headers } from "next/headers";
 
+import { PRODUCTION_CANONICAL_ORIGIN } from "@/lib/seo/site-defaults";
+
 /**
  * Absolute site origin for OAuth and magic-link redirects (falls back to NEXT_PUBLIC_SITE_URL).
  */
@@ -15,5 +17,5 @@ export async function getSiteOrigin(): Promise<string> {
   if (site) {
     return site;
   }
-  return "http://localhost:3000";
+  return PRODUCTION_CANONICAL_ORIGIN;
 }

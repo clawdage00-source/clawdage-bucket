@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { Header } from "@/components/Header";
 import { buildGlobalKeywords, DEFAULT_DESCRIPTION, SITE_NAME } from "@/lib/seo/brand";
+import { PRODUCTION_CANONICAL_ORIGIN } from "@/lib/seo/site-defaults";
 import { getSessionUser } from "@/lib/supabase/get-session-user";
 import { getSiteOrigin } from "@/lib/supabase/site-url";
 import type { HeaderUser } from "@/types/session";
@@ -24,7 +25,7 @@ function metadataBaseUrl(): URL {
       /* fall through */
     }
   }
-  return new URL("http://localhost:3000");
+  return new URL(PRODUCTION_CANONICAL_ORIGIN);
 }
 
 export const metadata: Metadata = {

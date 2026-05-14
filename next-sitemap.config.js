@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  siteUrl: process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://clawdage.com",
   generateRobotsTxt: true,
   exclude: ["/api/*", "/auth/callback"],
   robotsTxtOptions: {

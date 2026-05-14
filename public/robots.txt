@@ -5,7 +5,7 @@ Disallow: /api/
 Disallow: /auth/callback
 
 # Host
-Host: http://localhost:3000
+Host: https://clawdage.com
 
 # Sitemaps
-Sitemap: http://localhost:3000/sitemap.xml
+Sitemap: https://clawdage.com/sitemap.xml
