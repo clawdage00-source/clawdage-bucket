@@ -1,20 +1,29 @@
 import Link from "next/link";
 
 import { PricingFaq } from "@/components/pricing-faq";
-import { PricingPassesSection } from "@/components/pricing-passes-section";
+import { SubscriptionCheckoutSection } from "@/components/subscription-checkout-section";
 import { ToolsPageCta } from "@/components/tools-page-cta";
 import { formatPlanBanner, getProfilePlanSnapshot } from "@/lib/get-profile-plan";
+import { getSessionUser } from "@/lib/supabase/get-session-user";
 
 import { MotionFadeIn } from "./pricing-motion";
 
 export const metadata = {
-  title: "Pricing · EssentialToolbox",
+  title: "Pricing",
   description: "Simple passes from ₹19. No subscriptions. No hidden fees.",
 };
 
 export default async function PricingPage() {
   const snapshot = await getProfilePlanSnapshot();
   const planLine = formatPlanBanner(snapshot);
+  const user = await getSessionUser();
+
+  const userEmail = user?.email ?? "";
+  const meta = user?.user_metadata as Record<string, unknown> | undefined;
+  const userName =
+    (typeof meta?.full_name === "string" && meta.full_name) ||
+    (typeof meta?.name === "string" && meta.name) ||
+    "";
 
   return (
     <div className="min-h-screen bg-white pb-8">
@@ -46,7 +55,7 @@ export default async function PricingPage() {
       ) : null}
 
       <div className="mt-10 sm:mt-12">
-        <PricingPassesSection />
+        <SubscriptionCheckoutSection userEmail={userEmail} userName={userName} />
       </div>
 
       <MotionFadeIn className="mx-auto mt-14 max-w-3xl px-6 sm:mt-16">

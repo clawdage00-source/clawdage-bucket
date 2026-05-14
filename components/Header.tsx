@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, Menu, UserRound, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -46,34 +47,49 @@ export function Header({ user }: HeaderProps) {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="text-base font-bold tracking-tight text-black">
-            EssentialToolbox
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white">
+      <div className="flex w-full items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-4 md:px-6 md:py-3 lg:px-8">
+        <div className="flex min-w-0 shrink-0 items-center justify-start">
+          <Link
+            href="/"
+            className="inline-flex shrink-0 items-center py-0.5"
+            aria-label="Clawdage home"
+          >
+            <Image
+              src="/text-logo.png"
+              alt="Clawdage"
+              width={320}
+              height={40}
+              className="h-auto w-auto max-h-3.5 object-contain object-left sm:max-h-4 md:max-h-[1.125rem] lg:max-h-5 xl:max-h-[1.35rem] 2xl:max-h-6"
+              priority
+            />
           </Link>
-          <nav className="hidden items-center gap-6 md:flex" aria-label="Main">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm font-medium text-slate-700 transition hover:text-black"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
         </div>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <nav
+          className="hidden items-center justify-center gap-2 text-xs font-medium md:flex md:gap-3 md:text-sm lg:gap-5 xl:gap-6"
+          aria-label="Main"
+        >
+          {nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-slate-700 transition hover:text-black"
+            >
+              {item.label}
+            </Link>
+          ))}
+          {user ? (
+            <Link href="/dashboard" className="text-slate-700 transition hover:text-black">
+              Dashboard
+            </Link>
+          ) : null}
+        </nav>
+
+        <div className="flex min-w-0 shrink-0 items-center justify-end gap-2 md:gap-3">
+          <div className="hidden items-center gap-2 md:flex md:gap-3">
           {user ? (
             <>
-              <Link
-                href="/dashboard"
-                className="text-sm font-medium text-slate-700 transition hover:text-black"
-              >
-                Dashboard
-              </Link>
               <div className="relative" ref={menuRef}>
                 <button
                   type="button"
@@ -108,6 +124,14 @@ export function Header({ user }: HeaderProps) {
                   >
                     <Link
                       role="menuitem"
+                      href="/profile"
+                      className="block px-4 py-2 text-sm text-slate-800 hover:bg-slate-50"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      role="menuitem"
                       href="/account"
                       className="block px-4 py-2 text-sm text-slate-800 hover:bg-slate-50"
                       onClick={() => setMenuOpen(false)}
@@ -139,28 +163,29 @@ export function Header({ user }: HeaderProps) {
             <>
               <Link
                 href="/login"
-                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-black transition hover:bg-slate-50"
+                className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-black transition hover:bg-slate-50 sm:px-4"
               >
                 Login
               </Link>
               <Link
                 href="/login"
-                className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800"
+                className="rounded-xl bg-black px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 sm:px-4"
               >
                 Get Started
               </Link>
             </>
           )}
-        </div>
+          </div>
 
-        <button
-          type="button"
-          className="inline-flex rounded-lg border border-slate-200 p-2 text-black md:hidden"
-          onClick={() => setMobileOpen(true)}
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+          <button
+            type="button"
+            className="inline-flex shrink-0 rounded-lg border border-slate-200 p-2 text-black md:hidden"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {mobileOpen ? (
@@ -194,6 +219,15 @@ export function Header({ user }: HeaderProps) {
                   {item.label}
                 </Link>
               ))}
+              {user ? (
+                <Link
+                  href="/dashboard"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              ) : null}
             </nav>
             <div className="border-t border-slate-200 px-4 py-4">
               {user ? (
@@ -221,11 +255,11 @@ export function Header({ user }: HeaderProps) {
                     </div>
                   </div>
                   <Link
-                    href="/dashboard"
+                    href="/profile"
                     className="rounded-lg px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Dashboard
+                    Profile
                   </Link>
                   <Link
                     href="/account"

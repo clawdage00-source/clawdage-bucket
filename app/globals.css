@@ -6,3 +6,28 @@ body {
   padding: 0;
   background-color: #ffffff;
 }
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  33% {
+    transform: translate3d(3px, -10px, 0);
+  }
+  66% {
+    transform: translate3d(-4px, 6px, 0);
+  }
+}
+
+.hero-float-icon {
+  animation-name: hero-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-float-icon {
+    animation: none;
+  }
+}

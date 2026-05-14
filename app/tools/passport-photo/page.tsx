@@ -1,17 +1,22 @@
-import type { Metadata } from "next";
-
+import { ToolJsonLd } from "@/components/JsonLd";
+import { ToolSeoContent } from "@/components/tool-seo-content";
 import { PassportPhotoToolLazy } from "@/app/tools/passport-photo/passport-photo-tool-loader";
 import { getProfilePlanSnapshot, userHasActivePaidPlan } from "@/lib/get-profile-plan";
+import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
 
-export const metadata: Metadata = {
-  title: "Online Passport Photo Maker - Create Print-Ready Sheets",
-  description:
-    "Convert any selfie into a professional 3.5×4.5cm passport photo. Auto-remove background, create 8-photo print sheets, and save as PDF. Perfect for Indian Passports & Visas.",
-};
+export async function generateMetadata() {
+  return buildToolMetadata("passport-photo");
+}
 
 export default async function PassportPhotoPage() {
   const snapshot = await getProfilePlanSnapshot();
   const isPro = userHasActivePaidPlan(snapshot);
 
-  return <PassportPhotoToolLazy isPro={isPro} />;
+  return (
+    <>
+      <ToolJsonLd slug="passport-photo" />
+      <PassportPhotoToolLazy isPro={isPro} />
+      <ToolSeoContent slug="passport-photo" />
+    </>
+  );
 }

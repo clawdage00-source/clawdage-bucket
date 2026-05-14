@@ -5,6 +5,7 @@ import {
   Contact,
   FileArchive,
   FileImage,
+  FileSignature,
   IdCard,
   ImageDown,
   Layers,
@@ -33,6 +34,7 @@ const ICONS: Record<ToolIconId, LucideIcon> = {
   layers: Layers,
   "file-archive": FileArchive,
   "file-image": FileImage,
+  "file-signature": FileSignature,
   "wand-sparkles": WandSparkles,
   "image-down": ImageDown,
   "refresh-cw": RefreshCw,
@@ -156,12 +158,11 @@ export function ToolGrid() {
                           {cardIconSrc ? (
                             <Image
                               src={cardIconSrc}
-                              alt=""
+                              alt={`${tool.name} — ${tool.description}`}
                               width={128}
                               height={128}
                               className="max-h-full max-w-full object-contain object-center"
                               sizes="(max-width: 768px) 112px, 128px"
-                              aria-hidden
                             />
                           ) : (
                             <Icon className="h-14 w-14 shrink-0 text-slate-800 sm:h-16 sm:w-16" aria-hidden />

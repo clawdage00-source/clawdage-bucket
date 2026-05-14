@@ -1,8 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
+import { OrganizationJsonLd } from "@/components/JsonLd";
 import { Header } from "@/components/Header";
+import { buildGlobalKeywords, DEFAULT_DESCRIPTION, SITE_NAME } from "@/lib/seo/brand";
 import { getSessionUser } from "@/lib/supabase/get-session-user";
+import { getSiteOrigin } from "@/lib/supabase/site-url";
 import type { HeaderUser } from "@/types/session";
 
 import "./globals.css";
@@ -12,9 +15,71 @@ const inter = Inter({
   display: "swap",
 });
 
+function metadataBaseUrl(): URL {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (raw) {
+    try {
+      return new URL(raw.replace(/\/$/, ""));
+    } catch {
+      /* fall through */
+    }
+  }
+  return new URL("http://localhost:3000");
+}
+
 export const metadata: Metadata = {
-  title: "EssentialToolbox",
-  description: "EssentialToolbox",
+  metadataBase: metadataBaseUrl(),
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  keywords: buildGlobalKeywords().split(", "),
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: DEFAULT_DESCRIPTION,
+    images: [
+      {
+        url: "/web-tab-logo.png",
+        width: 512,
+        height: 512,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: DEFAULT_DESCRIPTION,
+  },
+  icons: {
+    icon: [{ url: "/web-tab-logo.png", type: "image/png", sizes: "any" }],
+    apple: [{ url: "/web-tab-logo.png", type: "image/png" }],
+  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? {
+        verification: {
+          google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+        },
+      }
+    : {}),
+};
+
+export const viewport: Viewport = {
+  themeColor: "#2a1fff",
+  width: "device-width",
+  initialScale: 1,
 };
 
 function displayNameFromSession(
@@ -58,6 +123,7 @@ export default async function RootLayout({
 }>) {
   const sessionUser = await getSessionUser();
   const headerUser = sessionUser ? toHeaderUser(sessionUser) : null;
+  const siteUrl = await getSiteOrigin();
 
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
@@ -65,6 +131,7 @@ export default async function RootLayout({
         className={`flex min-h-screen flex-col antialiased ${inter.className}`}
         suppressHydrationWarning
       >
+        <OrganizationJsonLd siteUrl={siteUrl} />
         <Header user={headerUser} />
         <main className="flex-1">{children}</main>
       </body>

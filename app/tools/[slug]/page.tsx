@@ -1,26 +1,36 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ToolJsonLd } from "@/components/JsonLd";
+import { ToolSeoContent } from "@/components/tool-seo-content";
+import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
 import { getToolBySlug, MVP_TOOL_SLUGS } from "@/lib/tools-data";
+
+/** Slugs that have `app/tools/<slug>/page.tsx` — do not duplicate under `[slug]`. */
+const DEDICATED_TOOL_SLUGS = new Set([
+  "bg-remover",
+  "e-sign",
+  "id-resizer",
+  "image-compressor",
+  "ocr",
+  "passport-photo",
+  "qr-generator",
+]);
 
 type ToolPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return MVP_TOOL_SLUGS.map((slug) => ({ slug }));
+  return MVP_TOOL_SLUGS.filter((slug) => !DEDICATED_TOOL_SLUGS.has(slug)).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: ToolPageProps) {
   const { slug } = await params;
-  const tool = getToolBySlug(slug);
-  if (!tool) {
-    return { title: "Tool" };
-  }
-  return { title: `${tool.name} · EssentialToolbox` };
+  return buildToolMetadata(slug);
 }
 
-export default async function ToolPage({ params }: ToolPageProps) {
+export default async function ToolCatchAllPage({ params }: ToolPageProps) {
   const { slug } = await params;
   const tool = getToolBySlug(slug);
   if (!tool) {
@@ -28,18 +38,28 @@ export default async function ToolPage({ params }: ToolPageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="text-3xl font-bold tracking-tight text-black">{tool.name}</h1>
-      <p className="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-6 text-sm leading-relaxed text-slate-700">
-        Coming soon: tool interface. You&apos;ll be able to run this workflow entirely in your
-        browser.
-      </p>
-      <Link
-        href="/#tools"
-        className="mt-8 inline-flex text-sm font-medium text-black underline underline-offset-4 hover:text-slate-700"
-      >
-        ← Back to all tools
-      </Link>
-    </div>
+    <>
+      <ToolJsonLd slug={slug} />
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <h1 className="text-3xl font-bold tracking-tight text-black">{tool.name}</h1>
+        <p className="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-6 text-sm leading-relaxed text-slate-700">
+          Open this tool from the home catalog — the full workspace runs in your browser with the same
+          privacy-first defaults where supported.
+        </p>
+        <Link
+          href="/#tools"
+          className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800"
+        >
+          Open {tool.name} from all tools
+        </Link>
+        <Link
+          href="/#tools"
+          className="mt-8 inline-flex text-sm font-medium text-black underline underline-offset-4 hover:text-slate-700"
+        >
+          ← Back to all tools
+        </Link>
+      </div>
+      <ToolSeoContent slug={slug} />
+    </>
   );
 }

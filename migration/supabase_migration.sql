@@ -30,6 +30,16 @@ create table public.tools (
   is_pro boolean not null default false
 );
 
+/** Per-tool usage events (e.g. free-tier daily limits). */
+create table public.tool_usage (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles (id) on delete cascade,
+  tool_name text not null,
+  used_at timestamptz not null default now()
+);
+
+create index tool_usage_user_tool_day on public.tool_usage (user_id, tool_name, used_at desc);
+
 -- ---------------------------------------------------------------------------
 -- Profile row on signup (RLS allows only select/update on profiles)
 -- ---------------------------------------------------------------------------
@@ -62,6 +72,7 @@ create trigger on_auth_user_created
 alter table public.profiles enable row level security;
 alter table public.transactions enable row level security;
 alter table public.tools enable row level security;
+alter table public.tool_usage enable row level security;
 
 -- Profiles: users may only read and update their own row (per requirements).
 create policy "profiles_select_own"
@@ -86,3 +97,14 @@ create policy "tools_select_all"
   on public.tools
   for select
   using (true);
+
+-- tool_usage: own rows only (insert + read for daily counts).
+create policy "tool_usage_select_own"
+  on public.tool_usage
+  for select
+  using (auth.uid() = user_id);
+
+create policy "tool_usage_insert_own"
+  on public.tool_usage
+  for insert
+  with check (auth.uid() = user_id);

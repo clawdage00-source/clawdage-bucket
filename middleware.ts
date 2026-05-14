@@ -7,7 +7,7 @@ import { getSupabaseEnv } from "@/lib/supabase/env";
 const AUTH_GET_USER_TIMEOUT_MS = 2800;
 
 /** Prefixes that require an authenticated user (extend as you add routes). */
-const PROTECTED_PREFIXES = ["/dashboard", "/account", "/subscription"];
+const PROTECTED_PREFIXES = ["/dashboard", "/account", "/subscription", "/profile"];
 
 function skipSupabaseInMiddleware(): boolean {
   return process.env.NODE_ENV === "development" && process.env.SKIP_SUPABASE_MIDDLEWARE === "1";

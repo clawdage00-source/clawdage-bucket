@@ -120,7 +120,7 @@ export function paintPassportOnBackground(
   return out;
 }
 
-export function drawDiagonalWatermark(ctx: CanvasRenderingContext2D, w: number, h: number, text = "EssentialToolbox") {
+export function drawDiagonalWatermark(ctx: CanvasRenderingContext2D, w: number, h: number, text = "Clawdage") {
   ctx.save();
   ctx.translate(w / 2, h / 2);
   ctx.rotate(-Math.PI / 5.5);
@@ -136,7 +136,7 @@ export function drawDiagonalWatermark(ctx: CanvasRenderingContext2D, w: number, 
   ctx.fillStyle = "rgba(15, 23, 42, 0.35)";
   ctx.textAlign = "right";
   ctx.textBaseline = "bottom";
-  ctx.fillText("EssentialToolbox — Free export", w - 12, h - 8);
+  ctx.fillText("Clawdage — Free export", w - 12, h - 8);
   ctx.restore();
 }
 

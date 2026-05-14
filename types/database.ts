@@ -36,6 +36,7 @@ export interface Database {
           amount: string;
           status: string;
           plan_selected: string;
+          created_at: string;
         };
         Insert: {
           id?: string;
@@ -45,6 +46,7 @@ export interface Database {
           amount: string;
           status: string;
           plan_selected: string;
+          created_at?: string;
         };
         Update: {
           id?: string;
@@ -54,6 +56,7 @@ export interface Database {
           amount?: string;
           status?: string;
           plan_selected?: string;
+          created_at?: string;
         };
         Relationships: [
           {
@@ -85,6 +88,35 @@ export interface Database {
           is_pro?: boolean;
         };
         Relationships: [];
+      };
+      tool_usage: {
+        Row: {
+          id: string;
+          user_id: string;
+          tool_name: string;
+          used_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          tool_name: string;
+          used_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          tool_name?: string;
+          used_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tool_usage_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: Record<string, never>;

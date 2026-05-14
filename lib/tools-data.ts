@@ -9,6 +9,7 @@ export type ToolIconId =
   | "layers"
   | "file-archive"
   | "file-image"
+  | "file-signature"
   | "wand-sparkles"
   | "image-down"
   | "refresh-cw"
@@ -52,11 +53,19 @@ export const MVP_TOOLS: ToolDefinition[] = [
     icon: "file-image",
   },
   {
-    slug: "ai-background-remover",
+    slug: "e-sign",
+    name: "Self-Attestation & E-Sign",
+    description: "Draw or type your signature, stamp PDFs, and add dates — 100% in your browser.",
+    category: "pdf",
+    is_pro: false,
+    icon: "file-signature",
+  },
+  {
+    slug: "bg-remover",
     name: "AI Background Remover",
-    description: "Remove backgrounds from portraits and product shots.",
+    description: "Remove backgrounds in-browser with local AI — transparent PNG export.",
     category: "ai",
-    is_pro: true,
+    is_pro: false,
     icon: "wand-sparkles",
   },
   {

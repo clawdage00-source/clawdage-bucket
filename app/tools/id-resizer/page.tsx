@@ -1,17 +1,22 @@
-import type { Metadata } from "next";
-
+import { ToolJsonLd } from "@/components/JsonLd";
+import { ToolSeoContent } from "@/components/tool-seo-content";
 import { IdResizerTool } from "@/components/tools/id-resizer-tool";
 import { getProfilePlanSnapshot, userHasActivePaidPlan } from "@/lib/get-profile-plan";
+import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
 
-export const metadata: Metadata = {
-  title: "Aadhar & PAN Card Resizer Online - Under 50KB/100KB",
-  description:
-    "Specifically designed for Indian exam and government portals. Resize Aadhar, PAN, and Passport photos to exact dimensions and KB limits. Secure and private.",
-};
+export async function generateMetadata() {
+  return buildToolMetadata("id-resizer");
+}
 
 export default async function IdResizerPage() {
   const snapshot = await getProfilePlanSnapshot();
   const isPro = userHasActivePaidPlan(snapshot);
 
-  return <IdResizerTool isPro={isPro} />;
+  return (
+    <>
+      <ToolJsonLd slug="id-resizer" />
+      <IdResizerTool isPro={isPro} />
+      <ToolSeoContent slug="id-resizer" />
+    </>
+  );
 }
