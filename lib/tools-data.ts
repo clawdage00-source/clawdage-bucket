@@ -76,11 +76,12 @@ export const MVP_TOOLS: ToolDefinition[] = [
     icon: "refresh-cw",
   },
   {
-    slug: "passport-photo-maker",
+    slug: "passport-photo",
     name: "Passport Photo Maker",
-    description: "India-standard layouts for passport and visa photos.",
+    description:
+      "3.5×4.5cm passport photos: AI background removal, crop, print sheets (4×6 & A4), PDF/JPEG at 300 DPI.",
     category: "indian",
-    is_pro: true,
+    is_pro: false,
     icon: "contact",
   },
   {
@@ -101,10 +102,10 @@ export const MVP_TOOLS: ToolDefinition[] = [
   },
   {
     slug: "ocr",
-    name: "Image to Text OCR",
-    description: "Pull editable text from screenshots and scans.",
+    name: "AI Handwriting OCR",
+    description: "Groq Vision: extract text and auto-detect language (pass).",
     category: "ai",
-    is_pro: false,
+    is_pro: true,
     icon: "scan-text",
   },
 ];

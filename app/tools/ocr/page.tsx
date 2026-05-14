@@ -4,9 +4,9 @@ import { OcrToolLazy } from "@/app/tools/ocr/ocr-tool-loader";
 import { getProfilePlanSnapshot, userHasActivePaidPlan } from "@/lib/get-profile-plan";
 
 export const metadata: Metadata = {
-  title: "Free Online OCR — Printed & Handwriting (Pro)",
+  title: "AI Handwriting OCR (Pro) — Groq Vision",
   description:
-    "Extract text from images in your browser: Tesseract for printed text, optional TrOCR handwriting AI (Daily Pass). Canvas cleanup, confidence review, WebP/JPG/PNG and more — files stay on your device.",
+    "Upload an image: Groq Vision extracts handwriting and printed text and detects the document language automatically. Requires an active pass.",
 };
 
 export default async function OcrPage() {

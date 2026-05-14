@@ -10,7 +10,7 @@ values
   ('AI Background Remover', 'ai-background-remover', true),
   ('Image Compressor', 'image-compressor', false),
   ('Format Converter', 'format-converter', false),
-  ('Passport Photo Maker', 'passport-photo-maker', true),
+  ('Passport Photo Maker', 'passport-photo', false),
   ('Aadhar / PAN Card Resizer', 'id-resizer', false),
   ('QR Code Generator', 'qr-generator', false),
   ('Image to Text OCR', 'ocr', false),

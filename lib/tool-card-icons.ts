@@ -8,6 +8,7 @@ export const TOOL_CARD_ICON_BY_SLUG: Record<string, string> = {
   "image-to-pdf": "/tools-icon/image-to-pdf.png",
   "ai-background-remover": "/tools-icon/background-remover.png",
   "image-compressor": "/tools-icon/image-compressor.png",
+  "passport-photo": "/tools-icon/passport-photo-maker.png",
   "passport-photo-maker": "/tools-icon/passport-photo-maker.png",
   "id-resizer": "/tools-icon/aadhar-pancard-resizer.png",
   "qr-generator": "/tools-icon/qrcode-generator.png",
