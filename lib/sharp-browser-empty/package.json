@@ -1,0 +1,7 @@
+{
+  "name": "sharp",
+  "version": "0.0.0-browser-stub",
+  "private": true,
+  "description": "Stub package so @xenova/transformers does not pull native Sharp bindings into the Next.js browser bundle.",
+  "main": "index.cjs"
+}
