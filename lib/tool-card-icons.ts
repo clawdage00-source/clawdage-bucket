@@ -7,6 +7,8 @@ export const TOOL_CARD_ICON_BY_SLUG: Record<string, string> = {
   "compress-pdf": "/tools-icon/pdf-compressor.png",
   "image-to-pdf": "/tools-icon/image-to-pdf.png",
   "e-sign": "/tools-icon/pdf-self-attesting.png",
+  "pdf-to-excel": "/tools-icon/pdf-to-excel.png",
+  "excel-editor": "/tools-icon/excel-editor.png",
   "bg-remover": "/tools-icon/background-remover.png",
   "ai-background-remover": "/tools-icon/background-remover.png",
   "image-compressor": "/tools-icon/image-compressor.png",

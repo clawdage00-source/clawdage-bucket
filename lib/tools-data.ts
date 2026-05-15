@@ -16,7 +16,9 @@ export type ToolIconId =
   | "contact"
   | "id-card"
   | "qr-code"
-  | "scan-text";
+  | "scan-text"
+  | "clipboard"
+  | "table";
 
 export type ToolDefinition = {
   slug: string;
@@ -59,6 +61,22 @@ export const MVP_TOOLS: ToolDefinition[] = [
     category: "pdf",
     is_pro: false,
     icon: "file-signature",
+  },
+  {
+    slug: "pdf-to-excel",
+    name: "PDF to Excel Converter",
+    description: "Extract tables and data from PDF files and convert them to editable Excel spreadsheets.",
+    category: "pdf",
+    is_pro: false,
+    icon: "table",
+  },
+  {
+    slug: "excel-editor",
+    name: "Excel Editor",
+    description: "View, edit, and export Excel and CSV files directly in your browser with full spreadsheet functionality.",
+    category: "utility",
+    is_pro: false,
+    icon: "table",
   },
   {
     slug: "bg-remover",

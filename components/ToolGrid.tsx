@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ClipboardCopy,
   Contact,
   FileArchive,
   FileImage,
@@ -12,6 +13,7 @@ import {
   QrCode,
   RefreshCw,
   ScanText,
+  Table,
   WandSparkles,
   type LucideIcon,
 } from "lucide-react";
@@ -36,12 +38,14 @@ const ICONS: Record<ToolIconId, LucideIcon> = {
   "file-image": FileImage,
   "file-signature": FileSignature,
   "wand-sparkles": WandSparkles,
+  "table": Table,
   "image-down": ImageDown,
   "refresh-cw": RefreshCw,
   contact: Contact,
   "id-card": IdCard,
   "qr-code": QrCode,
   "scan-text": ScanText,
+  clipboard: ClipboardCopy,
 };
 
 const listVariants = {

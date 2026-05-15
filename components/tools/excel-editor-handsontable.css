@@ -1,0 +1,83 @@
+/* Light Excel-style Handsontable shell — requires ht-theme-main on the wrapper */
+.excel-editor-hot.ht-theme-main {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+.excel-editor-hot {
+  touch-action: auto;
+}
+
+.excel-editor-hot .handsontable {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  font-size: 13px;
+}
+
+/* Scroll + interaction: do not force wtHolder width (breaks HT layout engine) */
+.excel-editor-hot .ht_master .wtHolder {
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.excel-editor-hot .handsontable td,
+.excel-editor-hot .handsontable th {
+  pointer-events: auto;
+}
+
+.excel-editor-hot .htEditor,
+.excel-editor-hot .handsontableInput {
+  pointer-events: auto;
+  z-index: 200;
+}
+
+.excel-editor-hot .ht_clone_top,
+.excel-editor-hot .ht_clone_left,
+.excel-editor-hot .ht_clone_top_left_corner {
+  z-index: 2;
+}
+
+/* Header row — Excel-like green tint */
+.excel-editor-hot thead th {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  font-weight: 600;
+  border-color: #cbd5e1 !important;
+}
+
+.excel-editor-hot tbody td {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+}
+
+.excel-editor-hot tbody tr:nth-child(even) td {
+  background: #f8fafc !important;
+}
+
+.excel-editor-hot .ht__highlight {
+  background: #dbeafe !important;
+}
+
+.excel-editor-hot .area {
+  background: rgba(37, 99, 235, 0.08) !important;
+}
+
+.excel-editor-hot .currentRow {
+  background: #eff6ff !important;
+}
+
+.excel-editor-hot .wtBorder.current {
+  border-color: #2563eb !important;
+}
+
+/* Row header gutter */
+.excel-editor-hot .ht_clone_left th,
+.excel-editor-hot .ht_clone_top_left_corner th {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  font-weight: 500;
+  border-color: #cbd5e1 !important;
+}

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { signOut } from "@/lib/supabase/auth-actions";
+import { cn } from "@/lib/utils";
 import type { HeaderUser } from "@/types/session";
 
 const nav = [
@@ -18,10 +19,22 @@ type HeaderProps = {
   user: HeaderUser | null;
 };
 
+const SCROLL_THRESHOLD_PX = 12;
+
 export function Header({ user }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > SCROLL_THRESHOLD_PX);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -46,8 +59,17 @@ export function Header({ user }: HeaderProps) {
     };
   }, [mobileOpen]);
 
+  const showSolidHeader = scrolled || mobileOpen || menuOpen;
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white">
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 w-full border-b transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out",
+        showSolidHeader
+          ? "border-slate-200/90 bg-white/95 shadow-sm backdrop-blur-md"
+          : "border-transparent bg-transparent shadow-none backdrop-blur-none",
+      )}
+    >
       <div className="flex w-full items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-4 md:px-6 md:py-3 lg:px-8">
         <div className="flex min-w-0 shrink-0 items-center justify-start">
           <Link
@@ -60,7 +82,7 @@ export function Header({ user }: HeaderProps) {
               alt="Clawdage"
               width={320}
               height={40}
-              className="h-auto w-auto max-h-3.5 object-contain object-left sm:max-h-4 md:max-h-[1.125rem] lg:max-h-5 xl:max-h-[1.35rem] 2xl:max-h-6"
+              className="h-auto w-auto max-h-2.5 object-contain object-left sm:max-h-3 md:max-h-3 lg:max-h-3.5 xl:max-h-4 2xl:max-h-[1.125rem]"
               priority
             />
           </Link>
@@ -169,7 +191,7 @@ export function Header({ user }: HeaderProps) {
               </Link>
               <Link
                 href="/login"
-                className="rounded-xl bg-black px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 sm:px-4"
+                className="rounded-xl bg-[#251EFF] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#1e18cc] sm:px-4"
               >
                 Get Started
               </Link>
@@ -295,7 +317,7 @@ export function Header({ user }: HeaderProps) {
                   </Link>
                   <Link
                     href="/login"
-                    className="rounded-xl bg-black px-4 py-3 text-center text-sm font-medium text-white"
+                    className="rounded-xl bg-[#251EFF] px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-[#1e18cc]"
                     onClick={() => setMobileOpen(false)}
                   >
                     Get Started

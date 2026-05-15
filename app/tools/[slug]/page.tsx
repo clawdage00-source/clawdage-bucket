@@ -10,10 +10,12 @@ import { getToolBySlug, MVP_TOOL_SLUGS } from "@/lib/tools-data";
 const DEDICATED_TOOL_SLUGS = new Set([
   "bg-remover",
   "e-sign",
+  "excel-editor",
   "id-resizer",
   "image-compressor",
   "ocr",
   "passport-photo",
+  "pdf-to-excel",
   "qr-generator",
 ]);
 

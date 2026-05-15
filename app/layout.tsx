@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Geist } from "next/font/google";
 
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { Header } from "@/components/Header";
@@ -11,6 +11,9 @@ import type { HeaderUser } from "@/types/session";
 import { Analytics } from "@vercel/analytics/next"
 
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -128,7 +131,7 @@ export default async function RootLayout({
   const siteUrl = await getSiteOrigin();
 
   return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
+    <html lang="en" className={cn("h-full", "font-sans", geist.variable)} suppressHydrationWarning>
       <body
         className={`flex min-h-screen flex-col antialiased ${inter.className}`}
         suppressHydrationWarning
@@ -136,7 +139,7 @@ export default async function RootLayout({
         <OrganizationJsonLd siteUrl={siteUrl} />
         <Header user={headerUser} />
         <Analytics />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pt-14">{children}</main>
       </body>
     </html>
   );
