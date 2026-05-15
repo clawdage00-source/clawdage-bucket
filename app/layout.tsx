@@ -8,6 +8,7 @@ import { PRODUCTION_CANONICAL_ORIGIN } from "@/lib/seo/site-defaults";
 import { getSessionUser } from "@/lib/supabase/get-session-user";
 import { getSiteOrigin } from "@/lib/supabase/site-url";
 import type { HeaderUser } from "@/types/session";
+import { Analytics } from "@vercel/analytics/next"
 
 import "./globals.css";
 
@@ -134,6 +135,7 @@ export default async function RootLayout({
       >
         <OrganizationJsonLd siteUrl={siteUrl} />
         <Header user={headerUser} />
+        <Analytics />
         <main className="flex-1">{children}</main>
       </body>
     </html>
