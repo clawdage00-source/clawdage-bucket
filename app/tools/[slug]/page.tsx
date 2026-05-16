@@ -9,6 +9,7 @@ import { getToolBySlug, MVP_TOOL_SLUGS } from "@/lib/tools-data";
 /** Slugs that have `app/tools/<slug>/page.tsx` — do not duplicate under `[slug]`. */
 const DEDICATED_TOOL_SLUGS = new Set([
   "bg-remover",
+  "merge-pdf",
   "e-sign",
   "excel-editor",
   "id-resizer",
