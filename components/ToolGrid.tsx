@@ -159,27 +159,27 @@ export function ToolGrid() {
                           </span>
                         ) : null}
                         <div className="flex h-28 w-28 shrink-0 items-center justify-center sm:h-32 sm:w-32">
-                          {cardIconSrc ? (
-                            <Image
-                              src={cardIconSrc}
-                              alt={`${tool.name} — ${tool.description}`}
-                              width={128}
-                              height={128}
-                              className="max-h-full max-w-full object-contain object-center"
-                              sizes="(max-width: 768px) 112px, 128px"
-                            />
-                          ) : (
-                            <Icon className="h-14 w-14 shrink-0 text-slate-800 sm:h-16 sm:w-16" aria-hidden />
-                          )}
-                        </div>
-                        <div className={`flex min-w-0 flex-1 flex-col ${tool.is_pro ? "pr-16" : ""}`}>
-                          <h3 className="text-base font-semibold text-black">{tool.name}</h3>
-                          <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{tool.description}</p>
-                          <p className="mt-3 text-xs font-medium uppercase tracking-wide text-slate-400">
-                            {getTabLabel(tool.category)}
-                          </p>
-                        </div>
-                      </motion.div>
+                            {cardIconSrc ? (
+                              <Image
+                                src={cardIconSrc}
+                                alt={`${tool.name} — ${tool.description}`}
+                                width={128}
+                                height={128}
+                                className="max-h-full max-w-full object-contain object-center"
+                                sizes="(max-width: 768px) 112px, 128px"
+                              />
+                            ) : (
+                              <Icon className="h-14 w-14 shrink-0 text-slate-800 sm:h-16 sm:w-16" aria-hidden />
+                            )}
+                          </div>
+                          <div className={`flex min-w-0 flex-1 flex-col ${tool.is_pro ? "pr-16" : ""}`}>
+                            <h3 className="text-base font-semibold text-black">{tool.name}</h3>
+                            <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{tool.description}</p>
+                            <p className="mt-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+                              {getTabLabel(tool.category)}
+                            </p>
+                          </div>
+                        </motion.div>
                     </Link>
                   </motion.li>
                 );

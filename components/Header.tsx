@@ -1,9 +1,11 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Menu, UserRound, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { signOut } from "@/lib/supabase/auth-actions";
 import { cn } from "@/lib/utils";
@@ -25,7 +27,12 @@ export function Header({ user }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -61,13 +68,177 @@ export function Header({ user }: HeaderProps) {
 
   const showSolidHeader = scrolled || mobileOpen || menuOpen;
 
+  const mobileMenu = mounted
+    ? createPortal(
+        <AnimatePresence>
+          {mobileOpen ? (
+            <div className="fixed inset-0 z-[100] md:hidden" key="mobile-menu">
+              <motion.button
+                type="button"
+                className="absolute inset-0 bg-black/50"
+                aria-label="Close menu"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setMobileOpen(false)}
+              />
+              <motion.aside
+                role="dialog"
+                aria-modal="true"
+                aria-label="Navigation menu"
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", stiffness: 340, damping: 32 }}
+                className="absolute right-0 top-0 flex h-full w-[min(92vw,22rem)] flex-col border-l border-slate-200 bg-white shadow-2xl"
+              >
+                <div className="relative z-10 flex min-h-0 flex-1 flex-col bg-white">
+                  <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-5 py-5">
+                    <span className="text-lg font-bold text-black">Menu</span>
+                    <button
+                      type="button"
+                      className="rounded-xl border border-slate-200 p-2.5 text-black"
+                      onClick={() => setMobileOpen(false)}
+                      aria-label="Close menu"
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
+                  </div>
+
+                  {user ? (
+                    <div className="shrink-0 border-b border-slate-200 px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100">
+                          {user.avatarUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element -- remote Google avatars; avoids remotePatterns config
+                            <img
+                              src={user.avatarUrl}
+                              alt=""
+                              width={48}
+                              height={48}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <UserRound className="h-6 w-6 text-slate-600" aria-hidden />
+                          )}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-base font-semibold text-black">
+                            {user.displayName}
+                          </p>
+                          {user.email ? (
+                            <p className="truncate text-sm text-slate-500">{user.email}</p>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <nav
+                    className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-4 py-5"
+                    aria-label="Mobile"
+                  >
+                    <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      Navigate
+                    </p>
+                    {nav.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="rounded-xl px-4 py-3.5 text-xl font-semibold text-black transition hover:bg-slate-50 active:bg-slate-100"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                    {user ? (
+                      <Link
+                        href="/dashboard"
+                        className="rounded-xl px-4 py-3.5 text-xl font-semibold text-black transition hover:bg-slate-50 active:bg-slate-100"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                    ) : null}
+
+                    {user ? (
+                      <>
+                        <p className="mb-2 mt-6 px-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          Account
+                        </p>
+                        <Link
+                          href="/profile"
+                          className="rounded-xl px-4 py-3.5 text-xl font-semibold text-black transition hover:bg-slate-50 active:bg-slate-100"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                        <Link
+                          href="/account"
+                          className="rounded-xl px-4 py-3.5 text-xl font-semibold text-black transition hover:bg-slate-50 active:bg-slate-100"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          My Account
+                        </Link>
+                        <Link
+                          href="/subscription"
+                          className="rounded-xl px-4 py-3.5 text-xl font-semibold text-black transition hover:bg-slate-50 active:bg-slate-100"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          Subscription
+                        </Link>
+                        <form action={signOut} className="mt-1">
+                          <button
+                            type="submit"
+                            className="w-full rounded-xl px-4 py-3.5 text-left text-xl font-semibold text-black transition hover:bg-slate-50 active:bg-slate-100"
+                          >
+                            Logout
+                          </button>
+                        </form>
+                      </>
+                    ) : null}
+                  </nav>
+
+                  {!user ? (
+                    <div className="shrink-0 border-t border-slate-200 px-4 py-5">
+                      <div className="flex flex-col gap-3">
+                        <Link
+                          href="/login"
+                          className="rounded-xl border border-slate-200 px-4 py-4 text-center text-lg font-semibold text-black"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          Login
+                        </Link>
+                        <Link
+                          href="/login"
+                          className="rounded-xl bg-[#251EFF] px-4 py-4 text-center text-lg font-semibold text-white transition hover:bg-[#1e18cc]"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          Get Started
+                        </Link>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </motion.aside>
+            </div>
+          ) : null}
+        </AnimatePresence>,
+        document.body,
+      )
+    : null;
+
   return (
+    <>
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 w-full border-b transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out",
-        showSolidHeader
-          ? "border-slate-200/90 bg-white/95 shadow-sm backdrop-blur-md"
-          : "border-transparent bg-transparent shadow-none backdrop-blur-none",
+        mobileOpen
+          ? "border-slate-200 bg-white shadow-sm"
+          : showSolidHeader
+            ? "border-slate-200/90 bg-white/95 shadow-sm backdrop-blur-md"
+            : "border-transparent bg-transparent shadow-none backdrop-blur-none",
       )}
     >
       <div className="flex w-full items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-4 md:px-6 md:py-3 lg:px-8">
@@ -82,7 +253,7 @@ export function Header({ user }: HeaderProps) {
               alt="Clawdage"
               width={320}
               height={40}
-              className="h-auto w-auto max-h-2.5 object-contain object-left sm:max-h-3 md:max-h-3 lg:max-h-3.5 xl:max-h-4 2xl:max-h-[1.125rem]"
+              className="h-auto w-auto object-contain object-left max-sm:max-h-7 sm:max-h-3 md:max-h-3 lg:max-h-3.5 xl:max-h-4 2xl:max-h-[1.125rem]"
               priority
             />
           </Link>
@@ -210,124 +381,8 @@ export function Header({ user }: HeaderProps) {
         </div>
       </div>
 
-      {mobileOpen ? (
-        <div className="fixed inset-0 z-50 md:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/40"
-            aria-label="Close menu"
-            onClick={() => setMobileOpen(false)}
-          />
-          <div className="absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col border-l border-slate-200 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-              <span className="text-sm font-bold text-black">Menu</span>
-              <button
-                type="button"
-                className="rounded-lg p-2 text-black"
-                onClick={() => setMobileOpen(false)}
-                aria-label="Close menu"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <nav className="flex flex-1 flex-col gap-1 px-4 py-4" aria-label="Mobile">
-              {nav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              {user ? (
-                <Link
-                  href="/dashboard"
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Dashboard
-                </Link>
-              ) : null}
-            </nav>
-            <div className="border-t border-slate-200 px-4 py-4">
-              {user ? (
-                <div className="flex flex-col gap-2">
-                  <div className="mb-1 flex items-center gap-3 border-b border-slate-100 px-3 pb-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100">
-                      {user.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element -- remote Google avatars; avoids remotePatterns config
-                        <img
-                          src={user.avatarUrl}
-                          alt=""
-                          width={40}
-                          height={40}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <UserRound className="h-5 w-5 text-slate-600" aria-hidden />
-                      )}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-black">{user.displayName}</p>
-                      {user.email ? (
-                        <p className="truncate text-xs text-slate-500">{user.email}</p>
-                      ) : null}
-                    </div>
-                  </div>
-                  <Link
-                    href="/profile"
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    href="/account"
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    My Account
-                  </Link>
-                  <Link
-                    href="/subscription"
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Subscription
-                  </Link>
-                  <form action={signOut}>
-                    <button
-                      type="submit"
-                      className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-800 hover:bg-slate-50"
-                    >
-                      Logout
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <Link
-                    href="/login"
-                    className="rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-medium text-black"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/login"
-                    className="rounded-xl bg-[#251EFF] px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-[#1e18cc]"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : null}
     </header>
+    {mobileMenu}
+    </>
   );
 }
