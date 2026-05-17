@@ -1,5 +1,4 @@
 import { ToolJsonLd } from "@/components/JsonLd";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { IdResizerTool } from "@/components/tools/id-resizer-tool";
 import { getProfilePlanSnapshot, userHasActivePaidPlan } from "@/lib/get-profile-plan";
 import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
@@ -16,7 +15,6 @@ export default async function IdResizerPage() {
     <>
       <ToolJsonLd slug="id-resizer" />
       <IdResizerTool isPro={isPro} />
-      <ToolSeoContent slug="id-resizer" />
     </>
   );
 }

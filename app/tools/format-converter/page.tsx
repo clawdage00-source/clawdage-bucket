@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
-
+import { ToolJsonLd } from "@/components/JsonLd";
 import { FormatConverterTool } from "@/components/tools/format-converter-tool";
+import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
 
-export const metadata: Metadata = {
-  title: "Image Format Converter — PNG, JPG, WebP, AVIF & More",
-  description:
-    "Convert images between PNG, JPEG, WebP, GIF, AVIF, TIFF, BMP, and SVG in your browser with live preview, quality controls, and clipboard copy.",
-};
+export async function generateMetadata() {
+  return buildToolMetadata("format-converter");
+}
 
 export default function FormatConverterPage() {
-  return <FormatConverterTool />;
+  return (
+    <>
+      <ToolJsonLd slug="format-converter" />
+      <FormatConverterTool />
+    </>
+  );
 }

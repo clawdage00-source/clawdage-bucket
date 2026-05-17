@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { CreditCard, Globe, Shield, Smartphone, Upload } from "lucide-react";
 import Link from "next/link";
 
+import { IndiaTrustBadges } from "@/components/india-trust-badges";
 import { HeroGridBeams } from "@/components/ui/background-beams";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
@@ -61,7 +62,8 @@ export function Hero() {
             </Link>
           </div>
 
-          <ul className="mt-8 flex flex-wrap items-center justify-center gap-2">
+          <IndiaTrustBadges className="mt-6 justify-center" />
+          <ul className="mt-4 flex flex-wrap items-center justify-center gap-2">
             {TRUST_BADGES.map(({ icon: Icon, label }) => (
               <li
                 key={label}

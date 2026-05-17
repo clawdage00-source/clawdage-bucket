@@ -1,5 +1,4 @@
 import { ToolJsonLd } from "@/components/JsonLd";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { ImageCompressorTool } from "@/components/tools/image-compressor-tool";
 import { getProfilePlanSnapshot, userHasActivePaidPlan } from "@/lib/get-profile-plan";
 import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
@@ -16,7 +15,6 @@ export default async function ImageCompressorPage() {
     <>
       <ToolJsonLd slug="image-compressor" />
       <ImageCompressorTool canBulk={canBulk} />
-      <ToolSeoContent slug="image-compressor" />
     </>
   );
 }

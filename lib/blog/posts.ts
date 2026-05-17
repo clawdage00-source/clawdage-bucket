@@ -181,6 +181,54 @@ const POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: "how-to-resize-ssc-photos-online",
+    title: "How to Resize SSC Photos Online",
+    description: "Step-by-step SSC photo and signature resize for CHSL, CGL, and MTS online forms in India.",
+    category: "Government Exams",
+    publishedAt: "2026-05-12",
+    readMinutes: 6,
+    relatedToolSlugs: ["id-resizer", "passport-photo", "image-compressor"],
+    relatedLandingSlugs: ["ssc-photo-resizer", "resize-photo-for-ssc"],
+    sections: [
+      {
+        paragraphs: [
+          "SSC notifications publish exact pixel and KB limits each cycle. WhatsApp forwards rarely meet those specs.",
+          "Use Clawdage ID Resizer with custom dimensions, then verify in the portal preview before payment.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Can I resize on mobile?",
+        answer: "Yes — use Chrome on Android with a clear source photo.",
+      },
+    ],
+  },
+  {
+    slug: "create-transparent-signatures-for-forms",
+    title: "How to Create Transparent Signatures for Online Forms",
+    description: "Crop and export signature images for Indian online applications — when PNG vs JPG matters.",
+    category: "Student Tools",
+    publishedAt: "2026-05-14",
+    readMinutes: 5,
+    relatedToolSlugs: ["id-resizer", "e-sign", "bg-remover"],
+    relatedLandingSlugs: ["online-signature-resizer"],
+    sections: [
+      {
+        paragraphs: [
+          "Most government portals want a white-background JPG signature, not transparency. Read the form PDF first.",
+          "For creative layouts, background removal can isolate ink strokes before placing on white.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Does e-sign replace a scanned signature?",
+        answer: "Only if the institution accepts digital stamps — many exams require handwritten scans.",
+      },
+    ],
+  },
 ];
 
 export function getAllBlogPosts(): BlogPostMeta[] {

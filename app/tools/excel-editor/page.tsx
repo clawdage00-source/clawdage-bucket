@@ -1,5 +1,4 @@
 import { ToolJsonLd } from "@/components/JsonLd";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { ExcelEditorToolLazy } from "@/app/tools/excel-editor/excel-editor-tool-loader";
 import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
 
@@ -12,7 +11,6 @@ export default function ExcelEditorPage() {
     <>
       <ToolJsonLd slug="excel-editor" />
       <ExcelEditorToolLazy />
-      <ToolSeoContent slug="excel-editor" />
     </>
   );
 }

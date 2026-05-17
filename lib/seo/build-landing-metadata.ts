@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 import { SITE_NAME } from "@/lib/seo/brand";
-import { getLandingPage } from "@/lib/seo/landing-pages";
+import { getSeoPageBySlug } from "@/lib/seo/programmatic-pages";
 import { getSiteOrigin } from "@/lib/supabase/site-url";
 
 export async function buildLandingMetadata(slug: string): Promise<Metadata> {
-  const page = getLandingPage(slug);
+  const page = getSeoPageBySlug(slug);
   if (!page) {
     return { title: "Utility" };
   }

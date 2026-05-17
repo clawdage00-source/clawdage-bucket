@@ -3,14 +3,20 @@
 const SEO_LANDING_SLUGS = [
   "aadhaar-photo-resize-online",
   "pan-card-photo-resizer",
+  "pan-card-image-resizer",
   "passport-photo-maker-india",
   "ssc-photo-resizer",
   "upsc-signature-resizer",
   "neet-photo-resizer",
   "pdf-compressor-for-government-portal",
   "online-self-attestation-tool",
+  "online-signature-resizer",
   "jpg-to-pdf-india",
   "image-resize-for-exam-forms",
+  "resize-photo-for-ssc",
+  "resize-photo-for-upsc",
+  "resize-photo-for-neet",
+  "resize-photo-for-railway-exam",
 ];
 
 const BLOG_SLUGS = [
@@ -19,7 +25,11 @@ const BLOG_SLUGS = [
   "compress-pdf-without-losing-quality",
   "ssc-signature-resize-guide",
   "neet-photo-upload-requirements",
+  "how-to-resize-ssc-photos-online",
+  "create-transparent-signatures-for-forms",
 ];
+
+const COMPARE_SLUGS = ["jpg-vs-png", "merge-pdf-vs-compress-pdf", "ocr-vs-manual-typing", "webp-vs-jpg"];
 
 module.exports = {
   siteUrl: process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://clawdage.com",
@@ -52,7 +62,17 @@ module.exports = {
         lastmod: new Date().toISOString(),
       })),
     ];
-    return [...landing, ...blog];
+    const compare = COMPARE_SLUGS.map((slug) => ({
+      loc: `/compare/${slug}`,
+      changefreq: "monthly",
+      priority: 0.65,
+      lastmod: new Date().toISOString(),
+    }));
+    const hubs = [
+      { loc: "/exam-tools", changefreq: "weekly", priority: 0.85, lastmod: new Date().toISOString() },
+      { loc: "/contact", changefreq: "monthly", priority: 0.5, lastmod: new Date().toISOString() },
+    ];
+    return [...landing, ...blog, ...compare, ...hubs];
   },
   transform: async (_config, path) => {
     const isHighPriority =

@@ -383,6 +383,68 @@ export const TOOL_SEO_BY_SLUG: Record<string, ToolSeoEntry> = {
       },
     ],
   },
+  "pdf-to-excel": {
+    metaTitle: "PDF to Excel Converter Online — Extract Tables | Clawdage",
+    metaDescription:
+      "Convert PDF tables to editable Excel spreadsheets in your browser. Useful for marksheets, invoices, and government forms.",
+    keywords: ["pdf to excel", "pdf table to xlsx", "extract pdf tables India"],
+    howToSteps: [
+      "Upload your PDF with visible tables.",
+      "Run extraction and review detected rows in the preview.",
+      "Download XLSX or CSV for editing in Excel or Google Sheets.",
+    ],
+    whyTitle: "Why convert PDF to Excel?",
+    whyParagraph:
+      "Portals and offices often ship data as PDF only. Extracting tables locally helps students and accountants avoid retyping rows.",
+    targetHeading: "Best for marksheets and structured annexures",
+    targetBody:
+      "Scanned PDFs may need OCR-quality source files. For native digital PDFs, extraction is faster. Always verify totals after export.",
+    faqs: [
+      {
+        question: "Will formatting be perfect?",
+        answer: "Complex merged cells may need manual cleanup — treat output as a starting point.",
+      },
+      {
+        question: "Is my PDF uploaded?",
+        answer: "Check the in-tool banner for browser vs cloud processing before sensitive documents.",
+      },
+      {
+        question: "Works on mobile?",
+        answer: "Small PDFs yes; large files are easier on desktop.",
+      },
+    ],
+  },
+  "excel-editor": {
+    metaTitle: "Excel Editor Online — Edit XLSX & CSV in Browser | Clawdage",
+    metaDescription:
+      "View and edit Excel and CSV files online without installing Microsoft Excel. Spreadsheet editor for quick fixes before portal upload.",
+    keywords: ["excel editor online", "edit xlsx browser", "csv editor India"],
+    howToSteps: [
+      "Open your XLSX or CSV file from your device.",
+      "Edit cells, rows, and columns in the spreadsheet view.",
+      "Export the updated file for upload or sharing.",
+    ],
+    whyTitle: "Why edit spreadsheets in the browser?",
+    whyParagraph:
+      "Cyber cafés and school labs may not have Excel licensed. A browser editor helps you fix headers and KB-heavy exports quickly.",
+    targetHeading: "Students and small offices",
+    targetBody:
+      "Use for quick corrections — not a full replacement for macro-heavy workbooks. Save a backup before bulk edits.",
+    faqs: [
+      {
+        question: "Is it safe?",
+        answer: "Files stay local when the tool runs fully in-browser — read the processing notice.",
+      },
+      {
+        question: "Macro support?",
+        answer: "No VBA/macros — import data-only sheets.",
+      },
+      {
+        question: "Large files?",
+        answer: "Very large workbooks may be slow — split sheets if needed.",
+      },
+    ],
+  },
   ocr: {
     metaTitle: "Handwriting to Text OCR — Hindi & Multi-Language (Pro Pass)",
     metaDescription:

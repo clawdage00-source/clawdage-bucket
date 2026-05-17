@@ -2,14 +2,14 @@ import { notFound } from "next/navigation";
 
 import { SeoLandingPageView } from "@/components/seo/seo-landing-page";
 import { buildLandingMetadata } from "@/lib/seo/build-landing-metadata";
-import { getAllLandingSlugs, getLandingPage } from "@/lib/seo/landing-pages";
+import { getAllSeoPageSlugs, getSeoPageBySlug } from "@/lib/seo/programmatic-pages";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return getAllLandingSlugs().map((slug) => ({ slug }));
+  return getAllSeoPageSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps) {
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function SeoLandingRoute({ params }: PageProps) {
   const { slug } = await params;
-  const page = getLandingPage(slug);
+  const page = getSeoPageBySlug(slug);
   if (!page) {
     notFound();
   }

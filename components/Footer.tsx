@@ -3,7 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { SiteContactBlock } from "@/components/site-contact-block";
+import { getAllBlogPosts } from "@/lib/blog/posts";
+import { EXAM_TOOLS } from "@/lib/seo/exam-tools";
+import { getExamUtilityLinks } from "@/lib/seo/internal-links";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/seo/brand";
+import { MVP_TOOLS } from "@/lib/tools-data";
 
 const BRAND_ICON_SRC = "/Group 1000001054.png";
 
@@ -138,6 +142,62 @@ export function Footer() {
           </div>
 
           <SiteContactBlock variant="address" align="right" className="md:ml-auto" />
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl border-t border-border px-6 py-12 sm:px-8 lg:px-10">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <p className="text-sm font-semibold text-foreground">All tools</p>
+            <ul className="mt-3 max-h-48 space-y-1 overflow-y-auto text-sm">
+              {MVP_TOOLS.map((t) => (
+                <li key={t.slug}>
+                  <FooterLink href={`/tools/${t.slug}`}>{t.name}</FooterLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Exam utilities</p>
+            <ul className="mt-3 space-y-1 text-sm">
+              <li>
+                <FooterLink href="/exam-tools">Exam tools hub</FooterLink>
+              </li>
+              {EXAM_TOOLS.slice(0, 6).map((e) => (
+                <li key={e.slug}>
+                  <FooterLink href={e.href}>{e.title}</FooterLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Popular searches</p>
+            <ul className="mt-3 space-y-1 text-sm">
+              {getExamUtilityLinks().map((l) => (
+                <li key={l.href}>
+                  <FooterLink href={l.href}>{l.label}</FooterLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Guides &amp; compare</p>
+            <ul className="mt-3 space-y-1 text-sm">
+              {getAllBlogPosts()
+                .slice(0, 5)
+                .map((p) => (
+                  <li key={p.slug}>
+                    <FooterLink href={`/blog/${p.slug}`}>{p.title}</FooterLink>
+                  </li>
+                ))}
+              <li>
+                <FooterLink href="/compare/jpg-vs-png">JPG vs PNG</FooterLink>
+              </li>
+              <li>
+                <FooterLink href="/compare/merge-pdf-vs-compress-pdf">Merge vs compress PDF</FooterLink>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 

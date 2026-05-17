@@ -1,5 +1,4 @@
 import { ToolJsonLd } from "@/components/JsonLd";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { ESignToolLazy } from "@/app/tools/e-sign/e-sign-tool-loader";
 import { getProfilePlanSnapshot, isFreemodeDevelopment, userHasActivePaidPlan } from "@/lib/get-profile-plan";
 import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
@@ -16,7 +15,6 @@ export default async function ESignPage() {
     <>
       <ToolJsonLd slug="e-sign" />
       <ESignToolLazy isPro={isPro} />
-      <ToolSeoContent slug="e-sign" />
     </>
   );
 }

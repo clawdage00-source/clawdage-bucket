@@ -1,5 +1,6 @@
 import { getRelatedBlogSlugsForTool, type BlogPostMeta } from "@/lib/blog/posts";
 import { getToolBySlug, MVP_TOOLS, type ToolDefinition } from "@/lib/tools-data";
+export { getTrendingTools, getExamSeasonTools, getPopularInIndiaTools } from "@/lib/seo/trending-tools";
 
 /** Curated related tools per slug — drives internal linking on tool & landing pages. */
 const RELATED_BY_SLUG: Record<string, string[]> = {

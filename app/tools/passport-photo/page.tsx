@@ -1,5 +1,4 @@
 import { ToolJsonLd } from "@/components/JsonLd";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { PassportPhotoToolLazy } from "@/app/tools/passport-photo/passport-photo-tool-loader";
 import { getProfilePlanSnapshot, userHasActivePaidPlan } from "@/lib/get-profile-plan";
 import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
@@ -16,7 +15,6 @@ export default async function PassportPhotoPage() {
     <>
       <ToolJsonLd slug="passport-photo" />
       <PassportPhotoToolLazy isPro={isPro} />
-      <ToolSeoContent slug="passport-photo" />
     </>
   );
 }

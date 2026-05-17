@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ToolJsonLd } from "@/components/JsonLd";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
 import { getToolBySlug, MVP_TOOL_SLUGS } from "@/lib/tools-data";
 
@@ -17,6 +16,8 @@ const DEDICATED_TOOL_SLUGS = new Set([
   "passport-photo",
   "pdf-to-excel",
   "qr-generator",
+  "image-to-pdf",
+  "format-converter",
 ]);
 
 type ToolPageProps = {
@@ -61,7 +62,6 @@ export default async function ToolCatchAllPage({ params }: ToolPageProps) {
           ← Back to all tools
         </Link>
       </div>
-      <ToolSeoContent slug={slug} />
     </>
   );
 }

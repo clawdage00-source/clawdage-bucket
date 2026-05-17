@@ -205,6 +205,17 @@ export function LandingPageJsonLd({ page }: { page: SeoLandingPage }) {
   );
 }
 
+export function ExamToolsJsonLd() {
+  const json = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Government Exam Tools — Clawdage",
+    description: "SSC, UPSC, NEET, and PSC photo and signature utilities for India.",
+    about: { "@type": "Country", name: "India" },
+  };
+  return <JsonLdScript id="exam-tools" data={json} />;
+}
+
 export function BlogPostJsonLd({ post }: { post: BlogPost }) {
   const json = {
     "@context": "https://schema.org",

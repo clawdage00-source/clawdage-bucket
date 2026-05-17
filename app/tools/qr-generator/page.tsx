@@ -1,5 +1,4 @@
 import { ToolJsonLd } from "@/components/JsonLd";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { QrGeneratorTool } from "@/components/tools/qr-generator-tool";
 import { getProfilePlanSnapshot, userHasActivePaidPlan } from "@/lib/get-profile-plan";
 import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
@@ -16,7 +15,6 @@ export default async function QrGeneratorPage() {
     <>
       <ToolJsonLd slug="qr-generator" />
       <QrGeneratorTool isPro={isPro} />
-      <ToolSeoContent slug="qr-generator" />
     </>
   );
 }

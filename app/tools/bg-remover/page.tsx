@@ -1,5 +1,4 @@
 import { ToolJsonLd } from "@/components/JsonLd";
-import { ToolSeoContent } from "@/components/tool-seo-content";
 import { getBgRemoverEligibility } from "@/actions/bg-remover-usage";
 import { BgRemoverToolLazy } from "@/app/tools/bg-remover/bg-remover-tool-loader";
 import { buildToolMetadata } from "@/lib/seo/build-tool-metadata";
@@ -15,7 +14,6 @@ export default async function BgRemoverPage() {
     <>
       <ToolJsonLd slug="bg-remover" />
       <BgRemoverToolLazy initialEligibility={initialEligibility} />
-      <ToolSeoContent slug="bg-remover" />
     </>
   );
 }
