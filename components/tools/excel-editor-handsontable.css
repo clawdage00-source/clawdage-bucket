@@ -81,3 +81,40 @@
   font-weight: 500;
   border-color: #cbd5e1 !important;
 }
+
+/* Dark mode — matches site near-black palette */
+.dark .excel-editor-hot.ht-theme-main {
+  background: oklch(0.12 0 0);
+  color: oklch(0.92 0 0);
+}
+
+.dark .excel-editor-hot thead th {
+  background: oklch(0.18 0 0) !important;
+  color: oklch(0.92 0 0) !important;
+  border-color: oklch(0.28 0 0) !important;
+}
+
+.dark .excel-editor-hot tbody td {
+  background: oklch(0.12 0 0) !important;
+  color: oklch(0.9 0 0) !important;
+  border-color: oklch(0.22 0 0) !important;
+}
+
+.dark .excel-editor-hot tbody tr:nth-child(even) td {
+  background: oklch(0.15 0 0) !important;
+}
+
+.dark .excel-editor-hot .ht__highlight {
+  background: oklch(0.25 0.05 264) !important;
+}
+
+.dark .excel-editor-hot .currentRow {
+  background: oklch(0.2 0.04 264) !important;
+}
+
+.dark .excel-editor-hot .ht_clone_left th,
+.dark .excel-editor-hot .ht_clone_top_left_corner th {
+  background: oklch(0.18 0 0) !important;
+  color: oklch(0.65 0 0) !important;
+  border-color: oklch(0.28 0 0) !important;
+}

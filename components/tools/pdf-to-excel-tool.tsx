@@ -216,7 +216,7 @@ export function PdfToExcelTool() {
   const handleDownload = () => {
     if (!excelBlob) return;
     const fileName = pdfFile ? pdfFile.name.replace(/\.pdf$/i, ".xlsx") : "converted.xlsx";
-    downloadBlob(excelBlob, fileName);
+    downloadBlob(excelBlob, fileName, "pdf-to-excel");
     setToast("Download started.");
     window.setTimeout(() => setToast(null), 3000);
   };
@@ -238,13 +238,13 @@ export function PdfToExcelTool() {
 
   return (
     <motion.div
-      className="min-h-screen bg-white pb-16"
+      className="min-h-screen bg-background pb-16"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35, ease }}
     >
       <motion.div
-        className="border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6"
+        className="border-b border-border bg-muted/50 px-4 py-4 sm:px-6"
         initial={{ opacity: 0, y: -6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease }}
@@ -257,12 +257,12 @@ export function PdfToExcelTool() {
         >
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-black"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
           </Link>
-          <span className="rounded-full border border-slate-100 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          <span className="rounded-full border border-border bg-card px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             PDF
           </span>
         </motion.div>
@@ -274,8 +274,8 @@ export function PdfToExcelTool() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.08, ease }}
       >
-        <h1 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">PDF to Excel</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">PDF to Excel</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
           Pull table-like text from PDF pages and export an editable .xlsx file. Processing runs in your browser — best
           for text-based PDFs with clear rows and columns.
         </p>
@@ -288,16 +288,16 @@ export function PdfToExcelTool() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/80 backdrop-blur-[2px]"
+                className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-card/80 backdrop-blur-[2px]"
               >
                 <motion.div
-                  className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 py-4 shadow-md"
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-md"
                   initial={{ scale: 0.96, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: "spring", stiffness: 400, damping: 28 }}
                 >
-                  <Loader2 className="h-6 w-6 animate-spin text-black" aria-hidden />
-                  <p className="text-sm font-semibold text-black">
+                  <Loader2 className="h-6 w-6 animate-spin text-foreground" aria-hidden />
+                  <p className="text-sm font-semibold text-foreground">
                     {isConverting ? "Building Excel file…" : "Reading PDF page…"}
                   </p>
                 </motion.div>
@@ -307,7 +307,7 @@ export function PdfToExcelTool() {
 
           <motion.div
             layout
-            className="rounded-2xl border border-slate-100 bg-white p-1 shadow-sm"
+            className="rounded-2xl border border-border bg-card p-1 shadow-sm"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, duration: 0.4, ease }}
@@ -333,26 +333,26 @@ export function PdfToExcelTool() {
                 onDrop={onDrop}
                 className={`flex min-h-[200px] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-12 text-center transition sm:min-h-[220px] ${
                   dragOver
-                    ? "border-black bg-slate-50"
-                    : "border-slate-200 bg-slate-50/40 hover:border-slate-300 hover:bg-slate-50"
+                    ? "border-primary bg-muted"
+                    : "border-border bg-muted/40 hover:border-border hover:bg-muted"
                 }`}
               >
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-100 bg-white text-black shadow-sm">
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-card text-foreground shadow-sm">
                   <Upload className="h-7 w-7" strokeWidth={1.25} aria-hidden />
                 </span>
-                <span className="mt-4 text-sm font-semibold text-black">Drop PDF here, or tap to browse</span>
-                <span className="mt-1 text-xs text-slate-500">Text-based PDFs work best · up to {formatBytes(MAX_BYTES)}</span>
+                <span className="mt-4 text-sm font-semibold text-foreground">Drop PDF here, or tap to browse</span>
+                <span className="mt-1 text-xs text-muted-foreground">Text-based PDFs work best · up to {formatBytes(MAX_BYTES)}</span>
               </button>
             ) : (
               <motion.div
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/60 px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/60 px-4 py-3"
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: "spring", stiffness: 380, damping: 28 }}
               >
                 <motion.div className="min-w-0" layout>
-                  <p className="truncate text-sm font-semibold text-black">{pdfFile.name}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="truncate text-sm font-semibold text-foreground">{pdfFile.name}</p>
+                  <p className="text-xs text-muted-foreground">
                     {formatBytes(pdfFile.size)}
                     {numPages > 0 ? ` · ${numPages} page${numPages !== 1 ? "s" : ""}` : ""}
                   </p>
@@ -360,7 +360,7 @@ export function PdfToExcelTool() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-black"
+                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition hover:border-border hover:text-foreground"
                 >
                   <Trash2 className="h-3.5 w-3.5" aria-hidden />
                   Change file
@@ -400,12 +400,12 @@ export function PdfToExcelTool() {
                 transition={{ duration: 0.35, ease }}
                 className="space-y-4"
               >
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <Table2 className="h-4 w-4 text-slate-400" aria-hidden />
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-sm">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Table2 className="h-4 w-4 text-muted-foreground" aria-hidden />
                     <span>
-                      Page <span className="font-semibold text-black">{currentPage}</span> of{" "}
-                      <span className="font-semibold text-black">{numPages}</span>
+                      Page <span className="font-semibold text-foreground">{currentPage}</span> of{" "}
+                      <span className="font-semibold text-foreground">{numPages}</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
@@ -413,7 +413,7 @@ export function PdfToExcelTool() {
                       type="button"
                       onClick={() => handlePageChange("prev")}
                       disabled={currentPage <= 1 || isProcessing}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-black transition hover:bg-slate-50 disabled:opacity-40"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted disabled:opacity-40"
                       aria-label="Previous page"
                     >
                       <ChevronLeft className="h-5 w-5" />
@@ -422,7 +422,7 @@ export function PdfToExcelTool() {
                       type="button"
                       onClick={() => handlePageChange("next")}
                       disabled={currentPage >= numPages || isProcessing}
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-black transition hover:bg-slate-50 disabled:opacity-40"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted disabled:opacity-40"
                       aria-label="Next page"
                     >
                       <ChevronRight className="h-5 w-5" />
@@ -431,7 +431,7 @@ export function PdfToExcelTool() {
                       type="button"
                       onClick={() => pdfDoc && void extractTableFromPage(pdfDoc, currentPage)}
                       disabled={isProcessing}
-                      className="ml-1 inline-flex h-10 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-black disabled:opacity-40"
+                      className="ml-1 inline-flex h-10 items-center gap-1.5 rounded-xl border border-border bg-card px-3 text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-40"
                     >
                       <RefreshCw className="h-3.5 w-3.5" aria-hidden />
                       Re-scan
@@ -442,34 +442,34 @@ export function PdfToExcelTool() {
                 {previewData.length > 0 ? (
                   <motion.div
                     layout
-                    className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm"
+                    className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   >
                     <motion.div className="max-h-[420px] overflow-auto" layout>
                       <table className="min-w-full divide-y divide-slate-100 text-sm">
-                        <thead className="sticky top-0 bg-slate-50">
+                        <thead className="sticky top-0 bg-muted">
                           <tr>
                             {columns.map((col, index) => (
                               <th
                                 key={index}
-                                className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+                                className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                               >
                                 {col || "—"}
                               </th>
                             ))}
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-50 bg-white">
+                        <tbody className="divide-y divide-slate-50 bg-card">
                           {previewData.map((row, rowIndex) => (
-                            <tr key={rowIndex} className="hover:bg-slate-50/80">
+                            <tr key={rowIndex} className="hover:bg-muted/80">
                               {row.map((cell, cellIndex) => (
                                 <td
                                   key={cellIndex}
-                                  className="max-w-[240px] break-words px-4 py-2.5 text-slate-700"
+                                  className="max-w-[240px] break-words px-4 py-2.5 text-muted-foreground"
                                 >
                                   {cell === "" ? (
-                                    <span className="text-slate-300">—</span>
+                                    <span className="text-muted-foreground">—</span>
                                   ) : (
                                     cell
                                   )}
@@ -482,7 +482,7 @@ export function PdfToExcelTool() {
                     </motion.div>
 
                     {previewData.length === 1 && previewData[0]?.[0] === NO_TABLE_MSG ? (
-                      <div className="border-t border-slate-100 bg-amber-50/80 px-4 py-4 text-sm text-amber-950">
+                      <div className="border-t border-border bg-amber-50/80 px-4 py-4 text-sm text-amber-950">
                         <p className="font-medium">No clear table on this page</p>
                         <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-amber-900/90">
                           <li>Scanned PDFs — try the OCR tool first</li>
@@ -510,7 +510,7 @@ export function PdfToExcelTool() {
                       type="button"
                       onClick={() => void convertToExcel()}
                       disabled={isConverting || isProcessing}
-                      className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {isConverting ? (
                         <>
@@ -528,7 +528,7 @@ export function PdfToExcelTool() {
                       <button
                         type="button"
                         onClick={handleDownload}
-                        className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-slate-50"
+                        className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
                       >
                         <Download className="h-4 w-4" aria-hidden />
                         Download .xlsx
@@ -548,24 +548,24 @@ export function PdfToExcelTool() {
               transition={{ delay: 0.12, duration: 0.4, ease }}
             >
               <motion.div
-                className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5"
+                className="rounded-2xl border border-border bg-muted/50 p-5"
                 whileHover={{ y: -2 }}
                 transition={{ type: "spring", stiffness: 400, damping: 28 }}
               >
-                <h2 className="text-sm font-bold text-black">How it works</h2>
-                <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-slate-600">
+                <h2 className="text-sm font-bold text-foreground">How it works</h2>
+                <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-muted-foreground">
                   <li>Upload a PDF with tables or structured text</li>
                   <li>Preview extracted rows page by page</li>
                   <li>Convert and download .xlsx</li>
                 </ol>
               </motion.div>
               <motion.div
-                className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5"
+                className="rounded-2xl border border-border bg-muted/50 p-5"
                 whileHover={{ y: -2 }}
                 transition={{ type: "spring", stiffness: 400, damping: 28 }}
               >
-                <h2 className="text-sm font-bold text-black">Tips</h2>
-                <ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-slate-600">
+                <h2 className="text-sm font-bold text-foreground">Tips</h2>
+                <ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-muted-foreground">
                   <li>Text-based PDFs work better than scans</li>
                   <li>Use OCR for scanned documents</li>
                   <li>Edit output in the Excel editor if needed</li>

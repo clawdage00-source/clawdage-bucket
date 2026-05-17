@@ -19,7 +19,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import { trackEvent } from "@/lib/analytics";
 
 import {
   getTabLabel,
@@ -77,14 +79,27 @@ export function ToolGrid() {
   const [search, setSearch] = useState("");
 
   const visible = useMemo(() => filterTools(tab, search), [tab, search]);
+  const searchTrackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const q = search.trim();
+    if (q.length < 2) return;
+    if (searchTrackRef.current) clearTimeout(searchTrackRef.current);
+    searchTrackRef.current = setTimeout(() => {
+      void trackEvent("search", undefined, { query: q, tab, results: visible.length });
+    }, 600);
+    return () => {
+      if (searchTrackRef.current) clearTimeout(searchTrackRef.current);
+    };
+  }, [search, tab, visible.length]);
 
   return (
-    <section id="tools" className="scroll-mt-20 border-b border-slate-100 bg-slate-50/80 px-6 py-14 sm:py-16">
+    <section id="tools" className="scroll-mt-20 border-b border-border bg-muted/80 px-6 py-14 sm:py-16">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">All tools</h2>
-            <p className="mt-1 text-sm text-slate-600">Search, filter, and open a tool in one tap.</p>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">All tools</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Search, filter, and open a tool in one tap.</p>
           </div>
           <label className="w-full sm:max-w-xs">
             <span className="sr-only">Search tools</span>
@@ -93,7 +108,7 @@ export function ToolGrid() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name or category…"
-              className="min-h-[48px] w-full rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm text-black shadow-sm outline-none ring-black/5 transition placeholder:text-slate-400 focus:border-slate-200 focus:ring-2"
+              className="min-h-[48px] w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground shadow-sm outline-none ring-ring/20 transition placeholder:text-muted-foreground focus:border-border focus:ring-2"
             />
           </label>
         </div>
@@ -112,8 +127,8 @@ export function ToolGrid() {
               onClick={() => setTab(id)}
               className={`min-h-[44px] rounded-full border px-4 py-2 text-sm font-medium transition ${
                 tab === id
-                  ? "border-black bg-black text-white"
-                  : "border-slate-100 bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50"
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
               }`}
             >
               {getTabLabel(id)}
@@ -128,7 +143,7 @@ export function ToolGrid() {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              className="rounded-xl border border-slate-100 bg-white px-6 py-16 text-center text-sm font-medium text-slate-600"
+              className="rounded-xl border border-border bg-card px-6 py-16 text-center text-sm font-medium text-muted-foreground"
             >
               Tool not found — try another search or category.
             </motion.p>
@@ -151,7 +166,7 @@ export function ToolGrid() {
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.99 }}
                         transition={{ type: "spring", stiffness: 420, damping: 26 }}
-                        className="relative flex h-full flex-row items-start gap-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                        className="relative flex h-full flex-row items-start gap-4 rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
                       >
                         {tool.is_pro ? (
                           <span className="absolute right-4 top-4 rounded-md border border-amber-200/80 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-900">
@@ -169,13 +184,13 @@ export function ToolGrid() {
                                 sizes="(max-width: 768px) 112px, 128px"
                               />
                             ) : (
-                              <Icon className="h-14 w-14 shrink-0 text-slate-800 sm:h-16 sm:w-16" aria-hidden />
+                              <Icon className="h-14 w-14 shrink-0 text-foreground sm:h-16 sm:w-16" aria-hidden />
                             )}
                           </div>
                           <div className={`flex min-w-0 flex-1 flex-col ${tool.is_pro ? "pr-16" : ""}`}>
-                            <h3 className="text-base font-semibold text-black">{tool.name}</h3>
-                            <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{tool.description}</p>
-                            <p className="mt-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+                            <h3 className="text-base font-semibold text-foreground">{tool.name}</h3>
+                            <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{tool.description}</p>
+                            <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                               {getTabLabel(tool.category)}
                             </p>
                           </div>

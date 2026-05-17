@@ -1,62 +1,77 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
+import { CreditCard, Globe, Shield, Smartphone, Upload } from "lucide-react";
+import Link from "next/link";
 
 import { HeroGridBeams } from "@/components/ui/background-beams";
-
-const HERO_LOGO_SRC = "/Group%201000001054.png";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 const HERO_GRID_CELL_PX = 80;
 
+const TRUST_BADGES = [
+  { icon: Globe, label: "100% Browser Processing" },
+  { icon: Upload, label: "No File Uploads" },
+  { icon: Shield, label: "Privacy First" },
+  { icon: Smartphone, label: "Mobile Friendly" },
+  { icon: CreditCard, label: "No Auto Debit" },
+] as const;
+
 export function Hero() {
   const reduceMotion = useReducedMotion();
 
-  const logoTransition = reduceMotion
+  const copyTransition = reduceMotion
     ? { duration: 0 }
-    : { duration: 0.65, ease: easeOut };
-
-  const mascotTransition = reduceMotion
-    ? { duration: 0 }
-    : { duration: 0.9, delay: 0.55, ease: easeOut };
+    : { duration: 0.6, delay: 0.2, ease: easeOut };
 
   return (
-    <section className="relative -mt-14 min-h-[100vh] w-full overflow-x-hidden bg-white">
+    <section className="relative -mt-14 flex min-h-[min(100vh,52rem)] w-full items-center justify-center overflow-x-hidden bg-background px-6 py-24 sm:py-28">
       <HeroGridBeams cellSize={HERO_GRID_CELL_PX} className="z-0" />
-      <motion.div
-        className="pointer-events-none absolute top-1/2 left-1/2 z-[2] -translate-x-1/2 -translate-y-1/2"
-        initial={reduceMotion ? false : { opacity: 0, scale: 0.88 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={logoTransition}
-      >
-        <Image
-          src={HERO_LOGO_SRC}
-          alt=""
-          width={663}
-          height={473}
-          priority
-          aria-hidden
-          className="h-auto w-auto object-contain max-sm:w-[min(175vw,52rem)] max-sm:max-h-[min(95vh,48rem)] sm:w-[44rem] sm:max-h-[min(78vh,32rem)] md:w-[52rem] md:max-h-[min(82vh,36rem)] lg:w-[min(94vw,60rem)] lg:max-h-[min(85vh,40rem)]"
-        />
-      </motion.div>
 
-      <div className="absolute inset-x-0 bottom-0 z-10 overflow-hidden">
+      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center text-center">
         <motion.div
-          className="flex justify-center px-4"
-          initial={reduceMotion ? false : { y: "110%", opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={mascotTransition}
+          initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={copyTransition}
         >
-          <Image
-            src="/image.png"
-            alt="Clawdage mascot"
-            width={613}
-            height={971}
-            priority
-            className="pointer-events-none relative z-10 block h-auto max-sm:max-h-[44vh] max-sm:w-[min(78vw,15rem)] object-contain object-bottom sm:max-h-[62vh] sm:w-[26rem] md:max-h-[68vh] md:w-[32rem] lg:max-h-[72vh] lg:w-[36rem]"
-          />
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Built for <span className="text-[#251EFF]">India</span>
+          </p>
+          <h1 className="mt-4 text-3xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.25rem]">
+            India&apos;s Daily Digital Utility Platform
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Resize Aadhaar photos, create passport photos, compress PDFs, convert files, remove backgrounds, and
+            more — instantly in your browser.
+          </p>
+
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link
+              href="/#tools"
+              className="inline-flex min-h-[48px] w-full min-w-[200px] items-center justify-center rounded-xl bg-[#251EFF] px-6 text-sm font-semibold text-white shadow-lg shadow-[#251EFF]/25 transition hover:opacity-90 sm:w-auto"
+            >
+              Start Using Tools
+            </Link>
+            <Link
+              href="/#tools"
+              className="inline-flex min-h-[48px] w-full min-w-[200px] items-center justify-center rounded-xl border border-border bg-card px-6 text-sm font-semibold text-foreground transition hover:bg-muted sm:w-auto"
+            >
+              Explore All Tools
+            </Link>
+          </div>
+
+          <ul className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            {TRUST_BADGES.map(({ icon: Icon, label }) => (
+              <li
+                key={label}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1.5 text-[11px] font-medium text-muted-foreground backdrop-blur-sm sm:text-xs"
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0 text-[#251EFF]" aria-hidden />
+                {label}
+              </li>
+            ))}
+          </ul>
         </motion.div>
       </div>
     </section>

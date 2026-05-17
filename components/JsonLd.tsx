@@ -1,6 +1,18 @@
-import { SITE_NAME } from "@/lib/seo/brand";
+import type { BlogPost } from "@/lib/blog/posts";
+import { SITE_NAME, SITE_TAGLINE } from "@/lib/seo/brand";
+import type { SeoLandingPage } from "@/lib/seo/landing-pages";
 import { getToolSeoEntry } from "@/lib/seo/tool-registry";
 import { getToolBySlug } from "@/lib/tools-data";
+
+function JsonLdScript({ id, data }: { id: string; data: object }) {
+  return (
+    <script
+      key={id}
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
 
 type ToolJsonLdProps = {
   slug: string;
@@ -105,14 +117,93 @@ export function OrganizationJsonLd({ siteUrl }: OrganizationJsonLdProps) {
     "@type": "Organization",
     name: SITE_NAME,
     url: siteUrl,
-    description:
-      "Browser-first PDF, image, and AI utilities for India with optional passes for Pro features.",
+    description: SITE_TAGLINE,
+    areaServed: { "@type": "Country", name: "India" },
   };
 
+  return <JsonLdScript id="organization" data={json} />;
+}
+
+type WebSiteJsonLdProps = {
+  siteUrl: string;
+};
+
+export function WebSiteJsonLd({ siteUrl }: WebSiteJsonLdProps) {
+  const json = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: siteUrl,
+    description: SITE_TAGLINE,
+    inLanguage: "en-IN",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/#tools`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+  return <JsonLdScript id="website" data={json} />;
+};
+
+type BreadcrumbJsonLdProps = {
+  items: { name: string; path: string }[];
+  siteUrl: string;
+};
+
+export function BreadcrumbJsonLd({ items, siteUrl }: BreadcrumbJsonLdProps) {
+  const json = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: `${siteUrl}${item.path}`,
+    })),
+  };
+  return <JsonLdScript id="breadcrumb" data={json} />;
+}
+
+export function LandingPageJsonLd({ page }: { page: SeoLandingPage }) {
+  const tool = getToolBySlug(page.toolSlug);
+  const faq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: page.faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+  const app = tool
+    ? {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: tool.name,
+        applicationCategory: "UtilitiesApplication",
+        description: page.metaDescription,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+      }
+    : null;
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
-    />
+    <>
+      <JsonLdScript id={`landing-faq-${page.slug}`} data={faq} />
+      {app ? <JsonLdScript id={`landing-app-${page.slug}`} data={app} /> : null}
+    </>
   );
+}
+
+export function BlogPostJsonLd({ post }: { post: BlogPost }) {
+  const json = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.publishedAt,
+    author: { "@type": "Organization", name: SITE_NAME },
+    publisher: { "@type": "Organization", name: SITE_NAME },
+    articleSection: post.category,
+  };
+  return <JsonLdScript id={`blog-${post.slug}`} data={json} />;
 }

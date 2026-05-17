@@ -18,6 +18,7 @@ import { jsPDF } from "jspdf";
 
 import { ExcelEditorGrid } from "@/components/tools/excel-editor-grid";
 import { downloadBlob } from "@/lib/download-blob";
+import { useHideSiteChrome } from "@/lib/hooks/use-hide-site-chrome";
 import * as XLSX from "xlsx";
 
 const ACCEPT = ".xlsx,.xls,.csv";
@@ -47,6 +48,8 @@ export function ExcelEditorTool() {
   const [toast, setToast] = useState<string | null>(null);
 
   const hasSheet = sheetKey != null && fileData.length > 0 && headers.length > 0;
+
+  useHideSiteChrome(hasSheet);
 
   const handleGridReady = useCallback((hot: Handsontable.Core) => {
     hotInstanceRef.current = hot;
@@ -182,11 +185,15 @@ export function ExcelEditorTool() {
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
         const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-        downloadBlob(new Blob([excelBuffer], { type: "application/octet-stream" }), `${stem}.xlsx`);
+        downloadBlob(
+          new Blob([excelBuffer], { type: "application/octet-stream" }),
+          `${stem}.xlsx`,
+          "excel-editor",
+        );
         setToast("Excel file downloaded.");
       } else {
         const csv = XLSX.utils.sheet_to_csv(XLSX.utils.aoa_to_sheet(exportData));
-        downloadBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), `${stem}.csv`);
+        downloadBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), `${stem}.csv`, "excel-editor");
         setToast("CSV downloaded.");
       }
       window.setTimeout(() => setToast(null), 3000);
@@ -212,7 +219,7 @@ export function ExcelEditorTool() {
       <button
         type="button"
         onClick={() => handleExport("xlsx")}
-        className="inline-flex min-h-[40px] items-center gap-2 rounded-lg bg-black px-3 py-2 text-xs font-semibold text-white transition hover:bg-zinc-800 sm:text-sm"
+        className="inline-flex min-h-[40px] items-center gap-2 rounded-lg bg-black px-3 py-2 text-xs font-semibold text-white transition hover:opacity-90 sm:text-sm"
       >
         <FileSpreadsheet className="h-4 w-4 shrink-0" aria-hidden />
         <span className="hidden sm:inline">Excel</span>
@@ -220,7 +227,7 @@ export function ExcelEditorTool() {
       <button
         type="button"
         onClick={() => handleExport("csv")}
-        className="inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-black transition hover:bg-slate-50 sm:text-sm"
+        className="inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted sm:text-sm"
       >
         <Download className="h-4 w-4 shrink-0" aria-hidden />
         <span className="hidden sm:inline">CSV</span>
@@ -228,7 +235,7 @@ export function ExcelEditorTool() {
       <button
         type="button"
         onClick={() => handleExport("pdf")}
-        className="inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-black transition hover:bg-slate-50 sm:text-sm"
+        className="inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted sm:text-sm"
       >
         <FileText className="h-4 w-4 shrink-0" aria-hidden />
         <span className="hidden sm:inline">PDF</span>
@@ -239,22 +246,22 @@ export function ExcelEditorTool() {
   if (hasSheet && sheetKey) {
     return (
       <motion.div
-        className="fixed inset-0 z-40 flex h-[100dvh] w-full flex-col bg-white"
+        className="fixed inset-0 z-40 flex h-[100dvh] w-full flex-col bg-background"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, ease }}
       >
-        <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50 px-3 py-2 sm:gap-3 sm:px-4">
+        <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-muted px-3 py-2 sm:gap-3 sm:px-4">
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-white hover:text-black sm:text-sm"
+            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-card hover:text-foreground sm:text-sm"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             <span className="hidden sm:inline">All tools</span>
           </Link>
-          <div className="min-w-0 flex-1 border-l border-slate-200 pl-2 sm:pl-3">
-            <p className="truncate text-sm font-semibold text-black">{originalFileName}</p>
-            <p className="truncate text-[11px] text-slate-500">
+          <div className="min-w-0 flex-1 border-l border-border pl-2 sm:pl-3">
+            <p className="truncate text-sm font-semibold text-foreground">{originalFileName}</p>
+            <p className="truncate text-[11px] text-muted-foreground">
               {formatBytes(fileSize)} · {fileData.length} rows × {headers.length} cols · double-click to edit
             </p>
           </div>
@@ -262,7 +269,7 @@ export function ExcelEditorTool() {
           <button
             type="button"
             onClick={handleReset}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-black"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-2 text-xs font-medium text-muted-foreground transition hover:border-border hover:text-foreground"
             aria-label="Remove file"
           >
             <Trash2 className="h-4 w-4" aria-hidden />
@@ -283,13 +290,13 @@ export function ExcelEditorTool() {
         <div className="relative min-h-0 flex-1 w-full">
           {isLoading ? (
             <motion.div
-              className="absolute inset-0 z-10 flex items-center justify-center bg-white/80"
+              className="absolute inset-0 z-10 flex items-center justify-center bg-card/80"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 py-4 shadow-md">
-                <Loader2 className="h-6 w-6 animate-spin text-black" aria-hidden />
-                <p className="text-sm font-semibold text-black">Working on your file…</p>
+              <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-md">
+                <Loader2 className="h-6 w-6 animate-spin text-foreground" aria-hidden />
+                <p className="text-sm font-semibold text-foreground">Working on your file…</p>
               </div>
             </motion.div>
           ) : null}
@@ -307,12 +314,12 @@ export function ExcelEditorTool() {
 
   return (
     <motion.div
-      className="min-h-screen bg-white pb-16"
+      className="min-h-screen bg-background pb-16"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35, ease }}
     >
-      <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6">
+      <div className="border-b border-border bg-muted/50 px-4 py-4 sm:px-6">
         <motion.div
           className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3"
           initial={{ opacity: 0, y: 6 }}
@@ -321,12 +328,12 @@ export function ExcelEditorTool() {
         >
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-black"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
           </Link>
-          <span className="rounded-full border border-slate-100 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          <span className="rounded-full border border-border bg-card px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Utility
           </span>
         </motion.div>
@@ -334,8 +341,8 @@ export function ExcelEditorTool() {
 
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}>
-          <h1 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">Excel editor</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Excel editor</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             Open spreadsheets in your browser, edit cells with a full grid, then export to Excel, CSV, or PDF. Files stay
             on your device.
           </p>
@@ -343,19 +350,19 @@ export function ExcelEditorTool() {
 
         <div className="relative mt-8 space-y-6">
           {isLoading ? (
-            <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/80">
+            <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-card/80">
               <motion.div
-                className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 py-4 shadow-md"
+                className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-md"
                 animate={{ opacity: [0.7, 1, 0.7] }}
                 transition={{ duration: 1.2, repeat: Infinity }}
               >
-                <Loader2 className="h-6 w-6 animate-spin text-black" aria-hidden />
-                <p className="text-sm font-semibold text-black">Working on your file…</p>
+                <Loader2 className="h-6 w-6 animate-spin text-foreground" aria-hidden />
+                <p className="text-sm font-semibold text-foreground">Working on your file…</p>
               </motion.div>
             </div>
           ) : null}
 
-          <div className="rounded-2xl border border-slate-100 bg-white p-1 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-1 shadow-sm">
             <input
               ref={inputRef}
               id={`${formId}-file`}
@@ -377,15 +384,15 @@ export function ExcelEditorTool() {
               disabled={isLoading}
               className={`flex min-h-[200px] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-12 text-center transition sm:min-h-[220px] ${
                 dragOver
-                  ? "border-black bg-slate-50"
-                  : "border-slate-200 bg-slate-50/40 hover:border-slate-300 hover:bg-slate-50"
+                  ? "border-primary bg-muted"
+                  : "border-border bg-muted/40 hover:border-border hover:bg-muted"
               } disabled:cursor-not-allowed disabled:opacity-50`}
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-100 bg-white text-black shadow-sm">
+              <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-card text-foreground shadow-sm">
                 <Upload className="h-7 w-7" strokeWidth={1.25} aria-hidden />
               </span>
-              <span className="mt-4 text-sm font-semibold text-black">Drop Excel or CSV here, or tap to browse</span>
-              <span className="mt-1 text-xs text-slate-500">XLSX, XLS, CSV · up to {formatBytes(MAX_BYTES)}</span>
+              <span className="mt-4 text-sm font-semibold text-foreground">Drop Excel or CSV here, or tap to browse</span>
+              <span className="mt-1 text-xs text-muted-foreground">XLSX, XLS, CSV · up to {formatBytes(MAX_BYTES)}</span>
             </button>
           </div>
 
@@ -404,12 +411,12 @@ export function ExcelEditorTool() {
           {!isLoading ? (
             <aside className="grid gap-6 sm:grid-cols-2">
               <motion.div
-                className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5"
+                className="rounded-2xl border border-border bg-muted/50 p-5"
                 whileHover={{ y: -2 }}
                 transition={{ type: "spring", stiffness: 400, damping: 28 }}
               >
-                <h2 className="text-sm font-bold text-black">How it works</h2>
-                <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-slate-600">
+                <h2 className="text-sm font-bold text-foreground">How it works</h2>
+                <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-muted-foreground">
                   <li>Upload an Excel or CSV file</li>
                   <li>Double-click a cell to edit</li>
                   <li>Scroll to navigate large sheets</li>
@@ -417,12 +424,12 @@ export function ExcelEditorTool() {
                 </ol>
               </motion.div>
               <motion.div
-                className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5"
+                className="rounded-2xl border border-border bg-muted/50 p-5"
                 whileHover={{ y: -2 }}
                 transition={{ type: "spring", stiffness: 400, damping: 28 }}
               >
-                <h2 className="text-sm font-bold text-black">Tips</h2>
-                <ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-slate-600">
+                <h2 className="text-sm font-bold text-foreground">Tips</h2>
+                <ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-muted-foreground">
                   <li>Use arrow keys and Tab to move between cells</li>
                   <li>Right-click for row/column actions</li>
                   <li>Runs locally — nothing uploaded</li>

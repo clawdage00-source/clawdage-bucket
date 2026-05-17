@@ -43,20 +43,20 @@ export default async function ToolCatchAllPage({ params }: ToolPageProps) {
     <>
       <ToolJsonLd slug={slug} />
       <div className="mx-auto max-w-2xl px-6 py-16">
-        <h1 className="text-3xl font-bold tracking-tight text-black">{tool.name}</h1>
-        <p className="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-6 text-sm leading-relaxed text-slate-700">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{tool.name}</h1>
+        <p className="mt-4 rounded-xl border border-border bg-muted/80 px-4 py-6 text-sm leading-relaxed text-muted-foreground">
           Open this tool from the home catalog — the full workspace runs in your browser with the same
           privacy-first defaults where supported.
         </p>
         <Link
           href="/#tools"
-          className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800"
+          className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
         >
           Open {tool.name} from all tools
         </Link>
         <Link
           href="/#tools"
-          className="mt-8 inline-flex text-sm font-medium text-black underline underline-offset-4 hover:text-slate-700"
+          className="mt-8 inline-flex text-sm font-medium text-foreground underline underline-offset-4 hover:text-muted-foreground"
         >
           ← Back to all tools
         </Link>

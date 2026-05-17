@@ -34,9 +34,9 @@ export function DailyPassUpsellModal({
 
   const defaultDescription = (
     <>
-      Free accounts compress <span className="font-medium text-black">one image at a time</span>.
-      Upgrade to a <span className="font-medium text-black">Daily Pass from ₹19</span> to compress up
-      to <span className="font-medium text-black">20 images</span> in one go.
+      Free accounts compress <span className="font-medium text-foreground">one image at a time</span>.
+      Upgrade to a <span className="font-medium text-foreground">Daily Pass from ₹19</span> to compress up
+      to <span className="font-medium text-foreground">20 images</span> in one go.
     </>
   );
 
@@ -63,26 +63,26 @@ export function DailyPassUpsellModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ type: "spring", stiffness: 420, damping: 32 }}
-            className="relative w-full max-w-md rounded-2xl border border-slate-100 bg-white p-6 shadow-xl"
+            className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-xl"
           >
             <button
               type="button"
               onClick={onClose}
-              className="absolute right-4 top-4 rounded-lg p-1 text-slate-500 hover:bg-slate-100 hover:text-black"
+              className="absolute right-4 top-4 rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
               aria-label="Close"
             >
               <X className="h-5 w-5" />
             </button>
-            <p id="upsell-title" className="pr-10 text-lg font-semibold text-black">
+            <p id="upsell-title" className="pr-10 text-lg font-semibold text-foreground">
               {title}
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {description ?? defaultDescription}
             </p>
             <div className="mt-6 flex flex-col gap-2 sm:flex-row">
               <Link
                 href="/pricing"
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl bg-black px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-zinc-800"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition hover:opacity-90"
                 onClick={onClose}
               >
                 View passes
@@ -90,7 +90,7 @@ export function DailyPassUpsellModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-slate-50"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
               >
                 {secondaryActionLabel}
               </button>

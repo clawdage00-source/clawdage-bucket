@@ -17,6 +17,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { getBgRemoverEligibility, recordBgRemoverUsage } from "@/actions/bg-remover-usage";
 import type { BgRemoverEligibility } from "@/lib/bg-remover-usage-shared";
+import { trackToolUse } from "@/lib/analytics";
 import { DailyPassUpsellModal } from "@/components/tools/daily-pass-upsell-modal";
 import { processImage } from "@/lib/bg-remover-process";
 
@@ -243,18 +244,21 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
     try {
       if (exportSolid === "transparent") {
         downloadBlob(transparentBlob, `${base}-no-bg.png`);
+        trackToolUse("bg-remover");
         return;
       }
       const solid = EXPORT_SOLIDS.find((s) => s.id === exportSolid);
       const hex = solid?.hex;
       if (!hex) {
         downloadBlob(transparentBlob, `${base}-no-bg.png`);
+        trackToolUse("bg-remover");
         return;
       }
       setBusy(true);
       setProgressMsg("Preparing download…");
       const out = await compositeSolidPng(transparentBlob, hex);
       downloadBlob(out, `${base}-${exportSolid}-bg.png`);
+      trackToolUse("bg-remover", { background: exportSolid });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Download failed.");
     } finally {
@@ -327,20 +331,20 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
   }, [endCompareDrag]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pb-20">
-      <div className="border-b border-slate-100 bg-white">
+    <div className="min-h-screen bg-background pb-20">
+      <div className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-3xl flex-col gap-3 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="flex items-start gap-3">
             <Link
               href="/#tools"
-              className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-700 transition hover:bg-slate-50"
+              className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-muted"
               aria-label="Back to tools"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl font-semibold tracking-tight text-black sm:text-2xl">
+                <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
                   AI Background Remover
                 </h1>
                 <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-900">
@@ -348,17 +352,17 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                   Powered by Local AI
                 </span>
               </div>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Private in-browser processing — your image never leaves this device for removal.
               </p>
               {!eligibility.unlimited && eligibility.isLoggedIn ? (
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Free plan: {Math.max(0, FREE_DAILY_LIMIT - eligibility.usedToday)} of {FREE_DAILY_LIMIT}{" "}
                   removals left today (UTC).
                 </p>
               ) : null}
               {!eligibility.unlimited && !eligibility.isLoggedIn ? (
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Guest: {Math.max(0, FREE_DAILY_LIMIT - getAnonUsage().count)} of {FREE_DAILY_LIMIT} free
                   removals today on this browser.
                 </p>
@@ -369,7 +373,7 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
       </div>
 
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-        <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
           <input
             ref={fileInputRef}
             id={formId}
@@ -384,11 +388,11 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
             {!beforeUrl ? (
               <label
                 htmlFor={formId}
-                className="flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 px-4 py-12 text-center transition hover:border-slate-300 hover:bg-slate-50"
+                className="flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/50 px-4 py-12 text-center transition hover:border-border hover:bg-muted"
               >
-                <ImagePlus className="h-10 w-10 text-slate-400" aria-hidden />
-                <p className="mt-3 text-sm font-semibold text-black">Drop an image here or click to upload</p>
-                <p className="mt-1 text-xs text-slate-500">JPG, PNG, WebP — processed entirely in your browser.</p>
+                <ImagePlus className="h-10 w-10 text-muted-foreground" aria-hidden />
+                <p className="mt-3 text-sm font-semibold text-foreground">Drop an image here or click to upload</p>
+                <p className="mt-1 text-xs text-muted-foreground">JPG, PNG, WebP — processed entirely in your browser.</p>
               </label>
             ) : null}
 
@@ -401,12 +405,12 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
               <>
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   {afterUrl ? (
-                    <div className="inline-flex rounded-lg border border-slate-200 p-0.5 text-xs font-medium">
+                    <div className="inline-flex rounded-lg border border-border p-0.5 text-xs font-medium">
                       <button
                         type="button"
                         onClick={() => setCompareMode("slider")}
                         className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 ${
-                          compareMode === "slider" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
+                          compareMode === "slider" ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"
                         }`}
                       >
                         <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -416,19 +420,19 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                         type="button"
                         onClick={() => setCompareMode("toggle")}
                         className={`rounded-md px-2.5 py-1.5 ${
-                          compareMode === "toggle" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
+                          compareMode === "toggle" ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"
                         }`}
                       >
                         Before / After
                       </button>
                     </div>
                   ) : (
-                    <p className="text-sm font-medium text-slate-700">Preview</p>
+                    <p className="text-sm font-medium text-muted-foreground">Preview</p>
                   )}
                   <div className="flex flex-wrap gap-2">
                     <label
                       htmlFor={formId}
-                      className={`inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-black transition hover:bg-slate-50 ${
+                      className={`inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted ${
                         busy ? "pointer-events-none opacity-50" : ""
                       }`}
                     >
@@ -438,7 +442,7 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                     <button
                       type="button"
                       onClick={clearAll}
-                      className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                      className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted"
                     >
                       <Trash2 className="h-4 w-4" />
                       Clear
@@ -447,7 +451,7 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                 </div>
 
                 <div
-                  className="relative overflow-hidden rounded-xl border border-slate-100 bg-slate-100"
+                  className="relative overflow-hidden rounded-xl border border-border bg-muted"
                   style={afterUrl ? previewBg : { backgroundColor: "#0f172a" }}
                 >
                   {!afterUrl ? (
@@ -528,7 +532,7 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                         </div>
                       </div>
                       <div
-                        className="pointer-events-none absolute inset-y-0 z-[1] w-px bg-white/95 shadow-[0_0_20px_rgba(0,0,0,0.35)]"
+                        className="pointer-events-none absolute inset-y-0 z-[1] w-px bg-card/95 shadow-[0_0_20px_rgba(0,0,0,0.35)]"
                         style={{
                           left: `${comparePct}%`,
                           transform: "translateX(-50%)",
@@ -556,7 +560,7 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
 
                 {compareMode === "slider" && beforeUrl && afterUrl ? (
                   <div className="space-y-2 px-0.5">
-                    <div className="flex items-center justify-between text-xs text-slate-500">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>Original</span>
                       <span>Background removed</span>
                     </div>
@@ -578,7 +582,7 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                         setCompareDragging(false);
                       }}
                       onChange={(e) => setComparePct(Number(e.target.value))}
-                      className="h-3 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-slate-900 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-slate-900 [&::-webkit-slider-thumb]:shadow-md"
+                      className="h-3 w-full cursor-pointer appearance-none rounded-full bg-muted accent-foreground [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-slate-900 [&::-webkit-slider-thumb]:shadow-md"
                       style={{
                         background: `linear-gradient(to right, rgb(15 23 42) 0%, rgb(15 23 42) ${comparePct}%, rgb(226 232 240) ${comparePct}%, rgb(226 232 240) 100%)`,
                       }}
@@ -587,8 +591,8 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                 ) : null}
 
                 {afterUrl ? (
-                  <div className="space-y-3 rounded-xl border border-slate-100 bg-slate-50/80 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Export background</p>
+                  <div className="space-y-3 rounded-xl border border-border bg-muted/80 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Export background</p>
                     <div className="flex flex-wrap gap-2">
                       {EXPORT_SOLIDS.map((s) => (
                         <button
@@ -597,8 +601,8 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                           onClick={() => setExportSolid(s.id)}
                           className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
                             exportSolid === s.id
-                              ? "border-slate-900 bg-slate-900 text-white"
-                              : "border-slate-200 bg-white text-slate-800 hover:border-slate-300"
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-card text-foreground hover:border-border"
                           }`}
                         >
                           {s.label}
@@ -609,7 +613,7 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                       type="button"
                       disabled={busy || !transparentBlob}
                       onClick={() => void onDownload()}
-                      className="inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-40"
+                      className="inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
                     >
                       {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                       Download PNG
@@ -618,13 +622,13 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                 ) : null}
 
                 {busy && !afterUrl ? (
-                  <p className="text-center text-xs text-slate-500">
+                  <p className="text-center text-xs text-muted-foreground">
                     First run downloads the AI model — please keep this tab open.
                   </p>
                 ) : null}
 
                 {busy && afterUrl ? (
-                  <div className="flex items-center gap-2 rounded-lg border border-slate-100 bg-white px-3 py-2 text-sm text-slate-600">
+                  <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
                     {progressMsg ?? "Please wait…"}
                   </div>
@@ -640,7 +644,7 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-slate-500">
+        <p className="mt-6 text-center text-xs text-muted-foreground">
           Need more than {FREE_DAILY_LIMIT} removals a day? A Daily Pass unlocks unlimited tool access for your
           account.
         </p>
@@ -653,8 +657,8 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
         description={
           <>
             You&apos;ve used your{" "}
-            <span className="font-medium text-black">{FREE_DAILY_LIMIT} free background removals</span> for today.
-            Upgrade with a <span className="font-medium text-black">Daily Pass from ₹19</span> for unlimited removals
+            <span className="font-medium text-foreground">{FREE_DAILY_LIMIT} free background removals</span> for today.
+            Upgrade with a <span className="font-medium text-foreground">Daily Pass from ₹19</span> for unlimited removals
             and other Pro workflows, or come back tomorrow.
           </>
         }

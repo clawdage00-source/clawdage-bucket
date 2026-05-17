@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { useCallback, useId, useMemo, useRef, useState } from "react";
 
+import { trackToolUse } from "@/lib/analytics";
 import { DailyPassUpsellModal } from "@/components/tools/daily-pass-upsell-modal";
 import {
   buildUpiPayload,
@@ -231,6 +232,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
     a.href = url;
     a.download = `qr-${label}.png`;
     a.click();
+    trackToolUse("qr-generator", { label });
   };
 
   const downloadStandardPng = () => {
@@ -282,17 +284,17 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
   const frameClass = effectiveRounded ? "rounded-[28px] p-3 shadow-inner" : "rounded-lg p-2";
 
   return (
-    <div className="min-h-screen bg-white pb-16">
-      <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6">
+    <div className="min-h-screen bg-background pb-16">
+      <div className="border-b border-border bg-muted/50 px-4 py-4 sm:px-6">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-black"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
           </Link>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             {isPro ? "Pro: custom colors, logo, SVG & hi-res PNG" : "Free: standard PNG · upgrade for Pro exports"}
           </p>
         </div>
@@ -304,8 +306,8 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const }}
         >
-          <h1 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">QR code generator</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">QR code generator</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             Create scannable codes for links, WiFi, contacts, and UPI. Everything renders locally in your
             browser.
           </p>
@@ -314,7 +316,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
         <div className="mt-8 flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
           {/* Preview first on mobile */}
           <div className="order-1 flex flex-col items-center lg:order-2 lg:sticky lg:top-24">
-            <p className="mb-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 lg:text-left">
+            <p className="mb-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:text-left">
               Live preview
             </p>
             <motion.div
@@ -322,7 +324,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
               initial={{ opacity: 0.85, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
-              className={`inline-block border border-slate-100 bg-white ${frameClass}`}
+              className={`inline-block border border-border bg-card ${frameClass}`}
               style={{ backgroundColor: effectiveBg }}
             >
               <QRCodeCanvas
@@ -333,8 +335,8 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                 imageSettings={logoSettings(PREVIEW_SIZE, effectiveLogo)}
               />
             </motion.div>
-            <p className="mt-3 max-w-xs text-center text-[11px] leading-relaxed text-slate-500 lg:text-left">
-              Scan with your phone camera to test. UPI uses the standard <code className="text-slate-700">upi://pay</code>{" "}
+            <p className="mt-3 max-w-xs text-center text-[11px] leading-relaxed text-muted-foreground lg:text-left">
+              Scan with your phone camera to test. UPI uses the standard <code className="text-muted-foreground">upi://pay</code>{" "}
               format.
             </p>
 
@@ -343,7 +345,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                 type="button"
                 onClick={() => void copyImage()}
                 disabled={busy}
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-slate-50 disabled:opacity-50"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-50"
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ClipboardCopy className="h-4 w-4" />}
                 Copy image
@@ -351,7 +353,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
               <button
                 type="button"
                 onClick={downloadStandardPng}
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 <Download className="h-4 w-4" />
                 PNG (standard)
@@ -362,7 +364,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                 <button
                   type="button"
                   onClick={downloadHiResPng}
-                  className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-black transition hover:bg-slate-50"
+                  className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted"
                 >
                   <Download className="h-4 w-4" />
                   Hi-res PNG
@@ -370,7 +372,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                 <button
                   type="button"
                   onClick={downloadSvg}
-                  className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-black transition hover:bg-slate-50"
+                  className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted"
                 >
                   <Download className="h-4 w-4" />
                   SVG
@@ -383,7 +385,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="mt-3 text-center text-xs font-medium text-slate-600"
+                  className="mt-3 text-center text-xs font-medium text-muted-foreground"
                 >
                   {copyHint}
                 </motion.p>
@@ -392,7 +394,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
           </div>
 
           <div className="order-2 space-y-6 lg:order-1">
-            <div className="flex flex-wrap gap-2 rounded-xl border border-slate-100 bg-slate-50/80 p-1">
+            <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-muted/80 p-1">
               {TABS.map((t) => {
                 const Icon = t.icon;
                 const active = tab === t.id;
@@ -402,7 +404,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                     type="button"
                     onClick={() => setTab(t.id)}
                     className={`inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition sm:flex-none sm:px-4 ${
-                      active ? "bg-white text-black shadow-sm" : "text-slate-600 hover:text-black"
+                      active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <Icon className="h-4 w-4 shrink-0" aria-hidden />
@@ -412,17 +414,17 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
               })}
             </div>
 
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
               {tab === "url" ? (
                 <div>
-                  <label htmlFor={`${formId}-url`} className="text-sm font-medium text-black">
+                  <label htmlFor={`${formId}-url`} className="text-sm font-medium text-foreground">
                     URL
                   </label>
                   <input
                     id={`${formId}-url`}
                     value={urlText}
                     onChange={(e) => setUrlText(e.target.value)}
-                    className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                    className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                     placeholder="https://example.com"
                     autoComplete="url"
                   />
@@ -432,18 +434,18 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
               {tab === "wifi" ? (
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor={`${formId}-ssid`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-ssid`} className="text-sm font-medium text-foreground">
                       Network name (SSID)
                     </label>
                     <input
                       id={`${formId}-ssid`}
                       value={wifiSsid}
                       onChange={(e) => setWifiSsid(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                     />
                   </div>
                   <div>
-                    <label htmlFor={`${formId}-wpass`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-wpass`} className="text-sm font-medium text-foreground">
                       Password
                     </label>
                     <input
@@ -451,11 +453,11 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                       type="password"
                       value={wifiPass}
                       onChange={(e) => setWifiPass(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                     />
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-black">Encryption</span>
+                    <span className="text-sm font-medium text-foreground">Encryption</span>
                     <div className="mt-2 flex gap-2">
                       {(["WPA", "WEP"] as const).map((enc) => (
                         <button
@@ -465,7 +467,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                           className={`rounded-xl border px-4 py-2 text-sm font-semibold ${
                             wifiEnc === enc
                               ? "border-black bg-black text-white"
-                              : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                              : "border-border bg-card text-muted-foreground hover:border-border"
                           }`}
                         >
                           {enc}
@@ -479,29 +481,29 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
               {tab === "vcard" ? (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <label htmlFor={`${formId}-fn`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-fn`} className="text-sm font-medium text-foreground">
                       Full name
                     </label>
                     <input
                       id={`${formId}-fn`}
                       value={vcName}
                       onChange={(e) => setVcName(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                     />
                   </div>
                   <div>
-                    <label htmlFor={`${formId}-tel`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-tel`} className="text-sm font-medium text-foreground">
                       Phone
                     </label>
                     <input
                       id={`${formId}-tel`}
                       value={vcPhone}
                       onChange={(e) => setVcPhone(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                     />
                   </div>
                   <div>
-                    <label htmlFor={`${formId}-em`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-em`} className="text-sm font-medium text-foreground">
                       Email
                     </label>
                     <input
@@ -509,18 +511,18 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                       type="email"
                       value={vcEmail}
                       onChange={(e) => setVcEmail(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label htmlFor={`${formId}-org`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-org`} className="text-sm font-medium text-foreground">
                       Company
                     </label>
                     <input
                       id={`${formId}-org`}
                       value={vcCompany}
                       onChange={(e) => setVcCompany(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                     />
                   </div>
                 </div>
@@ -529,30 +531,30 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
               {tab === "upi" ? (
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor={`${formId}-pa`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-pa`} className="text-sm font-medium text-foreground">
                       UPI ID (VPA)
                     </label>
                     <input
                       id={`${formId}-pa`}
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                       placeholder="name@bank"
                     />
                   </div>
                   <div>
-                    <label htmlFor={`${formId}-pn`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-pn`} className="text-sm font-medium text-foreground">
                       Payee name
                     </label>
                     <input
                       id={`${formId}-pn`}
                       value={upiName}
                       onChange={(e) => setUpiName(e.target.value)}
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                     />
                   </div>
                   <div>
-                    <label htmlFor={`${formId}-am`} className="text-sm font-medium text-black">
+                    <label htmlFor={`${formId}-am`} className="text-sm font-medium text-foreground">
                       Amount (₹, optional)
                     </label>
                     <input
@@ -560,7 +562,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                       value={upiAmount}
                       onChange={(e) => setUpiAmount(e.target.value)}
                       inputMode="decimal"
-                      className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-3 text-sm text-black outline-none focus:border-slate-200 focus:ring-2"
+                      className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-3 text-sm text-foreground outline-none focus:border-border focus:ring-2"
                       placeholder="199.00"
                     />
                   </div>
@@ -568,24 +570,24 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
               ) : null}
             </div>
 
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
               <div className="flex items-center gap-2">
-                <Palette className="h-4 w-4 text-slate-500" aria-hidden />
-                <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">
+                <Palette className="h-4 w-4 text-muted-foreground" aria-hidden />
+                <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
                   Customization {isPro ? "" : "(Pro)"}
                 </h2>
               </div>
               {!isPro ? (
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Colors, logo, rounded frame, SVG, and hi-res PNG unlock with a Daily Pass (from ₹19).
                 </p>
               ) : null}
               <div className="mt-4 grid gap-6 sm:grid-cols-2">
                 <div>
-                  <span id={`${formId}-fg-label`} className="text-sm font-medium text-black">
+                  <span id={`${formId}-fg-label`} className="text-sm font-medium text-foreground">
                     Foreground
                   </span>
-                  <p className="mt-0.5 text-xs text-slate-500">Browser color picker + hex, or quick swatches.</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Browser color picker + hex, or quick swatches.</p>
                   <div className="mt-3 flex gap-3">
                     <input
                       id={`${formId}-fg`}
@@ -596,7 +598,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                         setHexDraftFg(null);
                         onFgChange(e.target.value);
                       }}
-                      className={`h-12 w-[4.5rem] shrink-0 cursor-pointer rounded-xl border border-slate-200 bg-white p-1 shadow-sm ${!isPro ? "opacity-70" : ""}`}
+                      className={`h-12 w-[4.5rem] shrink-0 cursor-pointer rounded-xl border border-border bg-card p-1 shadow-sm ${!isPro ? "opacity-70" : ""}`}
                     />
                     <input
                       type="text"
@@ -625,7 +627,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                         if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                       }}
                       placeholder="#000000"
-                      className={`min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5 font-mono text-sm text-black outline-none placeholder:text-slate-400 focus:border-slate-300 focus:ring-2 focus:ring-slate-200 ${!isPro ? "cursor-pointer opacity-70" : ""}`}
+                      className={`min-w-0 flex-1 rounded-xl border border-border bg-muted/80 px-3 py-2.5 font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-border focus:ring-2 focus:ring-slate-200 ${!isPro ? "cursor-pointer opacity-70" : ""}`}
                       readOnly={!isPro}
                       onClick={() => {
                         if (!isPro) openUpsell();
@@ -646,17 +648,17 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                           setHexDraftFg(null);
                           onFgChange(c);
                         }}
-                        className={`h-8 w-8 rounded-full border border-slate-200 shadow-sm transition hover:scale-105 hover:ring-2 hover:ring-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${!isPro ? "opacity-70" : ""}`}
+                        className={`h-8 w-8 rounded-full border border-border shadow-sm transition hover:scale-105 hover:ring-2 hover:ring-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${!isPro ? "opacity-70" : ""}`}
                         style={{ backgroundColor: c }}
                       />
                     ))}
                   </div>
                 </div>
                 <div>
-                  <span id={`${formId}-bg-label`} className="text-sm font-medium text-black">
+                  <span id={`${formId}-bg-label`} className="text-sm font-medium text-foreground">
                     Background
                   </span>
-                  <p className="mt-0.5 text-xs text-slate-500">Pick a high contrast against the modules.</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Pick a high contrast against the modules.</p>
                   <div className="mt-3 flex gap-3">
                     <input
                       id={`${formId}-bg`}
@@ -667,7 +669,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                         setHexDraftBg(null);
                         onBgChange(e.target.value);
                       }}
-                      className={`h-12 w-[4.5rem] shrink-0 cursor-pointer rounded-xl border border-slate-200 bg-white p-1 shadow-sm ${!isPro ? "opacity-70" : ""}`}
+                      className={`h-12 w-[4.5rem] shrink-0 cursor-pointer rounded-xl border border-border bg-card p-1 shadow-sm ${!isPro ? "opacity-70" : ""}`}
                     />
                     <input
                       type="text"
@@ -696,7 +698,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                         if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                       }}
                       placeholder="#FFFFFF"
-                      className={`min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5 font-mono text-sm text-black outline-none placeholder:text-slate-400 focus:border-slate-300 focus:ring-2 focus:ring-slate-200 ${!isPro ? "cursor-pointer opacity-70" : ""}`}
+                      className={`min-w-0 flex-1 rounded-xl border border-border bg-muted/80 px-3 py-2.5 font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-border focus:ring-2 focus:ring-slate-200 ${!isPro ? "cursor-pointer opacity-70" : ""}`}
                       readOnly={!isPro}
                       onClick={() => {
                         if (!isPro) openUpsell();
@@ -717,7 +719,7 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                           setHexDraftBg(null);
                           onBgChange(c);
                         }}
-                        className={`h-8 w-8 rounded-full border border-slate-200 shadow-sm transition hover:scale-105 hover:ring-2 hover:ring-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${!isPro ? "opacity-70" : ""}`}
+                        className={`h-8 w-8 rounded-full border border-border shadow-sm transition hover:scale-105 hover:ring-2 hover:ring-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${!isPro ? "opacity-70" : ""}`}
                         style={{ backgroundColor: c }}
                       />
                     ))}
@@ -726,28 +728,28 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
               </div>
 
               <div className="mt-4">
-                <span className="text-sm font-medium text-black">Center logo</span>
+                <span className="text-sm font-medium text-foreground">Center logo</span>
                 <div className="mt-2 flex flex-wrap items-center gap-3">
                   <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" id={`${formId}-logo`} onChange={onLogoPick} />
                   <label
                     htmlFor={`${formId}-logo`}
-                    className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-slate-100"
+                    className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-muted px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
                   >
                     <ImagePlus className="h-4 w-4" aria-hidden />
                     Add logo
                   </label>
                   {logoDataUrl && isPro ? (
-                    <button type="button" onClick={clearLogo} className="text-sm font-medium text-slate-600 underline">
+                    <button type="button" onClick={clearLogo} className="text-sm font-medium text-muted-foreground underline">
                       Remove logo
                     </button>
                   ) : null}
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-3">
+              <div className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/50 px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-black">Rounded frame</p>
-                  <p className="text-xs text-slate-500">Softer outer corners on the preview.</p>
+                  <p className="text-sm font-medium text-foreground">Rounded frame</p>
+                  <p className="text-xs text-muted-foreground">Softer outer corners on the preview.</p>
                 </div>
                 <button
                   type="button"
@@ -755,11 +757,11 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
                   aria-checked={roundedFrame}
                   onClick={toggleRounded}
                   className={`relative h-8 w-14 shrink-0 rounded-full transition ${
-                    roundedFrame ? "bg-black" : "bg-slate-300"
+                    roundedFrame ? "bg-black" : "bg-muted"
                   }`}
                 >
                   <span
-                    className={`absolute top-1 left-1 h-6 w-6 rounded-full bg-white shadow transition ${
+                    className={`absolute top-1 left-1 h-6 w-6 rounded-full bg-card shadow transition ${
                       roundedFrame ? "translate-x-6" : ""
                     }`}
                   />
@@ -800,9 +802,9 @@ export function QrGeneratorTool({ isPro }: QrGeneratorToolProps) {
         title="Unlock Pro QR features"
         description={
           <>
-            Custom colors, logo in the center, rounded frame, <span className="font-medium text-black">SVG</span>, and{" "}
-            <span className="font-medium text-black">high-resolution PNG</span> exports are included with a{" "}
-            <span className="font-medium text-black">Daily Pass from ₹19</span>.
+            Custom colors, logo in the center, rounded frame, <span className="font-medium text-foreground">SVG</span>, and{" "}
+            <span className="font-medium text-foreground">high-resolution PNG</span> exports are included with a{" "}
+            <span className="font-medium text-foreground">Daily Pass from ₹19</span>.
           </>
         }
         secondaryActionLabel="Continue with free"

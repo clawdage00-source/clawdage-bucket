@@ -323,17 +323,17 @@ export function OcrTool({ isPro }: OcrToolProps) {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-white pb-20">
-      <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6">
+    <div className="min-h-screen overflow-x-hidden bg-card pb-20">
+      <div className="border-b border-border bg-muted/50 px-4 py-4 sm:px-6">
         <div className="mx-auto flex max-w-[90rem] flex-wrap items-center justify-between gap-3">
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-black"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
           </Link>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             {isPro ? "Pro: Groq AI handwriting OCR + auto language detection" : "Free: preview upload · pass unlocks AI extraction"}
           </p>
         </div>
@@ -341,8 +341,8 @@ export function OcrTool({ isPro }: OcrToolProps) {
 
       <div className="mx-auto max-w-[90rem] px-4 py-8 sm:px-6 sm:py-10">
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-          <h1 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">AI Handwriting OCR (Pro)</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">AI Handwriting OCR (Pro)</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             Upload an image. With an active pass, Groq Vision extracts text, detects the document language automatically,
             and streams the transcript here. Images are sent to Groq for processing.
           </p>
@@ -364,14 +364,14 @@ export function OcrTool({ isPro }: OcrToolProps) {
                 addFiles(Array.from(e.dataTransfer.files));
               }}
               className={`rounded-2xl border-2 border-dashed p-6 transition ${
-                dragOver ? "border-black bg-slate-50" : "border-slate-200 bg-slate-50/50"
+                dragOver ? "border-primary bg-muted" : "border-border bg-muted/50"
               }`}
             >
               <div className="flex items-start gap-3">
-                <ImagePlus className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" aria-hidden />
+                <ImagePlus className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-black">Drop an image here</p>
-                  <p className="mt-1 text-xs text-slate-600">JPG, PNG, WebP, GIF, TIFF, BMP · one file</p>
+                  <p className="text-sm font-semibold text-foreground">Drop an image here</p>
+                  <p className="mt-1 text-xs text-muted-foreground">JPG, PNG, WebP, GIF, TIFF, BMP · one file</p>
                   <input
                     id={`${formId}-file`}
                     type="file"
@@ -385,7 +385,7 @@ export function OcrTool({ isPro }: OcrToolProps) {
                   />
                   <label
                     htmlFor={`${formId}-file`}
-                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800"
+                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
                   >
                     Browse file
                   </label>
@@ -393,12 +393,12 @@ export function OcrTool({ isPro }: OcrToolProps) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
               <div className="flex items-center gap-2">
                 <Cloud className="h-4 w-4 text-sky-600" aria-hidden />
-                <p className="text-sm font-medium text-black">Cloud AI</p>
+                <p className="text-sm font-medium text-foreground">Cloud AI</p>
               </div>
-              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                 AI Mode processes images via Groq&apos;s secure servers. Language is detected automatically when extraction
                 runs.
               </p>
@@ -419,7 +419,7 @@ export function OcrTool({ isPro }: OcrToolProps) {
                 type="button"
                 disabled={busy || !selected || !isPro}
                 onClick={() => selected && void runGroqExtract(selected.file, selected.id)}
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-slate-50 disabled:opacity-40"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-40"
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <RefreshCw className="h-4 w-4" aria-hidden />}
                 Run again
@@ -428,7 +428,7 @@ export function OcrTool({ isPro }: OcrToolProps) {
                 type="button"
                 disabled={busy}
                 onClick={clearAll}
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-black transition hover:bg-slate-50 disabled:opacity-40"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-40"
               >
                 <Trash2 className="h-4 w-4" aria-hidden />
                 Clear
@@ -441,10 +441,10 @@ export function OcrTool({ isPro }: OcrToolProps) {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
+                  className="overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm"
                 >
-                  <p className="text-xs font-medium text-slate-600">{progress.message}</p>
-                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                  <p className="text-xs font-medium text-muted-foreground">{progress.message}</p>
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
                     <motion.div
                       className="h-full rounded-full bg-black"
                       initial={{ width: 0 }}
@@ -465,10 +465,10 @@ export function OcrTool({ isPro }: OcrToolProps) {
           </motion.div>
 
           <motion.div layout className="flex min-h-0 flex-col gap-4">
-            <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Original</p>
-              <p className="text-xs text-slate-500">Your upload — extracted text appears in the note below.</p>
-              <div className="mt-4 max-h-[min(56vh,32rem)] overflow-auto rounded-xl border border-slate-100 bg-slate-50/80 p-2">
+            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Original</p>
+              <p className="text-xs text-muted-foreground">Your upload — extracted text appears in the note below.</p>
+              <div className="mt-4 max-h-[min(56vh,32rem)] overflow-auto rounded-xl border border-border bg-muted/80 p-2">
                 {selected ? (
                   <motion.div
                     key={selected.id}
@@ -488,7 +488,7 @@ export function OcrTool({ isPro }: OcrToolProps) {
                     />
                   </motion.div>
                 ) : (
-                  <div className="flex min-h-[220px] items-center justify-center text-sm text-slate-500">No image yet</div>
+                  <div className="flex min-h-[220px] items-center justify-center text-sm text-muted-foreground">No image yet</div>
                 )}
               </div>
             </div>
@@ -498,7 +498,7 @@ export function OcrTool({ isPro }: OcrToolProps) {
 
       {/* Full-width lined paper — white bg, transparent writing area */}
       <section
-        className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] overflow-x-hidden border-y border-slate-200 bg-white py-10 sm:py-12"
+        className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] overflow-x-hidden border-y border-border bg-card py-10 sm:py-12"
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(148, 163, 184, 0.22) 40px, transparent 40px), repeating-linear-gradient(
             transparent,
@@ -512,17 +512,17 @@ export function OcrTool({ isPro }: OcrToolProps) {
       >
         <div className="relative mx-auto w-full max-w-[90rem] px-4 sm:px-6">
           <div className="pl-10 sm:pl-12">
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 pb-3">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-border pb-3">
               <div>
-                <p className="font-serif text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">Extracted text</p>
-                <p className="mt-1 font-serif text-xs italic text-slate-500">Typed onto the page as the AI finishes</p>
+                <p className="font-serif text-lg font-semibold tracking-tight text-foreground sm:text-xl">Extracted text</p>
+                <p className="mt-1 font-serif text-xs italic text-muted-foreground">Typed onto the page as the AI finishes</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {isPro && typingDone && combinedText.trim() && selected ? (
                   <button
                     type="button"
                     onClick={() => setCompareOpen(true)}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground shadow-sm transition hover:bg-muted"
                   >
                     <Columns2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
                     Compare
@@ -532,7 +532,7 @@ export function OcrTool({ isPro }: OcrToolProps) {
                   type="button"
                   disabled={!typingDone || !combinedText}
                   onClick={() => void copyText()}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50 disabled:opacity-40"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground shadow-sm transition hover:bg-muted disabled:opacity-40"
                 >
                   <ClipboardCopy className="h-3.5 w-3.5 shrink-0" aria-hidden />
                   {copyDone ? "Copied" : "Copy"}
@@ -541,8 +541,8 @@ export function OcrTool({ isPro }: OcrToolProps) {
             </div>
 
             {detectedLang && isPro ? (
-              <p className="mb-3 font-serif text-xs font-medium text-slate-600">
-                Detected language: <span className="font-semibold text-slate-900">{humanizeLanguageTag(detectedLang)}</span>
+              <p className="mb-3 font-serif text-xs font-medium text-muted-foreground">
+                Detected language: <span className="font-semibold text-foreground">{humanizeLanguageTag(detectedLang)}</span>
               </p>
             ) : null}
 
@@ -566,14 +566,14 @@ export function OcrTool({ isPro }: OcrToolProps) {
             <div className="rounded-md border-0 border-transparent bg-transparent p-0 shadow-none">
               {!typingDone ? (
                 <div
-                  className="min-h-[min(42vh,22rem)] w-full whitespace-pre-wrap break-words px-3 py-3 font-serif text-[15px] leading-[28px] text-slate-900 sm:min-h-[min(48vh,26rem)] sm:px-4 sm:text-base"
+                  className="min-h-[min(42vh,22rem)] w-full whitespace-pre-wrap break-words px-3 py-3 font-serif text-[15px] leading-[28px] text-foreground sm:min-h-[min(48vh,26rem)] sm:px-4 sm:text-base"
                   aria-busy="true"
                   aria-live="polite"
                 >
                   {previewText}
                   <span
                     aria-hidden
-                    className="inline-block h-[1.12em] w-0.5 animate-pulse bg-slate-900 align-text-bottom motion-reduce:animate-none"
+                    className="inline-block h-[1.12em] w-0.5 animate-pulse bg-foreground align-text-bottom motion-reduce:animate-none"
                   />
                 </div>
               ) : (
@@ -586,7 +586,7 @@ export function OcrTool({ isPro }: OcrToolProps) {
                       ? "Your transcript will appear here, typed line by line on the page…"
                       : "Add a pass to run Groq AI extraction on your upload."
                   }
-                  className="min-h-[min(42vh,22rem)] w-full resize-y border-0 bg-transparent px-3 py-3 font-serif text-[15px] leading-[28px] text-slate-900 outline-none ring-0 placeholder:text-slate-400 sm:min-h-[min(48vh,26rem)] sm:px-4 sm:text-base"
+                  className="min-h-[min(42vh,22rem)] w-full resize-y border-0 bg-transparent px-3 py-3 font-serif text-[15px] leading-[28px] text-foreground outline-none ring-0 placeholder:text-muted-foreground sm:min-h-[min(48vh,26rem)] sm:px-4 sm:text-base"
                 />
               )}
             </div>
@@ -619,28 +619,28 @@ export function OcrTool({ isPro }: OcrToolProps) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 10 }}
               transition={{ type: "spring", stiffness: 420, damping: 32 }}
-              className="relative flex max-h-[min(92vh,52rem)] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl"
+              className="relative flex max-h-[min(92vh,52rem)] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
             >
-              <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3 sm:px-5">
+              <div className="flex items-start justify-between gap-3 border-b border-border px-4 py-3 sm:px-5">
                 <div>
-                  <p id="ocr-compare-title" className="text-sm font-semibold text-black">
+                  <p id="ocr-compare-title" className="text-sm font-semibold text-foreground">
                     Compare — image and AI transcript
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">{selected.file.name}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{selected.file.name}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setCompareOpen(false)}
-                  className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-black"
+                  className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
                   aria-label="Close"
                 >
                   <X className="h-5 w-5" aria-hidden />
                 </button>
               </div>
               <div className="grid min-h-0 flex-1 grid-cols-1 gap-0 md:grid-cols-2 md:divide-x md:divide-slate-100">
-                <div className="flex min-h-0 flex-col bg-slate-50/80 p-3 sm:p-4">
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Original</p>
-                  <div className="flex min-h-[200px] flex-1 items-center justify-center overflow-auto rounded-xl border border-slate-100 bg-white p-2">
+                <div className="flex min-h-0 flex-col bg-muted/80 p-3 sm:p-4">
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Original</p>
+                  <div className="flex min-h-[200px] flex-1 items-center justify-center overflow-auto rounded-xl border border-border bg-card p-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={selected.previewUrl}
@@ -650,12 +650,12 @@ export function OcrTool({ isPro }: OcrToolProps) {
                   </div>
                 </div>
                 <div className="flex min-h-0 flex-col p-3 sm:p-4">
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">AI transcript</p>
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">AI transcript</p>
                   <textarea
                     readOnly
                     value={combinedText}
                     spellCheck={false}
-                    className="min-h-[min(55vh,28rem)] w-full flex-1 resize-y rounded-xl border border-slate-200 bg-slate-50/50 p-3 font-serif text-sm leading-relaxed text-slate-900 outline-none sm:text-[15px]"
+                    className="min-h-[min(55vh,28rem)] w-full flex-1 resize-y rounded-xl border border-border bg-muted/50 p-3 font-serif text-sm leading-relaxed text-foreground outline-none sm:text-[15px]"
                   />
                 </div>
               </div>
@@ -671,7 +671,7 @@ export function OcrTool({ isPro }: OcrToolProps) {
         description={
           <>
             Groq Vision extraction with automatic language detection is included with a{" "}
-            <span className="font-medium text-black">Daily Pass from ₹19</span>.
+            <span className="font-medium text-foreground">Daily Pass from ₹19</span>.
           </>
         }
         secondaryActionLabel="Close"

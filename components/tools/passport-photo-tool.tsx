@@ -18,6 +18,7 @@ import { useCallback, useEffect, useId, useRef, useState, type SyntheticEvent } 
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
+import { trackToolUse } from "@/lib/analytics";
 import { DailyPassUpsellModal } from "@/components/tools/daily-pass-upsell-modal";
 import {
   BG_COLORS,
@@ -242,6 +243,7 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
         const blob = await canvasToJpegBlob(passport);
         if (!blob) throw new Error("Could not encode JPEG.");
         downloadBlob(blob, "passport-photo-35x45.jpg");
+        trackToolUse("passport-photo");
         return;
       }
       const spec = layout === "sheet8" ? SHEET_4x6 : SHEET_A4;
@@ -257,6 +259,7 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
       if (!blob) throw new Error("Could not encode sheet JPEG.");
       const name = layout === "sheet8" ? "passport-sheet-4x6-8up.jpg" : "passport-sheet-a4-16up.jpg";
       downloadBlob(blob, name);
+      trackToolUse("passport-photo", { sheet: true });
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -304,17 +307,17 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-white pb-24">
-      <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6">
+    <div className="min-h-screen overflow-x-hidden bg-card pb-24">
+      <div className="border-b border-border bg-muted/50 px-4 py-4 sm:px-6">
         <div className="mx-auto flex max-w-[90rem] flex-wrap items-center justify-between gap-3">
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-black"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
           </Link>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             {isPro ? "Pro: print sheets & watermark-free export" : "Free: AI cutout + crop · watermark on download · sheets need Daily Pass"}
           </p>
         </div>
@@ -322,8 +325,8 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
 
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">Passport Photo Maker</h1>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Passport Photo Maker</h1>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
             First crop your upload with the corner and edge handles (great for group photos), then we remove the
             background. Finish with a fixed 3.5×4.5 cm passport frame — same drag handles — and print-ready JPEG/PDF at
             300 DPI.
@@ -331,9 +334,9 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
         </motion.div>
 
         <div className="mt-8 space-y-6">
-          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-            <p className="text-sm font-semibold text-black">1. Upload selfie</p>
-            <p className="mt-1 text-xs text-slate-500">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <p className="text-sm font-semibold text-foreground">1. Upload selfie</p>
+            <p className="mt-1 text-xs text-muted-foreground">
               JPG or PNG · step 2 uses free-form crop; step 4 keeps passport aspect while you resize from any corner.
             </p>
             <input
@@ -349,7 +352,7 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
             />
             <label
               htmlFor={`${formId}-file`}
-              className={`mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800 ${
+              className={`mt-4 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 ${
                 step === "removing" ? "pointer-events-none opacity-50" : ""
               }`}
             >
@@ -364,16 +367,16 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-5"
+                className="overflow-hidden rounded-2xl border border-border bg-muted p-5"
               >
                 <div className="flex items-center gap-3">
-                  <Loader2 className="h-5 w-5 shrink-0 animate-spin text-slate-700" aria-hidden />
+                  <Loader2 className="h-5 w-5 shrink-0 animate-spin text-muted-foreground" aria-hidden />
                   <div>
-                    <p className="text-sm font-semibold text-black">3. Removing background…</p>
-                    <p className="text-xs text-slate-600">{removeHint ?? "Preparing portrait AI…"}</p>
+                    <p className="text-sm font-semibold text-foreground">3. Removing background…</p>
+                    <p className="text-xs text-muted-foreground">{removeHint ?? "Preparing portrait AI…"}</p>
                   </div>
                 </div>
-                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
                   <div
                     className="h-full rounded-full bg-black transition-[width] duration-300"
                     style={{ width: `${removePct}%` }}
@@ -384,13 +387,13 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
           </AnimatePresence>
 
           {step === "sourceCrop" && rawPreview ? (
-            <div className="space-y-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold text-black">2. Crop to one person</p>
-              <p className="mt-1 text-xs text-slate-500">
+            <div className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <p className="text-sm font-semibold text-foreground">2. Crop to one person</p>
+              <p className="mt-1 text-xs text-muted-foreground">
                 Drag the corners or edges of the box to include only the subject. Move the whole box by dragging inside
                 it. Then continue — background removal runs on this region only.
               </p>
-              <div className="flex justify-center overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 py-3">
+              <div className="flex justify-center overflow-x-auto rounded-xl border border-border bg-muted py-3">
                 {sourceCrop ? (
                   <ReactCrop
                     crop={sourceCrop}
@@ -420,7 +423,7 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
               <button
                 type="button"
                 onClick={() => void continueToBackgroundRemoval()}
-                className="mt-2 inline-flex min-h-[48px] w-full items-center justify-center rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 sm:w-auto"
+                className="mt-2 inline-flex min-h-[48px] w-full items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 sm:w-auto"
               >
                 Continue — remove background
               </button>
@@ -428,13 +431,13 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
           ) : null}
 
           {step === "crop" && noBgUrl ? (
-            <div className="space-y-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold text-black">4. Passport frame (3.5∶4.5)</p>
-              <p className="text-xs text-slate-500">
+            <div className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <p className="text-sm font-semibold text-foreground">4. Passport frame (3.5∶4.5)</p>
+              <p className="text-xs text-muted-foreground">
                 Resize from any corner or edge — aspect stays 3.5∶4.5. Drag inside the box to move it. Use the oval as
                 a rough face guide.
               </p>
-              <div className="relative flex justify-center overflow-x-auto rounded-xl border border-slate-200 bg-slate-900/90 py-3">
+              <div className="relative flex justify-center overflow-x-auto rounded-xl border border-border bg-slate-900/90 py-3">
                 {passportCrop ? (
                   <ReactCrop
                     crop={passportCrop}
@@ -473,7 +476,7 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
                 </div>
               </div>
 
-              <p className="pt-2 text-sm font-semibold text-black">Background color</p>
+              <p className="pt-2 text-sm font-semibold text-foreground">Background color</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {(Object.keys(BG_COLORS) as BgKey[]).map((key) => (
                   <button
@@ -481,7 +484,7 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
                     type="button"
                     onClick={() => setBgKey(key)}
                     className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
-                      bgKey === key ? "border-black ring-2 ring-black/10" : "border-slate-200 hover:bg-slate-50"
+                      bgKey === key ? "border-black ring-2 ring-black/10" : "border-border hover:bg-muted"
                     }`}
                     style={{
                       backgroundColor: `rgb(${BG_COLORS[key].r},${BG_COLORS[key].g},${BG_COLORS[key].b})`,
@@ -496,28 +499,28 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
           ) : null}
 
           {step === "crop" && noBgUrl ? (
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold text-black">5. Export</p>
-              <p className="mt-1 text-xs text-slate-500">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <p className="text-sm font-semibold text-foreground">5. Export</p>
+              <p className="mt-1 text-xs text-muted-foreground">
                 {PASSPORT_W_PX}×{PASSPORT_H_PX}px (300 DPI) · JPEG or PDF
               </p>
 
               <fieldset className="mt-4 space-y-2">
                 <legend className="sr-only">Output layout</legend>
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-3 py-3 has-[:checked]:border-black has-[:checked]:bg-slate-50">
+                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-border px-3 py-3 has-[:checked]:border-black has-[:checked]:bg-muted">
                   <input
                     type="radio"
                     name={`${formId}-layout`}
                     checked={layout === "individual"}
                     onChange={() => tryLayout("individual")}
-                    className="accent-black"
+                    className="accent-foreground"
                   />
-                  <span className="text-sm font-medium text-black">Individual passport photo</span>
+                  <span className="text-sm font-medium text-foreground">Individual passport photo</span>
                 </label>
                 <label
                   className={`flex items-center gap-3 rounded-xl border px-3 py-3 ${
                     isPro
-                      ? "cursor-pointer border-slate-200 has-[:checked]:border-black has-[:checked]:bg-slate-50"
+                      ? "cursor-pointer border-border has-[:checked]:border-black has-[:checked]:bg-muted"
                       : "cursor-pointer border-amber-100 bg-amber-50/40"
                   }`}
                 >
@@ -526,16 +529,16 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
                     name={`${formId}-layout`}
                     checked={layout === "sheet8"}
                     onChange={() => tryLayout("sheet8")}
-                    className="accent-black"
+                    className="accent-foreground"
                   />
-                  <Grid3x3 className="h-4 w-4 shrink-0 text-slate-600" aria-hidden />
-                  <span className="flex-1 text-sm font-medium text-black">Printable sheet — 8 photos on 4×6″</span>
+                  <Grid3x3 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <span className="flex-1 text-sm font-medium text-foreground">Printable sheet — 8 photos on 4×6″</span>
                   {!isPro ? <Lock className="h-4 w-4 shrink-0 text-amber-700" aria-hidden /> : null}
                 </label>
                 <label
                   className={`flex items-center gap-3 rounded-xl border px-3 py-3 ${
                     isPro
-                      ? "cursor-pointer border-slate-200 has-[:checked]:border-black has-[:checked]:bg-slate-50"
+                      ? "cursor-pointer border-border has-[:checked]:border-black has-[:checked]:bg-muted"
                       : "cursor-pointer border-amber-100 bg-amber-50/40"
                   }`}
                 >
@@ -544,10 +547,10 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
                     name={`${formId}-layout`}
                     checked={layout === "sheet16"}
                     onChange={() => tryLayout("sheet16")}
-                    className="accent-black"
+                    className="accent-foreground"
                   />
-                  <Grid3x3 className="h-4 w-4 shrink-0 text-slate-600" aria-hidden />
-                  <span className="flex-1 text-sm font-medium text-black">Printable sheet — 16 photos on A4</span>
+                  <Grid3x3 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <span className="flex-1 text-sm font-medium text-foreground">Printable sheet — 16 photos on A4</span>
                   {!isPro ? <Lock className="h-4 w-4 shrink-0 text-amber-700" aria-hidden /> : null}
                 </label>
               </fieldset>
@@ -557,7 +560,7 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
                   type="button"
                   disabled={busyExport || !croppedAreaPixels}
                   onClick={() => void handleExportJpeg()}
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:opacity-40"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
                 >
                   {busyExport ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Download className="h-4 w-4" aria-hidden />}
                   Download JPEG
@@ -566,14 +569,14 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
                   type="button"
                   disabled={busyExport || !croppedAreaPixels}
                   onClick={() => void handleExportPdf()}
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-black transition hover:bg-slate-50 disabled:opacity-40"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-border px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-40"
                 >
                   Download PDF
                 </button>
                 <button
                   type="button"
                   onClick={clearAll}
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-black transition hover:bg-slate-50"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden />
                   Clear
@@ -590,7 +593,7 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
                       await runRemoveBg(new File([blob], "subject.png", { type: "image/png" }));
                     })();
                   }}
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-black transition hover:bg-slate-50 disabled:opacity-40"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-40"
                 >
                   <RefreshCw className="h-4 w-4" aria-hidden />
                   Re-run AI
@@ -611,10 +614,10 @@ export function PassportPhotoTool({ isPro }: PassportPhotoToolProps) {
         title="Printable passport sheets (Pro)"
         description={
           <>
-            Unlock <span className="font-medium text-black">8-up 4×6″</span> and{" "}
-            <span className="font-medium text-black">16-up A4</span> grids,{" "}
-            <span className="font-medium text-black">no watermark</span> exports, with a{" "}
-            <span className="font-medium text-black">Daily Pass from ₹19</span>.
+            Unlock <span className="font-medium text-foreground">8-up 4×6″</span> and{" "}
+            <span className="font-medium text-foreground">16-up A4</span> grids,{" "}
+            <span className="font-medium text-foreground">no watermark</span> exports, with a{" "}
+            <span className="font-medium text-foreground">Daily Pass from ₹19</span>.
           </>
         }
         secondaryActionLabel="Continue with free"

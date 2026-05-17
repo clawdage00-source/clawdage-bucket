@@ -183,26 +183,26 @@ function SelectMenu({
         onClick={() => {
           if (!disabled) onOpenChange(!open);
         }}
-        className={`flex h-12 w-full items-center justify-between gap-3 rounded-xl bg-[#F3F4F6] px-4 text-left outline-none transition duration-300 hover:bg-gray-200/70 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-blue-600/35 disabled:cursor-not-allowed disabled:opacity-50 ${
-          open ? "bg-white ring-2 ring-blue-600/25 shadow-[0_2px_12px_-4px_rgba(37,99,235,0.12)]" : ""
+        className={`flex h-12 w-full items-center justify-between gap-3 rounded-xl bg-muted px-4 text-left outline-none transition duration-300 hover:bg-muted/70 focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-blue-600/35 disabled:cursor-not-allowed disabled:opacity-50 ${
+          open ? "bg-card ring-2 ring-blue-600/25 shadow-[0_2px_12px_-4px_rgba(37,99,235,0.12)]" : ""
         }`}
       >
         <span className="min-w-0 flex-1">
           {selected ? (
             <span className="flex flex-col gap-0.5">
-              <span className="text-sm font-medium text-[#111827]">{selected.label}</span>
+              <span className="text-sm font-medium text-foreground">{selected.label}</span>
               {selected.description ? (
-                <span className="line-clamp-2 text-xs font-normal leading-snug text-[#6B7280]">
+                <span className="line-clamp-2 text-xs font-normal leading-snug text-muted-foreground">
                   {selected.description}
                 </span>
               ) : null}
             </span>
           ) : (
-            <span className="text-sm text-[#6B7280]">Choose…</span>
+            <span className="text-sm text-muted-foreground">Choose…</span>
           )}
         </span>
         <ChevronDown
-          className={`h-5 w-5 shrink-0 text-[#6B7280] transition duration-300 ${open ? "rotate-180" : ""}`}
+          className={`h-5 w-5 shrink-0 text-muted-foreground transition duration-300 ${open ? "rotate-180" : ""}`}
           strokeWidth={2}
           aria-hidden
         />
@@ -218,7 +218,7 @@ function SelectMenu({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }}
-            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 max-h-72 overflow-y-auto overscroll-contain rounded-xl border border-gray-100/95 bg-white py-1.5 shadow-[0_20px_50px_-12px_rgba(17,24,39,0.2),0_8px_24px_-8px_rgba(17,24,39,0.1)] ring-1 ring-black/[0.03]"
+            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 max-h-72 overflow-y-auto overscroll-contain rounded-xl border border-gray-100/95 bg-card py-1.5 shadow-[0_20px_50px_-12px_rgba(17,24,39,0.2),0_8px_24px_-8px_rgba(17,24,39,0.1)] ring-1 ring-black/[0.03]"
           >
             {options.map((opt) => {
               const isSelected = opt.value === value;
@@ -247,16 +247,16 @@ function SelectMenu({
                     className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition duration-200 ${
                       isSelected
                         ? "border-blue-600 bg-blue-600 text-white"
-                        : "border-gray-200 bg-white text-transparent"
+                        : "border-gray-200 bg-card text-transparent"
                     }`}
                     aria-hidden
                   >
                     <Check className="h-3 w-3" strokeWidth={3} />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-[#111827]">{opt.label}</span>
+                    <span className="block text-sm font-medium text-foreground">{opt.label}</span>
                     {opt.description ? (
-                      <span className="mt-0.5 block text-xs font-normal leading-snug text-[#6B7280]">
+                      <span className="mt-0.5 block text-xs font-normal leading-snug text-muted-foreground">
                         {opt.description}
                       </span>
                     ) : null}
@@ -536,17 +536,17 @@ export function ImageToPdfTool() {
     : "border-[3px] border-dashed border-gray-200/90 bg-gradient-to-b from-blue-50/40 to-[#F9FAFB] shadow-[0_4px_24px_-6px_rgba(17,24,39,0.08)] hover:border-blue-300/80 hover:from-blue-50/60 hover:to-white";
 
   return (
-    <div className="min-h-screen bg-white pb-24 font-sans antialiased">
-      <div className="border-b border-gray-100/80 bg-white/90 px-4 py-5 shadow-[0_1px_0_rgba(17,24,39,0.04)] backdrop-blur-sm sm:px-6">
+    <div className="min-h-screen bg-background pb-24 font-sans antialiased">
+      <div className="border-b border-gray-100/80 bg-card/90 px-4 py-5 shadow-[0_1px_0_rgba(17,24,39,0.04)] backdrop-blur-sm sm:px-6">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3">
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[#6B7280] transition duration-300 hover:text-[#111827] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition duration-300 hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
             All tools
           </Link>
-          <p className="text-xs font-normal leading-relaxed text-[#6B7280]">Private — runs in your browser</p>
+          <p className="text-xs font-normal leading-relaxed text-muted-foreground">Private — runs in your browser</p>
         </div>
       </div>
 
@@ -557,10 +557,10 @@ export function ImageToPdfTool() {
           transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-center"
         >
-          <h1 className="text-3xl font-bold tracking-tight text-[#111827] sm:text-4xl sm:tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl sm:tracking-tight">
             Image to PDF
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base font-normal leading-relaxed text-[#6B7280] sm:text-[17px] sm:leading-[1.65]">
+          <p className="mx-auto mt-5 max-w-xl text-base font-normal leading-relaxed text-muted-foreground sm:text-[17px] sm:leading-[1.65]">
             Turn JPG or PNG pages into a single PDF. Drag to reorder, tune page size and quality, then
             convert — no uploads to a server.
           </p>
@@ -580,24 +580,24 @@ export function ImageToPdfTool() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center rounded-2xl bg-white/75 pt-28 backdrop-blur-[2px]"
+                className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center rounded-2xl bg-card/75 pt-28 backdrop-blur-[2px]"
               >
-                <div className="flex flex-col items-center gap-4 rounded-2xl bg-white px-8 py-7 shadow-[0_12px_40px_-12px_rgba(17,24,39,0.12),0_4px_16px_-4px_rgba(17,24,39,0.06)]">
+                <div className="flex flex-col items-center gap-4 rounded-2xl bg-card px-8 py-7 shadow-[0_12px_40px_-12px_rgba(17,24,39,0.12),0_4px_16px_-4px_rgba(17,24,39,0.06)]">
                   <Loader2 className="h-8 w-8 animate-spin text-blue-600" strokeWidth={2} aria-hidden />
-                  <p className="text-sm font-medium text-[#111827]">Building PDF…</p>
+                  <p className="text-sm font-medium text-foreground">Building PDF…</p>
                   <div className="h-2.5 w-52 overflow-hidden rounded-full bg-gray-100">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-[width] duration-300 ease-out"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
-                  <p className="text-xs font-normal text-[#6B7280]">{progress}%</p>
+                  <p className="text-xs font-normal text-muted-foreground">{progress}%</p>
                 </div>
               </motion.div>
             ) : null}
           </AnimatePresence>
 
-          <section className="rounded-2xl bg-white p-2 shadow-[0_4px_32px_-8px_rgba(17,24,39,0.08),0_2px_12px_-4px_rgba(17,24,39,0.04)]">
+          <section className="rounded-2xl bg-card p-2 shadow-[0_4px_32px_-8px_rgba(17,24,39,0.08),0_2px_12px_-4px_rgba(17,24,39,0.04)]">
             <input
               ref={inputRef}
               type="file"
@@ -619,13 +619,13 @@ export function ImageToPdfTool() {
               disabled={busy}
               className={`flex min-h-[220px] w-full flex-col items-center justify-center rounded-2xl px-6 py-14 text-center transition duration-300 ease-out sm:min-h-[260px] ${inputSurface} disabled:cursor-not-allowed disabled:opacity-50`}
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-[0_4px_20px_-4px_rgba(37,99,235,0.25)] ring-1 ring-blue-100/80">
+              <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-card text-blue-600 shadow-[0_4px_20px_-4px_rgba(37,99,235,0.25)] ring-1 ring-blue-100/80">
                 <UploadCloud className="h-7 w-7" strokeWidth={1.25} aria-hidden />
               </span>
-              <span className="mt-6 text-lg font-semibold tracking-tight text-[#111827] sm:text-xl">
+              <span className="mt-6 text-lg font-semibold tracking-tight text-foreground sm:text-xl">
                 Drag JPG or PNG files here, or click to select
               </span>
-              <span className="mt-2 max-w-md text-xs font-normal leading-relaxed text-[#6B7280] sm:text-[13px]">
+              <span className="mt-2 max-w-md text-xs font-normal leading-relaxed text-muted-foreground sm:text-[13px]">
                 Up to {MAX_IMAGES} images · {formatBytes(MAX_FILE_BYTES)} each · order = PDF pages
               </span>
             </button>
@@ -634,10 +634,10 @@ export function ImageToPdfTool() {
           {items.length > 0 ? (
             <section className="space-y-4">
               <div className="flex flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
-                <p className="text-sm font-medium text-[#111827]">
+                <p className="text-sm font-medium text-foreground">
                   {items.length} image{items.length === 1 ? "" : "s"} selected
                 </p>
-                <p className="text-xs font-normal text-[#6B7280]">Drag cards to reorder pages</p>
+                <p className="text-xs font-normal text-muted-foreground">Drag cards to reorder pages</p>
               </div>
               <ul className="flex gap-4 overflow-x-auto pb-3 pt-1 [-ms-overflow-style:none] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5">
                 {items.map((it) => (
@@ -651,20 +651,20 @@ export function ImageToPdfTool() {
                       if (draggingId) reorder(draggingId, it.id);
                       setDraggingId(null);
                     }}
-                    className={`group relative w-[136px] shrink-0 rounded-2xl bg-white p-2.5 shadow-[0_6px_24px_-6px_rgba(17,24,39,0.08),0_2px_8px_-2px_rgba(17,24,39,0.04)] ring-1 ring-gray-100/80 transition duration-300 hover:shadow-[0_10px_32px_-8px_rgba(17,24,39,0.1)] ${
+                    className={`group relative w-[136px] shrink-0 rounded-2xl bg-card p-2.5 shadow-[0_6px_24px_-6px_rgba(17,24,39,0.08),0_2px_8px_-2px_rgba(17,24,39,0.04)] ring-1 ring-border/80 transition duration-300 hover:shadow-[0_10px_32px_-8px_rgba(17,24,39,0.1)] ${
                       draggingId === it.id ? "scale-[0.98] opacity-70 ring-2 ring-blue-500/50" : ""
                     }`}
                   >
                     <div className="flex items-center gap-1 border-b border-gray-100/90 pb-2.5">
                       <span
-                        className="cursor-grab touch-none text-[#6B7280] transition duration-300 group-hover:text-[#111827] active:cursor-grabbing"
+                        className="cursor-grab touch-none text-muted-foreground transition duration-300 group-hover:text-foreground active:cursor-grabbing"
                         aria-hidden
                       >
                         <GripVertical className="h-5 w-5" strokeWidth={1.5} />
                       </span>
                       <span className="sr-only">Drag to reorder {it.file.name}</span>
                     </div>
-                    <div className="relative mt-2.5 aspect-square overflow-hidden rounded-xl bg-[#F9FAFB]">
+                    <div className="relative mt-2.5 aspect-square overflow-hidden rounded-xl bg-muted">
                       {/* eslint-disable-next-line @next/next/no-img-element -- blob preview */}
                       <img
                         src={it.previewUrl}
@@ -676,17 +676,17 @@ export function ImageToPdfTool() {
                         type="button"
                         onClick={() => removeOne(it.id)}
                         disabled={busy}
-                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-xl bg-white/95 text-[#6B7280] opacity-0 shadow-[0_4px_12px_-2px_rgba(17,24,39,0.12)] ring-1 ring-gray-200/60 transition duration-300 hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 disabled:opacity-40"
+                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-xl bg-card/95 text-muted-foreground opacity-0 shadow-[0_4px_12px_-2px_rgba(17,24,39,0.12)] ring-1 ring-border/60 transition duration-300 hover:bg-red-500/10 hover:text-red-600 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 disabled:opacity-40"
                         aria-label={`Remove ${it.file.name}`}
                       >
                         <X className="h-4 w-4" strokeWidth={2} aria-hidden />
                       </button>
                     </div>
-                    <p className="mt-2.5 truncate text-xs font-medium text-[#111827]" title={it.file.name}>
+                    <p className="mt-2.5 truncate text-xs font-medium text-foreground" title={it.file.name}>
                       {it.file.name}
                     </p>
-                    <p className="text-[11px] font-normal leading-relaxed text-[#6B7280]">{formatBytes(it.file.size)}</p>
-                    <p className="text-[11px] font-normal text-[#6B7280]">
+                    <p className="text-[11px] font-normal leading-relaxed text-muted-foreground">{formatBytes(it.file.size)}</p>
+                    <p className="text-[11px] font-normal text-muted-foreground">
                       {it.width}×{it.height}px
                     </p>
                   </li>
@@ -695,7 +695,7 @@ export function ImageToPdfTool() {
             </section>
           ) : null}
 
-          <section className="overflow-hidden rounded-2xl bg-white shadow-[0_4px_32px_-8px_rgba(17,24,39,0.08),0_2px_12px_-4px_rgba(17,24,39,0.04)] ring-1 ring-gray-100/80">
+          <section className="overflow-hidden rounded-2xl bg-card shadow-[0_4px_32px_-8px_rgba(17,24,39,0.08),0_2px_12px_-4px_rgba(17,24,39,0.04)] ring-1 ring-border/80">
             <button
               type="button"
               onClick={() => {
@@ -704,13 +704,13 @@ export function ImageToPdfTool() {
                   return !o;
                 });
               }}
-              className="flex w-full items-center justify-between gap-3 px-6 py-5 text-left transition duration-300 hover:bg-[#F9FAFB]/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600/30"
+              className="flex w-full items-center justify-between gap-3 px-6 py-5 text-left transition duration-300 hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600/30"
               aria-expanded={settingsOpen}
               id={`${formId}-settings-toggle`}
             >
-              <span className="text-[15px] font-medium tracking-tight text-[#111827]">Settings</span>
+              <span className="text-[15px] font-medium tracking-tight text-foreground">Settings</span>
               <ChevronDown
-                className={`h-5 w-5 shrink-0 text-[#6B7280] transition duration-300 ${settingsOpen ? "rotate-180" : ""}`}
+                className={`h-5 w-5 shrink-0 text-muted-foreground transition duration-300 ${settingsOpen ? "rotate-180" : ""}`}
                 strokeWidth={1.75}
                 aria-hidden
               />
@@ -727,7 +727,7 @@ export function ImageToPdfTool() {
                 >
                   <div className="grid gap-8 p-6 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-7">
                     <div className="space-y-2">
-                      <p id={`${formId}-page-lbl`} className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                      <p id={`${formId}-page-lbl`} className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         PDF page size
                       </p>
                       <SelectMenu
@@ -742,7 +742,7 @@ export function ImageToPdfTool() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <p id={`${formId}-margin-lbl`} className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
+                      <p id={`${formId}-margin-lbl`} className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Page margins
                       </p>
                       <SelectMenu
@@ -759,7 +759,7 @@ export function ImageToPdfTool() {
                     {pageSize === "custom" ? (
                       <div className="grid grid-cols-1 gap-4 sm:col-span-2 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <label htmlFor={`${formId}-cw`} className="text-xs font-medium text-[#6B7280]">
+                          <label htmlFor={`${formId}-cw`} className="text-xs font-medium text-muted-foreground">
                             Width (mm)
                           </label>
                           <input
@@ -770,11 +770,11 @@ export function ImageToPdfTool() {
                             value={customW}
                             onChange={(e) => setCustomW(Number(e.target.value))}
                             disabled={busy}
-                            className="h-12 w-full rounded-xl border-0 bg-[#F3F4F6] px-4 text-sm text-[#111827] outline-none transition duration-300 focus:bg-white focus:ring-2 focus:ring-blue-600/35 disabled:opacity-50"
+                            className="h-12 w-full rounded-xl border-0 bg-muted px-4 text-sm text-foreground outline-none transition duration-300 focus:bg-card focus:ring-2 focus:ring-blue-600/35 disabled:opacity-50"
                           />
                         </div>
                         <div className="space-y-2">
-                          <label htmlFor={`${formId}-ch`} className="text-xs font-medium text-[#6B7280]">
+                          <label htmlFor={`${formId}-ch`} className="text-xs font-medium text-muted-foreground">
                             Height (mm)
                           </label>
                           <input
@@ -785,17 +785,17 @@ export function ImageToPdfTool() {
                             value={customH}
                             onChange={(e) => setCustomH(Number(e.target.value))}
                             disabled={busy}
-                            className="h-12 w-full rounded-xl border-0 bg-[#F3F4F6] px-4 text-sm text-[#111827] outline-none transition duration-300 focus:bg-white focus:ring-2 focus:ring-blue-600/35 disabled:opacity-50"
+                            className="h-12 w-full rounded-xl border-0 bg-muted px-4 text-sm text-foreground outline-none transition duration-300 focus:bg-card focus:ring-2 focus:ring-blue-600/35 disabled:opacity-50"
                           />
                         </div>
                       </div>
                     ) : null}
                     <div className="sm:col-span-2">
                       <div className="flex items-baseline justify-between gap-2">
-                        <label htmlFor={`${formId}-quality`} className="text-sm font-medium text-[#111827]">
+                        <label htmlFor={`${formId}-quality`} className="text-sm font-medium text-foreground">
                           PDF image quality
                         </label>
-                        <span className="text-xs font-normal text-[#6B7280]">{qualityLabel}</span>
+                        <span className="text-xs font-normal text-muted-foreground">{qualityLabel}</span>
                       </div>
                       <input
                         id={`${formId}-quality`}
@@ -807,7 +807,7 @@ export function ImageToPdfTool() {
                         disabled={busy}
                         className="quality-slider mt-4 h-3 w-full cursor-pointer appearance-none rounded-full bg-gray-200/90 disabled:opacity-50"
                       />
-                      <div className="mt-2 flex justify-between text-[11px] font-normal text-[#6B7280]">
+                      <div className="mt-2 flex justify-between text-[11px] font-normal text-muted-foreground">
                         <span>Low</span>
                         <span>Medium</span>
                         <span>High</span>
@@ -815,8 +815,8 @@ export function ImageToPdfTool() {
                     </div>
                     <div className="flex items-center justify-between gap-4 sm:col-span-2">
                       <div>
-                        <p className="text-sm font-medium text-[#111827]">Auto-compress before PDF</p>
-                        <p className="mt-0.5 text-xs font-normal leading-relaxed text-[#6B7280]">
+                        <p className="text-sm font-medium text-foreground">Auto-compress before PDF</p>
+                        <p className="mt-0.5 text-xs font-normal leading-relaxed text-muted-foreground">
                           Shrinks heavy photos while keeping layout.
                         </p>
                       </div>
@@ -831,7 +831,7 @@ export function ImageToPdfTool() {
                         }`}
                       >
                         <span
-                          className={`absolute top-1 h-7 w-7 rounded-full bg-white shadow-md ring-1 ring-black/5 transition duration-300 ease-out ${
+                          className={`absolute top-1 h-7 w-7 rounded-full bg-card shadow-md ring-1 ring-black/5 transition duration-300 ease-out ${
                             autoCompress ? "left-6" : "left-1"
                           }`}
                         />
@@ -839,7 +839,7 @@ export function ImageToPdfTool() {
                       </button>
                     </div>
                     <div className="sm:col-span-2">
-                      <label htmlFor={`${formId}-fname`} className="text-sm font-medium text-[#111827]">
+                      <label htmlFor={`${formId}-fname`} className="text-sm font-medium text-foreground">
                         Download filename
                       </label>
                       <input
@@ -849,10 +849,10 @@ export function ImageToPdfTool() {
                         onChange={(e) => setFilename(e.target.value)}
                         disabled={busy}
                         placeholder="document"
-                        className="mt-2 h-12 w-full rounded-xl border-0 bg-[#F3F4F6] px-4 text-sm text-[#111827] outline-none transition duration-300 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-600/35 disabled:opacity-50"
+                        className="mt-2 h-12 w-full rounded-xl border-0 bg-muted px-4 text-sm text-foreground outline-none transition duration-300 placeholder:text-muted-foreground focus:bg-card focus:ring-2 focus:ring-blue-600/35 disabled:opacity-50"
                         autoComplete="off"
                       />
-                      <p className="mt-2 text-xs font-normal leading-relaxed text-[#6B7280]">
+                      <p className="mt-2 text-xs font-normal leading-relaxed text-muted-foreground">
                         “.pdf” is added automatically if omitted.
                       </p>
                     </div>
@@ -864,7 +864,7 @@ export function ImageToPdfTool() {
 
           {notice ? (
             <p
-              className="rounded-2xl bg-[#F9FAFB] px-5 py-4 text-sm font-normal leading-relaxed text-[#374151] shadow-[0_2px_12px_-4px_rgba(17,24,39,0.06)] ring-1 ring-gray-100/90"
+              className="rounded-2xl bg-muted px-5 py-4 text-sm font-normal leading-relaxed text-muted-foreground shadow-[0_2px_12px_-4px_rgba(17,24,39,0.06)] ring-1 ring-border/90"
               role="status"
             >
               {notice}
@@ -880,7 +880,7 @@ export function ImageToPdfTool() {
           ) : null}
           {success ? (
             <p
-              className="rounded-2xl border border-blue-100/90 bg-blue-50/80 px-5 py-4 text-sm font-normal leading-relaxed text-[#111827] shadow-[0_2px_12px_-4px_rgba(37,99,235,0.12)]"
+              className="rounded-2xl border border-blue-100/90 bg-blue-50/80 px-5 py-4 text-sm font-normal leading-relaxed text-foreground shadow-[0_2px_12px_-4px_rgba(37,99,235,0.12)]"
               role="status"
             >
               {success}
@@ -892,7 +892,7 @@ export function ImageToPdfTool() {
               type="button"
               onClick={clearAll}
               disabled={items.length === 0 || busy}
-              className="order-2 inline-flex min-h-[44px] items-center justify-center rounded-xl px-2 text-sm font-medium text-[#6B7280] transition duration-300 hover:bg-red-50/80 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 disabled:opacity-40 sm:order-1"
+              className="order-2 inline-flex min-h-[44px] items-center justify-center rounded-xl px-2 text-sm font-medium text-muted-foreground transition duration-300 hover:bg-red-500/10/80 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 disabled:opacity-40 sm:order-1"
             >
               Clear all
             </button>
@@ -902,7 +902,7 @@ export function ImageToPdfTool() {
                   type="button"
                   onClick={downloadAgain}
                   disabled={busy}
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-medium text-[#111827] shadow-[0_4px_20px_-6px_rgba(17,24,39,0.1)] ring-1 ring-gray-100/90 transition duration-300 hover:bg-[#F9FAFB] hover:shadow-[0_6px_24px_-6px_rgba(17,24,39,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/35 disabled:opacity-50"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl bg-card px-5 text-sm font-medium text-foreground shadow-[0_4px_20px_-6px_rgba(17,24,39,0.1)] ring-1 ring-border/90 transition duration-300 hover:bg-muted hover:shadow-[0_6px_24px_-6px_rgba(17,24,39,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/35 disabled:opacity-50"
                 >
                   <FileImage className="h-4 w-4" strokeWidth={2} aria-hidden />
                   Download again

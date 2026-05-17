@@ -2,10 +2,10 @@
 export const SITE_NAME = "Clawdage";
 
 export const SITE_TAGLINE =
-  "Privacy-first PDF, image, and AI utilities for India — run in your browser with optional daily passes from ₹19.";
+  "India's daily digital utility platform — Aadhaar & exam photos, PDF tools, and browser-first privacy from ₹19.";
 
 /** Default when a page does not override `description`. */
-export const DEFAULT_DESCRIPTION = `${SITE_NAME}: merge & compress PDFs, remove backgrounds, passport photos, Aadhar/PAN resizing, OCR, QR codes, and more. No server uploads for supported tools; passes for Pro features.`;
+export const DEFAULT_DESCRIPTION = `${SITE_NAME}: India's daily digital utility platform. Resize Aadhaar photos, passport photos, compress PDFs for government portals, e-sign, OCR, and more — in your browser. Optional Daily Pass ₹19, no auto-debit.`;
 
 export function buildGlobalKeywords(): string {
   const toolPhrases = [

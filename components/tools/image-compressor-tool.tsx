@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
+import { trackToolUse } from "@/lib/analytics";
 import { DailyPassUpsellModal } from "@/components/tools/daily-pass-upsell-modal";
 
 const MAX_BULK = 20;
@@ -212,6 +213,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
     const base = row.originalName.replace(/\.[^.]+$/i, "");
     const ext = row.outputFile.type.includes("png") ? "png" : "jpg";
     downloadFile(row.outputFile, `${base}-compressed.${ext}`);
+    trackToolUse("image-compressor");
   };
 
   const downloadAll = async () => {
@@ -234,17 +236,17 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
   const firstQueued = queued[0];
 
   return (
-    <div className="min-h-screen bg-white pb-16">
-      <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6">
+    <div className="min-h-screen bg-background pb-16">
+      <div className="border-b border-border bg-muted/50 px-4 py-4 sm:px-6">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3">
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-black"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
           </Link>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             {canBulk ? `Bulk mode: up to ${MAX_BULK} images` : "Free: 1 image at a time"}
           </p>
         </div>
@@ -256,8 +258,8 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const }}
         >
-          <h1 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">Image compressor</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Image compressor</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             Shrink JPG and PNG files in your browser. Nothing is uploaded—ideal for exam portals and
             government forms.
           </p>
@@ -271,11 +273,11 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/75 backdrop-blur-[2px]"
+                className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-card/75 backdrop-blur-[2px]"
               >
-                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 py-4 shadow-md">
-                  <Loader2 className="h-6 w-6 animate-spin text-black" aria-hidden />
-                  <p className="text-sm font-semibold text-black">Compressing in your browser…</p>
+                <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-md">
+                  <Loader2 className="h-6 w-6 animate-spin text-foreground" aria-hidden />
+                  <p className="text-sm font-semibold text-foreground">Compressing in your browser…</p>
                 </div>
               </motion.div>
             ) : null}
@@ -291,7 +293,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
               layout
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border border-slate-100 bg-white p-1 shadow-sm"
+              className="rounded-2xl border border-border bg-card p-1 shadow-sm"
             >
               <input
                 ref={inputRef}
@@ -314,17 +316,17 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                 disabled={phase === "compressing"}
                 className={`flex min-h-[180px] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-10 text-center transition sm:min-h-[220px] ${
                   dragOver
-                    ? "border-black bg-slate-50"
-                    : "border-slate-200 bg-slate-50/40 hover:border-slate-300 hover:bg-slate-50"
+                    ? "border-primary bg-muted"
+                    : "border-border bg-muted/40 hover:border-border hover:bg-muted"
                 } disabled:cursor-not-allowed disabled:opacity-50`}
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-100 bg-white text-black">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-foreground">
                   <ImagePlus className="h-6 w-6" aria-hidden />
                 </span>
-                <span className="mt-4 text-sm font-semibold text-black">
+                <span className="mt-4 text-sm font-semibold text-foreground">
                   Drop JPG or PNG here, or tap to browse
                 </span>
-                <span className="mt-1 text-xs text-slate-500">
+                <span className="mt-1 text-xs text-muted-foreground">
                   {canBulk ? `Up to ${MAX_BULK} files per batch` : "One file on the free plan"}
                 </span>
               </button>
@@ -343,7 +345,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                     layout
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 shadow-sm"
+                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element -- blob preview */}
                     <img
@@ -352,14 +354,14 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                       className="h-14 w-14 shrink-0 rounded-lg object-cover"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-black">{q.file.name}</p>
-                      <p className="text-xs text-slate-500">{formatBytes(q.file.size)}</p>
+                      <p className="truncate text-sm font-medium text-foreground">{q.file.name}</p>
+                      <p className="text-xs text-muted-foreground">{formatBytes(q.file.size)}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => removeOne(q.id)}
                       disabled={phase === "compressing"}
-                      className="shrink-0 rounded-lg border border-slate-100 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-black disabled:opacity-40"
+                      className="shrink-0 rounded-lg border border-border p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-40"
                       aria-label={`Remove ${q.file.name}`}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -377,14 +379,14 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
           </motion.div>
 
           <motion.aside
-            className="space-y-5 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-2"
+            className="space-y-5 rounded-2xl border border-border bg-card p-5 shadow-sm lg:col-span-2"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const }}
           >
-            <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Settings</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">Settings</h2>
             <div>
-              <label htmlFor={`${formId}-quality`} className="text-sm font-medium text-black">
+              <label htmlFor={`${formId}-quality`} className="text-sm font-medium text-foreground">
                 Compression quality ({quality}%)
               </label>
               <input
@@ -395,11 +397,11 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                 value={quality}
                 onChange={(e) => setQuality(Number(e.target.value))}
                 disabled={phase === "compressing"}
-                className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-black disabled:opacity-50"
+                className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-foreground disabled:opacity-50"
               />
             </div>
             <div>
-              <label htmlFor={`${formId}-target`} className="text-sm font-medium text-black">
+              <label htmlFor={`${formId}-target`} className="text-sm font-medium text-foreground">
                 Target file size (KB)
               </label>
               <input
@@ -410,9 +412,9 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                 value={targetKb}
                 onChange={(e) => setTargetKb(e.target.value)}
                 disabled={phase === "compressing"}
-                className="mt-2 w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2.5 text-sm text-black outline-none ring-black/5 placeholder:text-slate-400 focus:border-slate-200 focus:ring-2 disabled:opacity-50"
+                className="mt-2 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-sm text-foreground outline-none ring-black/5 placeholder:text-muted-foreground focus:border-border focus:ring-2 disabled:opacity-50"
               />
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Leave empty to optimize with quality only. Target size is a best-effort cap.
               </p>
             </div>
@@ -422,7 +424,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                 type="button"
                 onClick={() => void compressNow()}
                 disabled={queued.length === 0 || phase === "compressing"}
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {phase === "compressing" ? (
                   <>
@@ -440,7 +442,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                 type="button"
                 onClick={clearAll}
                 disabled={(queued.length === 0 && !results) || phase === "compressing"}
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Trash2 className="h-4 w-4" aria-hidden />
                 Clear all
@@ -457,19 +459,19 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              className="mt-10 rounded-2xl border border-slate-100 bg-slate-50/60 p-5 sm:p-8"
+              className="mt-10 rounded-2xl border border-border bg-muted/60 p-5 sm:p-8"
             >
-              <h2 className="text-lg font-bold text-black sm:text-xl">Results</h2>
+              <h2 className="text-lg font-bold text-foreground sm:text-xl">Results</h2>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-xl border border-slate-100 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Original total</p>
-                  <p className="mt-1 text-2xl font-bold text-black">{formatBytes(totalOriginal)}</p>
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Original total</p>
+                  <p className="mt-1 text-2xl font-bold text-foreground">{formatBytes(totalOriginal)}</p>
                 </div>
-                <div className="rounded-xl border border-slate-100 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Compressed total
                   </p>
-                  <p className="mt-1 text-2xl font-bold text-black">{formatBytes(totalCompressed)}</p>
+                  <p className="mt-1 text-2xl font-bold text-foreground">{formatBytes(totalCompressed)}</p>
                 </div>
               </div>
               <p className="mt-4 text-sm font-medium text-emerald-800">
@@ -479,8 +481,8 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
               {results.length === 1 && results[0] && firstQueued ? (
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Original</p>
-                    <div className="mt-2 overflow-hidden rounded-xl border border-slate-100 bg-white">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Original</p>
+                    <div className="mt-2 overflow-hidden rounded-xl border border-border bg-card">
                       {/* eslint-disable-next-line @next/next/no-img-element -- blob preview */}
                       <img
                         src={firstQueued.previewUrl}
@@ -490,8 +492,8 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Compressed</p>
-                    <div className="mt-2 overflow-hidden rounded-xl border border-slate-100 bg-white">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Compressed</p>
+                    <div className="mt-2 overflow-hidden rounded-xl border border-border bg-card">
                       {/* eslint-disable-next-line @next/next/no-img-element -- blob preview */}
                       <img
                         src={results[0].compressedPreviewUrl}
@@ -511,7 +513,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                       const r = results[0];
                       if (r) downloadOne(r);
                     }}
-                    className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 sm:max-w-sm"
+                    className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 sm:max-w-sm"
                   >
                     <Download className="h-4 w-4" aria-hidden />
                     Download compressed image
@@ -520,7 +522,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                   <button
                     type="button"
                     onClick={() => void downloadAll()}
-                    className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 sm:w-auto sm:flex-1"
+                    className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 sm:w-auto sm:flex-1"
                   >
                     <Download className="h-4 w-4" aria-hidden />
                     Download all ({results.length})
@@ -528,7 +530,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                 )}
               </div>
 
-              <ul className="mt-8 space-y-3 border-t border-slate-100 pt-6">
+              <ul className="mt-8 space-y-3 border-t border-border pt-6">
                 {results.map((row) => {
                   const rowPct =
                     row.originalBytes > 0
@@ -537,11 +539,11 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                   return (
                     <li
                       key={row.id}
-                      className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+                      className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-black">{row.originalName}</p>
-                        <p className="mt-1 text-xs text-slate-600">
+                        <p className="truncate text-sm font-medium text-foreground">{row.originalName}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {formatBytes(row.originalBytes)} → {formatBytes(row.compressedBytes)}
                           <span className="text-emerald-700"> ({rowPct}% saved)</span>
                         </p>
@@ -550,7 +552,7 @@ export function ImageCompressorTool({ canBulk }: ImageCompressorToolProps) {
                         <button
                           type="button"
                           onClick={() => downloadOne(row)}
-                          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-black transition hover:bg-slate-50 sm:text-sm"
+                          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted sm:text-sm"
                         >
                           <Download className="h-4 w-4" aria-hidden />
                           Download

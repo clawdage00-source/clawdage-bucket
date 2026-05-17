@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
+import { trackToolUse } from "@/lib/analytics";
 import { decodeFileToCanvas } from "@/lib/format-converter/decode";
 import {
   defaultFilenameStem,
@@ -247,6 +248,7 @@ export function FormatConverterTool() {
     const ext = extensionForFormat(outputFormat);
     const stem = filenameStem.trim() || "converted";
     downloadBlob(outputBlob, `${stem}.${ext}`);
+    trackToolUse("format-converter", { format: outputFormat });
     setToast("Download started.");
     window.setTimeout(() => setToast(null), 3000);
   };
@@ -275,17 +277,17 @@ export function FormatConverterTool() {
   const easeSnappy = [0.4, 0, 0.2, 1] as const;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-24 font-sans antialiased text-[#0F172A]">
-      <div className="bg-white/90 px-4 py-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-sm sm:px-8">
+    <div className="min-h-screen bg-background pb-24 font-sans antialiased text-foreground">
+      <div className="bg-card/90 px-4 py-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-sm sm:px-8">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[#0F172A]/55 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[#0F172A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-2 text-sm font-medium text-foreground/55 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
           </Link>
-          <span className="rounded-full bg-[#F1F5F9] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#0F172A]/55 shadow-[0_1px_2px_rgb(0,0,0,0.04)]">
+          <span className="rounded-full bg-muted px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-foreground/55 shadow-[0_1px_2px_rgb(0,0,0,0.04)]">
             Image
           </span>
         </div>
@@ -297,10 +299,10 @@ export function FormatConverterTool() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: easeSnappy }}
         >
-          <h1 className="text-[2rem] font-bold tracking-tight text-[#0F172A] sm:text-[2.25rem] sm:leading-tight">
+          <h1 className="text-[2rem] font-bold tracking-tight text-foreground sm:text-[2.25rem] sm:leading-tight">
             Format converter
           </h1>
-          <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#0F172A]/70">
+          <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-foreground/70">
             Switch between PNG, JPG, WebP, and more. Decoding runs in your browser; large images are scaled to a
             maximum edge of 8192px for stability.
           </p>
@@ -308,7 +310,7 @@ export function FormatConverterTool() {
 
         <div className="relative mt-12 grid gap-10 lg:grid-cols-2 lg:gap-14">
           <section className="space-y-8">
-            <div className="rounded-3xl bg-white p-2 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="rounded-3xl bg-card p-2 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <input
                 ref={inputRef}
                 type="file"
@@ -329,45 +331,45 @@ export function FormatConverterTool() {
                 disabled={decodeBusy}
                 className={`flex min-h-[220px] w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed px-5 py-14 text-center transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform ${
                   dragOver
-                    ? "scale-[1.02] border-[#93C5FD] bg-[#DBEAFE] shadow-[0_12px_40px_-12px_rgba(37,99,235,0.25)]"
-                    : "border-[#CBD5E1]/90 bg-[#EFF6FF]/80 hover:border-[#94A3B8] hover:bg-[#EFF6FF]"
+                    ? "scale-[1.02] border-primary/50 bg-primary/10 shadow-[0_12px_40px_-12px_rgba(37,99,235,0.25)]"
+                    : "border-border/90 bg-primary/10/80 hover:border-border hover:bg-primary/10"
                 } disabled:pointer-events-none disabled:opacity-55 active:scale-[0.99]`}
               >
                 {decodeBusy ? (
                   <Loader2 className="h-10 w-10 animate-spin text-[#2563EB]" aria-hidden />
                 ) : (
-                  <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[#0F172A]/70 shadow-[0_4px_20px_rgb(0,0,0,0.06)] ring-1 ring-[#0F172A]/[0.06]">
+                  <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-card text-foreground/70 shadow-[0_4px_20px_rgb(0,0,0,0.06)] ring-1 ring-[#0F172A]/[0.06]">
                     <RefreshCw className="h-8 w-8" strokeWidth={1.15} aria-hidden />
                   </span>
                 )}
-                <span className="mt-5 text-base font-semibold text-[#0F172A]">
+                <span className="mt-5 text-base font-semibold text-foreground">
                   {file ? file.name : "Drag image file here, or click to select"}
                 </span>
-                <span className="mt-1.5 text-[13px] text-[#0F172A]/50">One file · up to {formatBytes(MAX_BYTES)}</span>
+                <span className="mt-1.5 text-[13px] text-foreground/50">One file · up to {formatBytes(MAX_BYTES)}</span>
               </button>
             </div>
 
             {file && fileUrl ? (
-              <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-7">
+              <div className="rounded-3xl bg-card p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-7">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-[15px] font-semibold text-[#0F172A]">Original</h2>
-                    <p className="mt-1 text-[12px] text-[#0F172A]/55">
+                    <h2 className="text-[15px] font-semibold text-foreground">Original</h2>
+                    <p className="mt-1 text-[12px] text-foreground/55">
                       {sourceKind} · {formatBytes(file.size)}
                       {sourceDims ? ` · ${sourceDims.w}×${sourceDims.h}px` : ""}
                     </p>
-                    <p className="mt-1 text-[11px] text-[#0F172A]/40">Color: 8 bpc RGBA (decoded) · assumed sRGB</p>
+                    <p className="mt-1 text-[11px] text-foreground/40">Color: 8 bpc RGBA (decoded) · assumed sRGB</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => clearFile()}
-                    className="inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-xl bg-[#F1F5F9] px-3.5 text-[13px] font-medium text-[#0F172A]/80 shadow-[0_1px_2px_rgb(0,0,0,0.04)] transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#E2E8F0] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 active:scale-95"
+                    className="inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-xl bg-muted px-3.5 text-[13px] font-medium text-foreground/80 shadow-[0_1px_2px_rgb(0,0,0,0.04)] transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 active:scale-95"
                   >
                     <Trash2 className="h-4 w-4" aria-hidden />
                     Remove
                   </button>
                 </div>
-                <div className="relative mt-5 max-h-[360px] overflow-hidden rounded-2xl bg-[#F8FAFC] shadow-inner ring-1 ring-[#0F172A]/[0.04]">
+                <div className="relative mt-5 max-h-[360px] overflow-hidden rounded-2xl bg-background shadow-inner ring-1 ring-[#0F172A]/[0.04]">
                   {/* eslint-disable-next-line @next/next/no-img-element -- blob preview */}
                   <img
                     src={fileUrl}
@@ -380,16 +382,16 @@ export function FormatConverterTool() {
           </section>
 
           <section className="space-y-8">
-            <div className="overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="overflow-hidden rounded-3xl bg-card shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <button
                 type="button"
                 onClick={() => setSettingsOpen((o) => !o)}
-                className="flex w-full items-center justify-between gap-3 px-6 py-5 text-left transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#F8FAFC] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2563EB]"
+                className="flex w-full items-center justify-between gap-3 px-6 py-5 text-left transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2563EB]"
                 aria-expanded={settingsOpen}
               >
-                <span className="text-[15px] font-semibold text-[#0F172A]">Convert to</span>
+                <span className="text-[15px] font-semibold text-foreground">Convert to</span>
                 <ChevronDown
-                  className={`h-5 w-5 text-[#0F172A]/45 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${settingsOpen ? "rotate-180" : ""}`}
+                  className={`h-5 w-5 text-foreground/45 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${settingsOpen ? "rotate-180" : ""}`}
                   aria-hidden
                 />
               </button>
@@ -402,7 +404,7 @@ export function FormatConverterTool() {
                     transition={{ duration: 0.32, ease: easeSnappy }}
                     className="border-t border-[#0F172A]/[0.06] px-6 pb-6 pt-3"
                   >
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#0F172A]/45">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground/45">
                       Output format
                     </p>
                     <div
@@ -420,7 +422,7 @@ export function FormatConverterTool() {
                           className={`min-h-[42px] rounded-full border px-4 py-2 text-[13px] font-semibold transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 active:scale-95 ${
                             outputFormat === f.id
                               ? "border-[#2563EB] bg-[#2563EB] text-white shadow-[0_6px_20px_-6px_rgba(37,99,235,0.45)]"
-                              : "border-[#E2E8F0] bg-[#F8FAFC] text-[#0F172A]/75 hover:border-[#CBD5E1] hover:bg-[#F1F5F9]"
+                              : "border-[#E2E8F0] bg-background text-foreground/75 hover:border-border hover:bg-muted"
                           }`}
                         >
                           {f.label}
@@ -428,8 +430,8 @@ export function FormatConverterTool() {
                       ))}
                     </div>
                     {selectedMeta ? (
-                      <p className="mt-4 text-[13px] leading-relaxed text-[#0F172A]/65">
-                        <span className="font-semibold text-[#0F172A]">{selectedMeta.label}</span> — {selectedMeta.hint}
+                      <p className="mt-4 text-[13px] leading-relaxed text-foreground/65">
+                        <span className="font-semibold text-foreground">{selectedMeta.label}</span> — {selectedMeta.hint}
                       </p>
                     ) : null}
 
@@ -437,8 +439,8 @@ export function FormatConverterTool() {
                       {showAlphaControls ? (
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <p className="text-[13px] font-semibold text-[#0F172A]">Preserve transparency</p>
-                            <p className="mt-0.5 text-[12px] text-[#0F172A]/55">
+                            <p className="text-[13px] font-semibold text-foreground">Preserve transparency</p>
+                            <p className="mt-0.5 text-[12px] text-foreground/55">
                               Off flattens onto white for formats that allow it.
                             </p>
                           </div>
@@ -448,11 +450,11 @@ export function FormatConverterTool() {
                             aria-checked={preserveTransparency}
                             onClick={() => setPreserveTransparency((v) => !v)}
                             className={`relative h-9 w-14 shrink-0 rounded-full shadow-inner transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 ${
-                              preserveTransparency ? "bg-[#2563EB]" : "bg-[#E2E8F0]"
+                              preserveTransparency ? "bg-[#2563EB]" : "bg-muted"
                             }`}
                           >
                             <span
-                              className={`absolute top-1 h-7 w-7 rounded-full bg-white shadow-md ring-1 ring-[#0F172A]/5 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                              className={`absolute top-1 h-7 w-7 rounded-full bg-card shadow-md ring-1 ring-[#0F172A]/5 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                                 preserveTransparency ? "left-6" : "left-1"
                               }`}
                             />
@@ -463,7 +465,7 @@ export function FormatConverterTool() {
 
                       {showJpegControls ? (
                         <div>
-                          <div className="flex justify-between text-[13px] font-semibold text-[#0F172A]">
+                          <div className="flex justify-between text-[13px] font-semibold text-foreground">
                             <label htmlFor={`${formId}-jq`}>
                               {outputFormat === "avif" ? "AVIF quality" : "JPEG quality"}
                             </label>
@@ -482,27 +484,27 @@ export function FormatConverterTool() {
                               if (outputFormat === "avif") setAvifQuality(v);
                               else setJpegQuality(v);
                             }}
-                            className="format-converter-range mt-3 h-3 w-full cursor-pointer appearance-none rounded-full bg-[#E2E8F0]"
+                            className="format-converter-range mt-3 h-3 w-full cursor-pointer appearance-none rounded-full bg-muted"
                           />
-                          <p className="mt-2 text-[11px] text-[#0F172A]/45">Low · balanced · high fidelity</p>
+                          <p className="mt-2 text-[11px] text-foreground/45">Low · balanced · high fidelity</p>
                         </div>
                       ) : null}
 
                       {showWebpControls ? (
                         <div className="space-y-5">
                           <div className="flex items-center justify-between gap-3">
-                            <span className="text-[13px] font-semibold text-[#0F172A]">Lossless WebP</span>
+                            <span className="text-[13px] font-semibold text-foreground">Lossless WebP</span>
                             <button
                               type="button"
                               role="switch"
                               aria-checked={webpLossless}
                               onClick={() => setWebpLossless((v) => !v)}
                               className={`relative h-9 w-14 shrink-0 rounded-full shadow-inner transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 ${
-                                webpLossless ? "bg-[#2563EB]" : "bg-[#E2E8F0]"
+                                webpLossless ? "bg-[#2563EB]" : "bg-muted"
                               }`}
                             >
                               <span
-                                className={`absolute top-1 h-7 w-7 rounded-full bg-white shadow-md ring-1 ring-[#0F172A]/5 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                                className={`absolute top-1 h-7 w-7 rounded-full bg-card shadow-md ring-1 ring-[#0F172A]/5 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                                   webpLossless ? "left-6" : "left-1"
                                 }`}
                               />
@@ -511,7 +513,7 @@ export function FormatConverterTool() {
                           </div>
                           {!webpLossless ? (
                             <div>
-                              <div className="flex justify-between text-[13px] font-semibold text-[#0F172A]">
+                              <div className="flex justify-between text-[13px] font-semibold text-foreground">
                                 <label htmlFor={`${formId}-wq`}>WebP quality</label>
                                 <span className="font-medium text-[#2563EB]">{webpQuality}</span>
                               </div>
@@ -522,7 +524,7 @@ export function FormatConverterTool() {
                                 max={100}
                                 value={webpQuality}
                                 onChange={(e) => setWebpQuality(Number(e.target.value))}
-                                className="format-converter-range mt-3 h-3 w-full cursor-pointer appearance-none rounded-full bg-[#E2E8F0]"
+                                className="format-converter-range mt-3 h-3 w-full cursor-pointer appearance-none rounded-full bg-muted"
                               />
                             </div>
                           ) : null}
@@ -532,7 +534,7 @@ export function FormatConverterTool() {
                       {showGifControls ? (
                         <div className="space-y-5">
                           <div>
-                            <div className="flex justify-between text-[13px] font-semibold text-[#0F172A]">
+                            <div className="flex justify-between text-[13px] font-semibold text-foreground">
                               <label htmlFor={`${formId}-gc`}>GIF palette colors</label>
                               <span className="font-medium text-[#2563EB]">{gifColors}</span>
                             </div>
@@ -543,11 +545,11 @@ export function FormatConverterTool() {
                               max={256}
                               value={gifColors}
                               onChange={(e) => setGifColors(Number(e.target.value))}
-                              className="format-converter-range mt-3 h-3 w-full cursor-pointer appearance-none rounded-full bg-[#E2E8F0]"
+                              className="format-converter-range mt-3 h-3 w-full cursor-pointer appearance-none rounded-full bg-muted"
                             />
                           </div>
                           <div>
-                            <label htmlFor={`${formId}-gd`} className="text-[13px] font-semibold text-[#0F172A]">
+                            <label htmlFor={`${formId}-gd`} className="text-[13px] font-semibold text-foreground">
                               Frame delay (ms)
                             </label>
                             <input
@@ -557,22 +559,22 @@ export function FormatConverterTool() {
                               step={10}
                               value={gifDelayMs}
                               onChange={(e) => setGifDelayMs(Number(e.target.value))}
-                              className="mt-2.5 h-12 w-full rounded-2xl border-0 bg-[#F1F5F9] px-4 text-sm text-[#0F172A] shadow-[inset_0_1px_2px_rgb(0,0,0,0.04)] outline-none ring-0 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus:bg-white focus:ring-2 focus:ring-[#2563EB]/35"
+                              className="mt-2.5 h-12 w-full rounded-2xl border-0 bg-muted px-4 text-sm text-foreground shadow-[inset_0_1px_2px_rgb(0,0,0,0.04)] outline-none ring-0 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus:bg-card focus:ring-2 focus:ring-[#2563EB]/35"
                             />
                           </div>
                           <div className="flex items-center justify-between gap-3">
-                            <span className="text-[13px] font-semibold text-[#0F172A]">GIF transparency</span>
+                            <span className="text-[13px] font-semibold text-foreground">GIF transparency</span>
                             <button
                               type="button"
                               role="switch"
                               aria-checked={gifTransparency}
                               onClick={() => setGifTransparency((v) => !v)}
                               className={`relative h-9 w-14 shrink-0 rounded-full shadow-inner transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 ${
-                                gifTransparency ? "bg-[#2563EB]" : "bg-[#E2E8F0]"
+                                gifTransparency ? "bg-[#2563EB]" : "bg-muted"
                               }`}
                             >
                               <span
-                                className={`absolute top-1 h-7 w-7 rounded-full bg-white shadow-md ring-1 ring-[#0F172A]/5 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                                className={`absolute top-1 h-7 w-7 rounded-full bg-card shadow-md ring-1 ring-[#0F172A]/5 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                                   gifTransparency ? "left-6" : "left-1"
                                 }`}
                               />
@@ -583,7 +585,7 @@ export function FormatConverterTool() {
                       ) : null}
 
                       <div>
-                        <label htmlFor={`${formId}-fn`} className="text-[13px] font-semibold text-[#0F172A]">
+                        <label htmlFor={`${formId}-fn`} className="text-[13px] font-semibold text-foreground">
                           Download filename (without extension)
                         </label>
                         <input
@@ -591,7 +593,7 @@ export function FormatConverterTool() {
                           type="text"
                           value={filenameStem}
                           onChange={(e) => setFilenameStem(e.target.value)}
-                          className="mt-2.5 h-12 w-full rounded-2xl border-0 bg-[#F1F5F9] px-4 text-sm text-[#0F172A] shadow-[inset_0_1px_2px_rgb(0,0,0,0.04)] outline-none transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus:bg-white focus:ring-2 focus:ring-[#2563EB]/35"
+                          className="mt-2.5 h-12 w-full rounded-2xl border-0 bg-muted px-4 text-sm text-foreground shadow-[inset_0_1px_2px_rgb(0,0,0,0.04)] outline-none transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus:bg-card focus:ring-2 focus:ring-[#2563EB]/35"
                           autoComplete="off"
                         />
                       </div>
@@ -600,17 +602,17 @@ export function FormatConverterTool() {
                     <button
                       type="button"
                       onClick={() => setAdvancedOpen((o) => !o)}
-                      className="mt-6 flex w-full items-center justify-between rounded-2xl bg-[#F8FAFC] px-4 py-3 text-left text-[13px] font-semibold text-[#0F172A]/80 shadow-[0_1px_2px_rgb(0,0,0,0.04)] transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-[#F1F5F9] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
+                      className="mt-6 flex w-full items-center justify-between rounded-2xl bg-background px-4 py-3 text-left text-[13px] font-semibold text-foreground/80 shadow-[0_1px_2px_rgb(0,0,0,0.04)] transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
                       aria-expanded={advancedOpen}
                     >
                       Format notes
                       <ChevronDown
-                        className={`h-4 w-4 text-[#0F172A]/45 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${advancedOpen ? "rotate-180" : ""}`}
+                        className={`h-4 w-4 text-foreground/45 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${advancedOpen ? "rotate-180" : ""}`}
                         aria-hidden
                       />
                     </button>
                     {advancedOpen ? (
-                      <ul className="mt-3 space-y-2.5 text-[12px] leading-relaxed text-[#0F172A]/60">
+                      <ul className="mt-3 space-y-2.5 text-[12px] leading-relaxed text-foreground/60">
                         <li>HEIC uses in-browser decode; export targets below (not HEIC).</li>
                         <li>TIFF export is uncompressed RGBA via UTIF (good for archival, large files).</li>
                         <li>SVG export embeds a raster PNG inside a minimal SVG wrapper.</li>
@@ -624,11 +626,11 @@ export function FormatConverterTool() {
             </div>
 
             {file ? (
-              <div className="rounded-3xl bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-7">
+              <div className="rounded-3xl bg-card p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-7">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-[15px] font-semibold text-[#0F172A]">Output preview</h2>
-                    <p className="mt-1 text-[12px] text-[#0F172A]/55">
+                    <h2 className="text-[15px] font-semibold text-foreground">Output preview</h2>
+                    <p className="mt-1 text-[12px] text-foreground/55">
                       {outputFormat.toUpperCase()}
                       {sourceDims ? ` · ${sourceDims.w}×${sourceDims.h}px` : ""}
                       {outputBytes != null ? ` · ${formatBytes(outputBytes)}` : ""}
@@ -649,13 +651,13 @@ export function FormatConverterTool() {
                     </p>
                   </div>
                   {previewBusy ? (
-                    <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#0F172A]/50">
+                    <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-foreground/50">
                       <Loader2 className="h-4 w-4 animate-spin text-[#2563EB]" aria-hidden />
                       Updating…
                     </span>
                   ) : null}
                 </div>
-                <div className="relative mt-5 flex min-h-[200px] max-h-[360px] items-center justify-center overflow-hidden rounded-2xl bg-[#F8FAFC] shadow-inner ring-1 ring-[#0F172A]/[0.04]">
+                <div className="relative mt-5 flex min-h-[200px] max-h-[360px] items-center justify-center overflow-hidden rounded-2xl bg-background shadow-inner ring-1 ring-[#0F172A]/[0.04]">
                   {outputUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element -- blob preview
                     <img
@@ -664,7 +666,7 @@ export function FormatConverterTool() {
                       className="max-h-[360px] w-full object-contain"
                     />
                   ) : (
-                    <p className="px-4 text-center text-[13px] text-[#0F172A]/50">
+                    <p className="px-4 text-center text-[13px] text-foreground/50">
                       {previewBusy ? "Generating preview…" : "Adjust settings to update the preview."}
                     </p>
                   )}
@@ -686,7 +688,7 @@ export function FormatConverterTool() {
                 type="button"
                 onClick={() => void handleCopy()}
                 disabled={!outputBlob || previewBusy}
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-2xl border border-[#E2E8F0] bg-transparent px-5 text-sm font-semibold text-[#0F172A]/85 shadow-[0_1px_2px_rgb(0,0,0,0.04)] transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-[#CBD5E1] hover:bg-[#F8FAFC] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-2xl border border-[#E2E8F0] bg-transparent px-5 text-sm font-semibold text-foreground/85 shadow-[0_1px_2px_rgb(0,0,0,0.04)] transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-border hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <ClipboardCopy className="h-4 w-4" aria-hidden />
                 Copy
@@ -700,7 +702,7 @@ export function FormatConverterTool() {
                   clearFile();
                   inputRef.current?.click();
                 }}
-                className="w-full text-center text-[13px] font-semibold text-[#0F172A]/55 underline-offset-4 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[#2563EB] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
+                className="w-full text-center text-[13px] font-semibold text-foreground/55 underline-offset-4 transition duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[#2563EB] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
               >
                 Upload another file
               </button>
@@ -725,18 +727,18 @@ export function FormatConverterTool() {
           </section>
         </div>
 
-        <section className="mx-auto mt-14 max-w-3xl rounded-3xl bg-[#F1F5F9]/60 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.03)] ring-1 ring-[#0F172A]/[0.05] sm:p-8">
-          <div className="flex items-center gap-2.5 text-[#0F172A]">
-            <RasterImageIcon className="h-5 w-5 text-[#0F172A]/40" strokeWidth={1.5} aria-hidden />
+        <section className="mx-auto mt-14 max-w-3xl rounded-3xl bg-muted/60 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.03)] ring-1 ring-[#0F172A]/[0.05] sm:p-8">
+          <div className="flex items-center gap-2.5 text-foreground">
+            <RasterImageIcon className="h-5 w-5 text-foreground/40" strokeWidth={1.5} aria-hidden />
             <h3 className="text-sm font-semibold tracking-tight">Supported inputs</h3>
           </div>
-          <p className="mt-3 text-[13px] leading-relaxed text-[#0F172A]/60">
+          <p className="mt-3 text-[13px] leading-relaxed text-foreground/60">
             PNG, JPEG, WebP, GIF, AVIF (where the browser can decode), BMP, SVG, TIFF, and HEIC/HEIF (via in-browser
             decode). MIME detection plus extension fallback.
           </p>
-          <p className="mt-3 text-[12px] leading-relaxed text-[#0F172A]/50">
+          <p className="mt-3 text-[12px] leading-relaxed text-foreground/50">
             Output MIME:{" "}
-            <code className="rounded-lg bg-white/80 px-2 py-1 font-mono text-[11px] text-[#0F172A]/80 shadow-[inset_0_1px_0_rgb(255,255,255,0.8)] ring-1 ring-[#0F172A]/[0.06]">
+            <code className="rounded-lg bg-card/80 px-2 py-1 font-mono text-[11px] text-foreground/80 shadow-[inset_0_1px_0_rgb(255,255,255,0.8)] ring-1 ring-[#0F172A]/[0.06]">
               {getOutputMime(outputFormat)}
             </code>
           </p>

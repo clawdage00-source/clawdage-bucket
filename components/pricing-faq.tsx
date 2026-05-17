@@ -31,9 +31,11 @@ export function PricingFaq() {
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45 }}
     >
-      <h2 className="text-xl font-bold tracking-tight text-black sm:text-2xl">Frequently Asked Questions</h2>
-      <p className="mt-1 text-sm text-slate-600">Straight answers about passes and billing.</p>
-      <div className="mt-8 divide-y divide-slate-100 rounded-2xl border border-slate-100 bg-white">
+      <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+        Frequently Asked Questions
+      </h2>
+      <p className="mt-1 text-sm text-muted-foreground">Straight answers about passes and billing.</p>
+      <div className="mt-8 divide-y divide-border rounded-2xl border border-border bg-card">
         {FAQ_ITEMS.map((item, index) => {
           const open = openIndex === index;
           const panelId = `${baseId}-panel-${index}`;
@@ -47,11 +49,11 @@ export function PricingFaq() {
                   aria-expanded={open}
                   aria-controls={panelId}
                   onClick={() => setOpenIndex(open ? null : index)}
-                  className="flex w-full min-h-[52px] items-center justify-between gap-3 py-4 text-left text-sm font-semibold text-black sm:text-base"
+                  className="flex w-full min-h-[52px] items-center justify-between gap-3 py-4 text-left text-sm font-semibold text-foreground sm:text-base"
                 >
                   {item.q}
                   <ChevronDown
-                    className={`h-5 w-5 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+                    className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
                     aria-hidden
                   />
                 </button>
@@ -68,7 +70,7 @@ export function PricingFaq() {
                     transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] as const }}
                     className="overflow-hidden"
                   >
-                    <p className="pb-4 text-sm leading-relaxed text-slate-600">{item.a}</p>
+                    <p className="pb-4 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
                   </motion.div>
                 ) : null}
               </AnimatePresence>

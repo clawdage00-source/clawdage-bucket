@@ -1,14 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import { Inter, Geist } from "next/font/google";
 
-import { OrganizationJsonLd } from "@/components/JsonLd";
+import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+import { ThirdPartyAnalytics } from "@/components/ThirdPartyAnalytics";
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { buildGlobalKeywords, DEFAULT_DESCRIPTION, SITE_NAME } from "@/lib/seo/brand";
 import { PRODUCTION_CANONICAL_ORIGIN } from "@/lib/seo/site-defaults";
 import { getSessionUser } from "@/lib/supabase/get-session-user";
 import { getSiteOrigin } from "@/lib/supabase/site-url";
 import type { HeaderUser } from "@/types/session";
-import { Analytics } from "@vercel/analytics/next"
+import { AnalyticsRoot } from "@/components/analytics-root";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -129,17 +135,26 @@ export default async function RootLayout({
   const sessionUser = await getSessionUser();
   const headerUser = sessionUser ? toHeaderUser(sessionUser) : null;
   const siteUrl = await getSiteOrigin();
+  const requestHeaders = await headers();
+  const isAdminRoute = requestHeaders.get("x-admin-route") === "1";
 
   return (
     <html lang="en" className={cn("h-full", "font-sans", geist.variable)} suppressHydrationWarning>
       <body
-        className={`flex min-h-screen flex-col antialiased ${inter.className}`}
+        className={`flex min-h-screen flex-col bg-background text-foreground antialiased ${inter.className}`}
         suppressHydrationWarning
       >
-        <OrganizationJsonLd siteUrl={siteUrl} />
-        <Header user={headerUser} />
-        <Analytics />
-        <main className="flex-1 pt-14">{children}</main>
+        <ThemeProvider>
+          <OrganizationJsonLd siteUrl={siteUrl} />
+          <WebSiteJsonLd siteUrl={siteUrl} />
+          <ThirdPartyAnalytics />
+          {!isAdminRoute ? <Header user={headerUser} /> : null}
+          <Analytics />
+          {!isAdminRoute ? <AnalyticsRoot /> : null}
+          {!isAdminRoute ? <PwaInstallPrompt /> : null}
+          <main className={isAdminRoute ? "flex-1" : "flex-1 pt-14"}>{children}</main>
+          {!isAdminRoute ? <Footer /> : null}
+        </ThemeProvider>
       </body>
     </html>
   );

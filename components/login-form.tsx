@@ -42,11 +42,11 @@ export function LoginForm({ initialUrlError }: LoginFormProps) {
   const [email, setEmail] = useState("");
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white px-6 py-12">
-      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white px-6 py-8 shadow-sm">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background px-6 py-12">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card px-6 py-8 text-card-foreground shadow-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-black">Welcome back</h1>
-          <p className="mt-2 text-sm text-slate-600">Login to access pro tools</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Welcome back</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Login to access pro tools</p>
         </div>
 
         {initialUrlError ? (
@@ -69,7 +69,7 @@ export function LoginForm({ initialUrlError }: LoginFormProps) {
 
         {magicState?.ok === true ? (
           <p
-            className="mb-6 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm text-slate-800"
+            className="mb-6 rounded-lg border border-border bg-muted px-3 py-2 text-center text-sm text-foreground"
             role="status"
           >
             Check your email — we sent you a magic link.
@@ -79,7 +79,7 @@ export function LoginForm({ initialUrlError }: LoginFormProps) {
         <form action={signInWithGoogle} className="mb-6">
           <FormSubmitButton
             pendingLabel="Redirecting…"
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-black transition hover:bg-slate-50 disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted disabled:opacity-60"
           >
             <GoogleMark className="h-5 w-5" />
             Continue with Google
@@ -87,14 +87,14 @@ export function LoginForm({ initialUrlError }: LoginFormProps) {
         </form>
 
         <div className="mb-6 flex items-center gap-3">
-          <span className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs font-medium uppercase tracking-wide text-slate-500">or</span>
-          <span className="h-px flex-1 bg-slate-200" />
+          <span className="h-px flex-1 bg-border" />
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">or</span>
+          <span className="h-px flex-1 bg-border" />
         </div>
 
         <form action={magicFormAction} className="space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-black">
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
               Email
             </label>
             <input
@@ -106,12 +106,12 @@ export function LoginForm({ initialUrlError }: LoginFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-black outline-none ring-black/10 transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2"
+              className="w-full rounded-xl border border-border px-4 py-3 text-sm text-foreground outline-none ring-ring/20 transition placeholder:text-muted-foreground focus:border-border focus:ring-2"
             />
           </div>
           <FormSubmitButton
             pendingLabel="Sending…"
-            className="w-full rounded-xl bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-60"
+            className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-60"
           >
             Send Magic Link
           </FormSubmitButton>

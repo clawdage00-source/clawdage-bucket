@@ -24,6 +24,7 @@ import { useCallback, useId, useMemo, useRef, useState } from "react";
 import Cropper, { type Area, type MediaSize, type Point } from "react-easy-crop";
 import "react-easy-crop/react-easy-crop.css";
 
+import { trackToolUse } from "@/lib/analytics";
 import { DailyPassUpsellModal } from "@/components/tools/daily-pass-upsell-modal";
 import {
   applyWatermark,
@@ -248,6 +249,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
           stitchLayout === "vertical" ? await stitchCanvasesVertical(a, b) : await stitchCanvasesHorizontal(a, b);
         const blob = await exportJpegUnderMax(stitched, maxBytes);
         downloadBlob(blob, `id-${doc.id}-combined.jpg`);
+        trackToolUse("id-resizer", { variant: "combined" });
         return;
       }
       const single = savedFront ?? (savedBack && !wantsDual ? savedBack : null);
@@ -255,6 +257,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
       const canvas = await buildExportCanvas(single, wm);
       const blob = await exportJpegUnderMax(canvas, maxBytes);
       downloadBlob(blob, `id-${doc.id}.jpg`);
+      trackToolUse("id-resizer");
     } finally {
       setBusy(false);
     }
@@ -311,17 +314,17 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
   const dualCropReady = wantsDual && savedFront && savedBack;
 
   return (
-    <div className="min-h-screen bg-white pb-20">
-      <div className="border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6">
+    <div className="min-h-screen bg-background pb-20">
+      <div className="border-b border-border bg-muted/50 px-4 py-4 sm:px-6">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3">
           <Link
             href="/#tools"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-black"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
           </Link>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             {isPro ? "Pro: combine sides, PDF, no watermark" : "Free: one side · watermarked JPG"}
           </p>
         </div>
@@ -329,8 +332,8 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
 
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
         <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-          <h1 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">Indian document resizer</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Indian document resizer</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             Aadhaar, PAN, passport photo, and signature presets with crop, KB limits for SSC, UPSC, NTA, and banking
             uploads. Your files stay in the browser.
           </p>
@@ -349,10 +352,10 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
             <li
               key={n}
               className={`flex items-center gap-2 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 ${
-                step === n ? "bg-black text-white" : step > n ? "bg-slate-200 text-black" : "bg-slate-100 text-slate-500"
+                step === n ? "bg-primary text-primary-foreground" : step > n ? "bg-muted text-foreground" : "bg-muted text-muted-foreground"
               }`}
             >
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-[11px] sm:text-xs">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-card/20 text-[11px] sm:text-xs">
                 {step > n ? <Check className="h-3.5 w-3.5" /> : n}
               </span>
               {label}
@@ -362,21 +365,21 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
 
         <div className="mt-8 space-y-8">
           {step === 1 ? (
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
-              <div className="flex items-center gap-2 text-slate-500">
+            <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <LayoutGrid className="h-4 w-4" aria-hidden />
                 <h2 className="text-sm font-bold uppercase tracking-wide">Document & portal</h2>
               </div>
               <div className="mt-4 grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label htmlFor={`${formId}-doc`} className="text-sm font-medium text-black">
+                  <label htmlFor={`${formId}-doc`} className="text-sm font-medium text-foreground">
                     Document type
                   </label>
                   <select
                     id={`${formId}-doc`}
                     value={docId}
                     onChange={(e) => onPickDoc(e.target.value as DocumentPresetId)}
-                    className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3 text-sm text-black outline-none focus:ring-2 focus:ring-slate-200"
+                    className="mt-2 w-full rounded-xl border border-border bg-muted/80 px-3 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-slate-200"
                   >
                     {DOCUMENT_PRESETS.map((d) => (
                       <option key={d.id} value={d.id}>
@@ -384,17 +387,17 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-2 text-xs text-slate-500">Aspect ratio matches the physical ID for accurate framing.</p>
+                  <p className="mt-2 text-xs text-muted-foreground">Aspect ratio matches the physical ID for accurate framing.</p>
                 </div>
                 <div>
-                  <label htmlFor={`${formId}-portal`} className="text-sm font-medium text-black">
+                  <label htmlFor={`${formId}-portal`} className="text-sm font-medium text-foreground">
                     Portal preset
                   </label>
                   <select
                     id={`${formId}-portal`}
                     value={portalId}
                     onChange={(e) => onPickPortal(e.target.value as PortalPresetId)}
-                    className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3 text-sm text-black outline-none focus:ring-2 focus:ring-slate-200"
+                    className="mt-2 w-full rounded-xl border border-border bg-muted/80 px-3 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-slate-200"
                   >
                     {PORTAL_PRESETS.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -402,11 +405,11 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-2 text-xs text-slate-500">{portal.description}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">{portal.description}</p>
                 </div>
               </div>
               <div className="mt-6">
-                <label htmlFor={`${formId}-kb`} className="text-sm font-medium text-black">
+                <label htmlFor={`${formId}-kb`} className="text-sm font-medium text-foreground">
                   Max output size (KB)
                 </label>
                 <input
@@ -416,16 +419,16 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                   max={5000}
                   value={maxKb}
                   onChange={(e) => setMaxKb(Number(e.target.value) || 50)}
-                  className="mt-2 w-full max-w-xs rounded-xl border border-slate-200 bg-white px-3 py-2.5 font-mono text-sm text-black outline-none focus:ring-2 focus:ring-slate-200"
+                  className="mt-2 w-full max-w-xs rounded-xl border border-border bg-card px-3 py-2.5 font-mono text-sm text-foreground outline-none focus:ring-2 focus:ring-slate-200"
                 />
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   We compress JPEG quality (and scale if needed) until the file is under this limit.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800"
+                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 Continue
                 <ChevronRight className="h-4 w-4" />
@@ -434,12 +437,12 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
           ) : null}
 
           {step === 2 ? (
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
-              <div className="flex items-center gap-2 text-slate-500">
+            <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Upload className="h-4 w-4" aria-hidden />
                 <h2 className="text-sm font-bold uppercase tracking-wide">Upload</h2>
               </div>
-              <p className="mt-2 text-sm text-slate-600">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {doc.supportsDualUpload
                   ? isPro
                     ? "Upload front and back for a combined export, or only the front for a single file."
@@ -447,25 +450,25 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                   : "Upload a clear photo or scan of your document."}
               </p>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4">
-                  <p className="text-sm font-medium text-black">Front / single</p>
+                <div className="rounded-xl border border-dashed border-border bg-muted/50 p-4">
+                  <p className="text-sm font-medium text-foreground">Front / single</p>
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
-                    className="mt-3 block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white"
+                    className="mt-3 block w-full text-xs text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white"
                     onChange={(e) => onFrontFile(e.target.files?.[0] ?? null)}
                   />
                 </div>
                 {doc.supportsDualUpload ? (
                   <div
-                    className={`rounded-xl border border-dashed p-4 ${isPro ? "border-slate-200 bg-slate-50/50" : "border-slate-100 bg-slate-50 opacity-70"}`}
+                    className={`rounded-xl border border-dashed p-4 ${isPro ? "border-border bg-muted/50" : "border-border bg-muted opacity-70"}`}
                   >
-                    <p className="text-sm font-medium text-black">Back {isPro ? "" : "(Pro)"}</p>
+                    <p className="text-sm font-medium text-foreground">Back {isPro ? "" : "(Pro)"}</p>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
                       disabled={!isPro}
-                      className="mt-3 block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white disabled:opacity-50"
+                      className="mt-3 block w-full text-xs text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white disabled:opacity-50"
                       onChange={(e) => {
                         if (!isPro) {
                           openUpsell();
@@ -476,7 +479,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                       }}
                     />
                     {!isPro ? (
-                      <button type="button" onClick={openUpsell} className="mt-2 text-xs font-medium text-slate-600 underline">
+                      <button type="button" onClick={openUpsell} className="mt-2 text-xs font-medium text-muted-foreground underline">
                         Unlock back + combine with Daily Pass
                       </button>
                     ) : null}
@@ -484,7 +487,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                 ) : null}
               </div>
               <div className="mt-6 flex flex-wrap gap-3">
-                <button type="button" onClick={() => setStep(1)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-black hover:bg-slate-50">
+                <button type="button" onClick={() => setStep(1)} className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted">
                   Back
                 </button>
                 <button
@@ -499,7 +502,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                     setCroppedAreaPixels(null);
                     setStep(3);
                   }}
-                  className="rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:opacity-40"
+                  className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
                 >
                   {wantsDual && !backSrc ? "Crop front" : "Adjust crop"}
                 </button>
@@ -508,24 +511,24 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
           ) : null}
 
           {step === 3 && activeSrc ? (
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+            <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-slate-500">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <IdCard className="h-4 w-4" aria-hidden />
                   <h2 className="text-sm font-bold uppercase tracking-wide">
                     Crop {wantsDual ? (cropSide === "front" ? "— front" : "— back") : ""}
                   </h2>
                 </div>
                 {wantsDual ? (
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     {cropSide === "front" ? "Front side" : "Back side"} · aspect {doc.widthCm}×{doc.heightCm} cm
                   </p>
                 ) : null}
               </div>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-muted-foreground">
                 Drag to reposition. Zoom out past 1× to see your whole upload — or use{" "}
-                <span className="font-medium text-slate-700">Fit full photo</span> for a pre-cropped scan. Use{" "}
-                <span className="font-medium text-slate-700">Rotate</span> if the card is sideways. The dashed frame is your ID
+                <span className="font-medium text-muted-foreground">Fit full photo</span> for a pre-cropped scan. Use{" "}
+                <span className="font-medium text-muted-foreground">Rotate</span> if the card is sideways. The dashed frame is your ID
                 safe area.
               </p>
               <div
@@ -561,11 +564,11 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
               </div>
               <div className="mx-auto mt-3 flex max-w-xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Rotate</span>
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Rotate</span>
                   <button
                     type="button"
                     onClick={() => setRotation((r) => normDeg(r - 90))}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-slate-50"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted"
                   >
                     <RotateCcw className="h-3.5 w-3.5" aria-hidden />
                     -90°
@@ -573,7 +576,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                   <button
                     type="button"
                     onClick={() => setRotation((r) => normDeg(r + 90))}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-slate-50"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted"
                   >
                     +90°
                     <RotateCw className="h-3.5 w-3.5" aria-hidden />
@@ -581,13 +584,13 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                   <button
                     type="button"
                     onClick={() => setRotation(0)}
-                    className="text-xs font-semibold text-slate-600 underline hover:text-black"
+                    className="text-xs font-semibold text-muted-foreground underline hover:text-foreground"
                   >
                     Reset angle
                   </button>
                 </div>
                 <div className="min-w-0 flex-1 sm:max-w-xs">
-                  <label htmlFor={`${formId}-rot`} className="text-xs font-medium text-slate-600">
+                  <label htmlFor={`${formId}-rot`} className="text-xs font-medium text-muted-foreground">
                     Fine angle ({normDeg(rotation)}°)
                   </label>
                   <input
@@ -597,13 +600,13 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                     max={359}
                     value={normDeg(rotation)}
                     onChange={(e) => setRotation(Number(e.target.value))}
-                    className="mt-1 w-full accent-black"
+                    className="mt-1 w-full accent-foreground"
                   />
                 </div>
               </div>
               <div className="mx-auto mt-4 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div className="min-w-0 flex-1">
-                  <label htmlFor={`${formId}-zoom`} className="text-xs font-medium text-slate-600">
+                  <label htmlFor={`${formId}-zoom`} className="text-xs font-medium text-muted-foreground">
                     Zoom ({zoom.toFixed(2)}×)
                   </label>
                   <input
@@ -614,7 +617,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                     step={0.01}
                     value={zoom}
                     onChange={(e) => setZoom(Number(e.target.value))}
-                    className="mt-1 w-full accent-black"
+                    className="mt-1 w-full accent-foreground"
                   />
                 </div>
                 <button
@@ -623,21 +626,21 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                     const ms = lastMediaSizeRef.current;
                     if (ms) fitFullPhotoFromMedia(ms);
                   }}
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-slate-50"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
                 >
                   <Maximize2 className="h-4 w-4" aria-hidden />
                   Fit full photo
                 </button>
               </div>
               <div className="mt-6 flex flex-wrap gap-3">
-                <button type="button" onClick={() => setStep(2)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-black hover:bg-slate-50">
+                <button type="button" onClick={() => setStep(2)} className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted">
                   Back
                 </button>
                 <button
                   type="button"
                   disabled={!croppedAreaPixels}
                   onClick={confirmCurrentCrop}
-                  className="inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:opacity-40"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
                 >
                   {wantsDual && cropSide === "front" && backSrc ? (
                     <>
@@ -660,24 +663,24 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
           ) : null}
 
           {step === 4 ? (
-            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
-              <div className="flex items-center gap-2 text-slate-500">
+            <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Download className="h-4 w-4" aria-hidden />
                 <h2 className="text-sm font-bold uppercase tracking-wide">Download</h2>
               </div>
-              <p className="mt-2 text-sm text-slate-600">
+              <p className="mt-2 text-sm text-muted-foreground">
                 Output ≈ {outPx.width}×{outPx.height}px per side @ {OUTPUT_DPI} DPI from your cm preset, then compressed to
                 under {maxKb} KB.
               </p>
               {wantsDual && savedFront && savedBack ? (
-                <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Combine layout</p>
+                <div className="mt-4 rounded-xl border border-border bg-muted/80 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Combine layout</p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <button
                       type="button"
                       onClick={() => setStitchLayout("vertical")}
                       className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold ${
-                        stitchLayout === "vertical" ? "bg-black text-white" : "bg-white text-black ring-1 ring-slate-200"
+                        stitchLayout === "vertical" ? "bg-black text-white" : "bg-card text-foreground ring-1 ring-slate-200"
                       }`}
                     >
                       <Rows3 className="h-4 w-4" />
@@ -687,7 +690,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                       type="button"
                       onClick={() => setStitchLayout("horizontal")}
                       className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold ${
-                        stitchLayout === "horizontal" ? "bg-black text-white" : "bg-white text-black ring-1 ring-slate-200"
+                        stitchLayout === "horizontal" ? "bg-black text-white" : "bg-card text-foreground ring-1 ring-slate-200"
                       }`}
                     >
                       <FileStack className="h-4 w-4" />
@@ -701,7 +704,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                   type="button"
                   disabled={busy || !exportReady}
                   onClick={() => void handleDownloadJpg()}
-                  className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:opacity-40"
+                  className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
                 >
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileImage className="h-4 w-4" />}
                   {dualCropReady ? "Download combined JPG" : "Download JPG"}
@@ -710,13 +713,13 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                   type="button"
                   disabled={busy || !exportReady}
                   onClick={() => void handleDownloadPdf()}
-                  className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-slate-50 disabled:opacity-40"
+                  className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-40"
                 >
                   <FileStack className="h-4 w-4" />
                   Download PDF
                 </button>
               </div>
-              {!isPro ? <p className="mt-2 text-xs text-slate-500">Free JPG includes a light watermark. PDF and combined sides require a pass.</p> : null}
+              {!isPro ? <p className="mt-2 text-xs text-muted-foreground">Free JPG includes a light watermark. PDF and combined sides require a pass.</p> : null}
               <div className="mt-6 flex flex-wrap gap-3">
                 <button type="button" onClick={() => {
                   if (savedFront) {
@@ -728,10 +731,10 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
                   }
                   setCroppedAreaPixels(null);
                   setStep(3);
-                }} className="text-sm font-medium text-slate-600 underline">
+                }} className="text-sm font-medium text-muted-foreground underline">
                   Re-adjust crop
                 </button>
-                <button type="button" onClick={resetSession} className="text-sm font-medium text-slate-600 underline">
+                <button type="button" onClick={resetSession} className="text-sm font-medium text-muted-foreground underline">
                   Start over
                 </button>
               </div>
@@ -759,7 +762,7 @@ export function IdResizerTool({ isPro }: IdResizerToolProps) {
         title="Combine, PDF & back side — Pro"
         description={
           <>
-            A <span className="font-medium text-black">Daily Pass from ₹19</span> unlocks back-side upload, automatic
+            A <span className="font-medium text-foreground">Daily Pass from ₹19</span> unlocks back-side upload, automatic
             front/back stitching, PDF export, and watermark-free JPGs.
           </>
         }

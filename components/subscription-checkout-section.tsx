@@ -111,7 +111,7 @@ export function SubscriptionCheckoutSection({ userEmail, userName }: Subscriptio
                 setError(verified.error);
                 return;
               }
-              router.push("/profile?status=success");
+              router.push("/subscription?status=success");
             },
           });
           rzp.open();
@@ -126,7 +126,7 @@ export function SubscriptionCheckoutSection({ userEmail, userName }: Subscriptio
   return (
     <>
       {error ? (
-        <div className="mx-auto mb-6 max-w-6xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+        <div className="mx-auto mb-6 max-w-6xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200">
           {error}
         </div>
       ) : null}
@@ -141,14 +141,14 @@ export function SubscriptionCheckoutSection({ userEmail, userName }: Subscriptio
           <motion.article
             key={pass.id}
             variants={cardMotion}
-            className={`relative flex flex-col rounded-2xl border bg-white p-5 shadow-sm sm:p-6 ${
+            className={`relative flex flex-col rounded-2xl border bg-card p-5 text-card-foreground shadow-sm sm:p-6 ${
               pass.popular
-                ? "z-[1] border-black/80 ring-2 ring-black/15 shadow-md lg:scale-[1.02]"
-                : "border-slate-100"
+                ? "z-[1] border-[#251EFF]/70 ring-2 ring-[#251EFF]/25 shadow-md dark:border-[#251EFF]/50 dark:ring-[#251EFF]/20 lg:scale-[1.02]"
+                : "border-border"
             }`}
           >
             {pass.popular ? (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-black bg-black px-3 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-[#251EFF] bg-[#251EFF] px-3 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                 Popular
               </span>
             ) : null}
@@ -157,8 +157,8 @@ export function SubscriptionCheckoutSection({ userEmail, userName }: Subscriptio
                 <span
                   className={`inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
                     pass.popular
-                      ? "border-amber-200 bg-amber-50 text-amber-900"
-                      : "border-slate-200 bg-slate-50 text-slate-700"
+                      ? "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
+                      : "border-border bg-muted text-muted-foreground"
                   }`}
                 >
                   {pass.tag}
@@ -168,18 +168,18 @@ export function SubscriptionCheckoutSection({ userEmail, userName }: Subscriptio
               ) : null}
             </div>
 
-            <h3 className="text-lg font-bold text-black">{pass.name}</h3>
+            <h3 className="text-lg font-bold text-foreground">{pass.name}</h3>
             <p className="mt-1 flex items-baseline gap-0.5">
-              <span className="text-3xl font-bold tracking-tight text-black sm:text-4xl">
+              <span className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 {pass.currency}
                 {pass.price}
               </span>
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600">{pass.description}</p>
-            <ul className="mt-5 flex flex-1 flex-col gap-2.5 border-t border-slate-100 pt-5">
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{pass.description}</p>
+            <ul className="mt-5 flex flex-1 flex-col gap-2.5 border-t border-border pt-5">
               {PAID_PASS_FEATURES.map((line) => (
-                <li key={line} className="flex gap-2 text-sm text-slate-700">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-black" aria-hidden />
+                <li key={line} className="flex gap-2 text-sm text-muted-foreground">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#251EFF] dark:text-[#7c83ff]" aria-hidden />
                   <span>{line}</span>
                 </li>
               ))}
@@ -188,7 +188,7 @@ export function SubscriptionCheckoutSection({ userEmail, userName }: Subscriptio
               type="button"
               disabled={isPending}
               onClick={() => buy(pass.id)}
-              className="mt-6 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-black py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:opacity-60"
+              className="mt-6 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-60"
             >
               {isPending ? (
                 <>

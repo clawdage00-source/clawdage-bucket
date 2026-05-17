@@ -1,5 +1,7 @@
+import { trackToolUse } from "@/lib/analytics";
+
 /** Trigger a file download from a Blob in the browser. */
-export function downloadBlob(blob: Blob, filename: string): void {
+export function downloadBlob(blob: Blob, filename: string, toolSlug?: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -9,4 +11,7 @@ export function downloadBlob(blob: Blob, filename: string): void {
   a.click();
   a.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+  if (toolSlug) {
+    trackToolUse(toolSlug, { filename });
+  }
 }

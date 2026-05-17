@@ -3,6 +3,48 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export interface Database {
   public: {
     Tables: {
+      allowed_admins: {
+        Row: {
+          id: string;
+          email: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      admin_sessions: {
+        Row: {
+          user_id: string;
+          is_verified: boolean;
+          verified_at: string | null;
+          last_activity_at: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          is_verified?: boolean;
+          verified_at?: string | null;
+          last_activity_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          is_verified?: boolean;
+          verified_at?: string | null;
+          last_activity_at?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;
@@ -86,6 +128,42 @@ export interface Database {
           name?: string;
           slug?: string;
           is_pro?: boolean;
+        };
+        Relationships: [];
+      };
+      analytics_events: {
+        Row: {
+          id: string;
+          event_name: string;
+          tool_slug: string | null;
+          user_id: string | null;
+          session_id: string;
+          user_agent: string | null;
+          path: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_name: string;
+          tool_slug?: string | null;
+          user_id?: string | null;
+          session_id: string;
+          user_agent?: string | null;
+          path?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          event_name?: string;
+          tool_slug?: string | null;
+          user_id?: string | null;
+          session_id?: string;
+          user_agent?: string | null;
+          path?: string | null;
+          metadata?: Json;
+          created_at?: string;
         };
         Relationships: [];
       };

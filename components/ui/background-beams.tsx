@@ -153,7 +153,7 @@ export const HeroGridBeams = React.memo(
         ref={ref}
         aria-hidden
         className={cn(
-          "pointer-events-none absolute inset-0 overflow-hidden bg-white",
+          "pointer-events-none absolute inset-0 overflow-hidden bg-background",
           className,
         )}
       >
@@ -177,7 +177,7 @@ export const HeroGridBeams = React.memo(
                 <path
                   d={tilePath}
                   fill="none"
-                  stroke="#d1d5db"
+                  stroke="var(--hero-grid-stroke)"
                   strokeWidth={1}
                   strokeDasharray="4 10"
                   strokeLinecap="round"
