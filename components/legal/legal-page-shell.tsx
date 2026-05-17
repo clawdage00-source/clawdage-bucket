@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BackToTop } from "@/components/legal/back-to-top";
+import { SiteContactBlock } from "@/components/site-contact-block";
 import { cn } from "@/lib/utils";
 
 export type LegalTocItem = {
@@ -79,17 +80,7 @@ export function LegalPageShell({
         <div className="mt-12 space-y-14 sm:space-y-16">{children}</div>
 
         <footer className="mt-16 border-t border-slate-200 pt-10">
-          <h2 className="text-lg font-semibold text-slate-900">Contact</h2>
-          <p className="mt-3 text-base leading-relaxed text-slate-600">
-            Have questions? Contact us at{" "}
-            <a
-              href="mailto:mail@essentialtoolbox.com"
-              className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-600"
-            >
-              mail@essentialtoolbox.com
-            </a>
-            .
-          </p>
+          <SiteContactBlock variant="full" className="text-slate-600 [&_p]:text-slate-900 [&_a]:text-slate-600 [&_a:hover]:text-slate-900" />
           <p className="mt-6 text-sm text-slate-500">
             See also:{" "}
             <Link href="/terms" className="underline underline-offset-4 hover:text-slate-800">

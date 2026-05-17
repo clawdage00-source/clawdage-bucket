@@ -1,5 +1,6 @@
 import type { BlogPost } from "@/lib/blog/posts";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/seo/brand";
+import { SITE_CONTACT } from "@/lib/site-contact";
 import type { SeoLandingPage } from "@/lib/seo/landing-pages";
 import { getToolSeoEntry } from "@/lib/seo/tool-registry";
 import { getToolBySlug } from "@/lib/tools-data";
@@ -118,6 +119,16 @@ export function OrganizationJsonLd({ siteUrl }: OrganizationJsonLdProps) {
     name: SITE_NAME,
     url: siteUrl,
     description: SITE_TAGLINE,
+    email: SITE_CONTACT.email,
+    telephone: SITE_CONTACT.phoneE164,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: SITE_CONTACT.addressLines.slice(0, 3).join(", "),
+      addressLocality: SITE_CONTACT.locality,
+      addressRegion: SITE_CONTACT.region,
+      postalCode: SITE_CONTACT.postalCode,
+      addressCountry: SITE_CONTACT.country,
+    },
     areaServed: { "@type": "Country", name: "India" },
   };
 

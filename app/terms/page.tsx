@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { LegalPageShell, LegalSection } from "@/components/legal/legal-page-shell";
+import { SITE_CONTACT } from "@/lib/site-contact";
 
 const LAST_UPDATED = "May 15, 2026";
 
@@ -128,10 +129,10 @@ export default function TermsPage() {
         <p>
           Contact{" "}
           <a
-            href="mailto:mail@essentialtoolbox.com"
+            href={`mailto:${SITE_CONTACT.email}`}
             className="font-medium text-slate-900 underline underline-offset-4"
           >
-            mail@essentialtoolbox.com
+            {SITE_CONTACT.email}
           </a>{" "}
           within seven (7) days of purchase with your order details. Approved refunds, if any, are
           processed through Razorpay to the original payment method.
@@ -201,7 +202,7 @@ export default function TermsPage() {
         <p>
           These Terms are governed by the laws of <strong className="text-slate-900">India</strong>.
           Any disputes shall be subject to the exclusive jurisdiction of the courts in{" "}
-          <strong className="text-slate-900">Chennai, Tamil Nadu</strong>, unless mandatory
+          <strong className="text-slate-900">Bengaluru, Karnataka</strong>, unless mandatory
           consumer protection rules in your location require otherwise.
         </p>
       </LegalSection>

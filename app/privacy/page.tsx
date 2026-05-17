@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { LegalPageShell, LegalSection } from "@/components/legal/legal-page-shell";
 import { PrivacyTrustBanner } from "@/components/legal/trust-banner";
+import { SITE_CONTACT } from "@/lib/site-contact";
 
 const LAST_UPDATED = "May 15, 2026";
 
@@ -188,10 +189,10 @@ export default function PrivacyPolicyPage() {
         <p>
           To exercise these rights, email{" "}
           <a
-            href="mailto:mail@essentialtoolbox.com"
+            href={`mailto:${SITE_CONTACT.email}`}
             className="font-medium text-slate-900 underline underline-offset-4"
           >
-            mail@essentialtoolbox.com
+            {SITE_CONTACT.email}
           </a>
           . We will respond within a reasonable timeframe.
         </p>

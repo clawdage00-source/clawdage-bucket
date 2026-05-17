@@ -2,6 +2,9 @@ import { Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { SiteContactBlock } from "@/components/site-contact-block";
+import { SITE_NAME, SITE_TAGLINE } from "@/lib/seo/brand";
+
 const BRAND_ICON_SRC = "/Group 1000001054.png";
 
 type IconProps = { className?: string };
@@ -36,6 +39,7 @@ const NAV_LINKS = [
   { href: "/blog", label: "Guides" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/contact", label: "Contact" },
   { href: "/aadhaar-photo-resize-online", label: "Aadhaar resize" },
 ] as const;
 
@@ -102,30 +106,22 @@ export function Footer() {
       {/* Section 1 — Information columns */}
       <div className="mx-auto max-w-7xl px-6 pt-20 pb-16 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 gap-14 md:grid-cols-3 md:gap-10 lg:gap-16">
-          <nav aria-label="Footer navigation">
-            <ul className="flex flex-col gap-1">
-              {NAV_LINKS.map(({ href, label }) => (
-                <li key={label}>
-                  <FooterLink href={href}>{label}</FooterLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div>
+            <p className="text-xl font-bold tracking-tight text-foreground">{SITE_NAME}</p>
+            <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">{SITE_TAGLINE}</p>
+            <nav className="mt-8" aria-label="Footer navigation">
+              <ul className="flex flex-col gap-1">
+                {NAV_LINKS.map(({ href, label }) => (
+                  <li key={label}>
+                    <FooterLink href={href}>{label}</FooterLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
 
           <div className="flex flex-col items-start text-left md:items-center md:text-center">
-            <p className="text-sm font-normal text-foreground">Follow us</p>
-            <a
-              href="mailto:mail@essentialtoolbox.com"
-              className="mt-4 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              mail@essentialtoolbox.com
-            </a>
-            <a
-              href="tel:+910000000000"
-              className="mt-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              +91 XXXXXXXXXX
-            </a>
+            <SiteContactBlock variant="links" align="left" className="md:items-center md:text-center" />
             <div className="mt-6 flex flex-wrap items-center justify-start gap-2 md:justify-center">
               {SOCIAL.map(({ href, label, renderIcon }) => (
                 <a
@@ -141,16 +137,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="md:text-right">
-            <p className="text-sm text-foreground">Address</p>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground md:ml-auto">
-              #21, North Street,
-              <br />
-              Velachery,
-              <br />
-              Chennai.
-            </p>
-          </div>
+          <SiteContactBlock variant="address" align="right" className="md:ml-auto" />
         </div>
       </div>
 
@@ -158,7 +145,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl border-t border-border px-6 py-6 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 gap-3 text-xs text-muted-foreground sm:grid-cols-3 sm:items-center sm:gap-4">
           <p className="text-center sm:text-left">
-            © {year} EssentialToolbox. All Rights Reserved.
+            © {year} {SITE_NAME}. All Rights Reserved.
           </p>
           <p className="text-center">
             <Link
@@ -183,7 +170,7 @@ export function Footer() {
       <div className="flex w-full justify-center bg-background px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 md:px-8 lg:px-10">
         <Image
           src={BRAND_ICON_SRC}
-          alt="EssentialToolbox"
+          alt={SITE_NAME}
           width={400}
           height={400}
           className="h-[clamp(4rem,14vw,7.5rem)] w-auto select-none object-contain"
