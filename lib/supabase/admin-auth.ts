@@ -96,6 +96,14 @@ export async function requireAdminAccess(): Promise<void> {
   }
 }
 
+/** For server actions — throw instead of redirect so the client can show an error. */
+export async function requireAdminAccessForAction(): Promise<void> {
+  const session = await getAdminSessionFromCookies();
+  if (!session) {
+    throw new Error("Admin session expired. Sign in again at /admin/login.");
+  }
+}
+
 export async function adminSignOut(): Promise<void> {
   await clearAdminCookies();
   redirect("/admin/login");

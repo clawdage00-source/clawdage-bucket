@@ -1,9 +1,11 @@
 "use client";
 
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import {
   Activity,
   BarChart3,
+  CalendarRange,
+  Eye,
   MousePointerClick,
   Percent,
   RefreshCw,
@@ -11,14 +13,16 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  Wrench,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import {
   Bar,
   BarChart,
   CartesianGrid,
   Cell,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -28,11 +32,19 @@ import {
 } from "recharts";
 
 import type { AdminAnalyticsStats } from "@/actions/get-admin-stats";
+import type { AnalyticsPeriod } from "@/lib/admin/analytics-range";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 
 type AdminAnalyticsDashboardProps = {
   initialStats: AdminAnalyticsStats;
 };
+
+const PERIOD_OPTIONS: { id: AnalyticsPeriod; label: string }[] = [
+  { id: "daily", label: "Daily" },
+  { id: "monthly", label: "Monthly" },
+  { id: "yearly", label: "Yearly" },
+  { id: "custom", label: "Date range" },
+];
 
 const CHART_COLORS = ["#4f46e5", "#059669", "#d97706", "#db2777", "#0284c7", "#7c3aed"];
 const GRID_STROKE = "#e2e8f0";
@@ -103,36 +115,107 @@ function ChartCard({
   );
 }
 
+function periodButtonClass(active: boolean): string {
+  return `rounded-md px-3 py-1.5 text-sm font-medium transition ${
+    active
+      ? "bg-indigo-600 text-white shadow-sm"
+      : "text-slate-600 hover:bg-slate-100"
+  }`;
+}
+
+function buildAnalyticsHref(
+  period: AnalyticsPeriod,
+  start?: string,
+  end?: string,
+): string {
+  const params = new URLSearchParams();
+  params.set("period", period);
+  if (period === "custom" && start && end) {
+    params.set("start", start);
+    params.set("end", end);
+  }
+  return `/admin/analytics?${params.toString()}`;
+}
+
 export function AdminAnalyticsDashboard({ initialStats }: AdminAnalyticsDashboardProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [stats, setStats] = useState(initialStats);
+  const [period, setPeriod] = useState<AnalyticsPeriod>(initialStats.query.period);
+  const [customStart, setCustomStart] = useState(initialStats.query.startDate);
+  const [customEnd, setCustomEnd] = useState(initialStats.query.endDate);
+  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
     setStats(initialStats);
+    setPeriod(initialStats.query.period);
+    setCustomStart(initialStats.query.startDate);
+    setCustomEnd(initialStats.query.endDate);
+    setError(null);
   }, [initialStats]);
 
-  const refresh = useCallback(() => {
-    startTransition(() => {
-      router.refresh();
-    });
-  }, [router]);
+  const navigate = useCallback(
+    (href: string) => {
+      setError(null);
+      startTransition(() => {
+        router.push(href);
+      });
+    },
+    [router],
+  );
 
-  const trafficChart = stats.trafficGrowth.map((d) => ({
-    ...d,
-    label: format(new Date(`${d.date}T12:00:00`), "MMM d"),
-  }));
+  const onPeriodChange = (next: AnalyticsPeriod) => {
+    setPeriod(next);
+    if (next !== "custom") {
+      navigate(buildAnalyticsHref(next));
+    }
+  };
+
+  const applyCustomRange = () => {
+    if (!customStart || !customEnd) {
+      setError("Choose both start and end dates.");
+      return;
+    }
+    if (customStart > customEnd) {
+      setError("Start date must be on or before end date.");
+      return;
+    }
+    navigate(buildAnalyticsHref("custom", customStart, customEnd));
+  };
+
+  const refresh = () => {
+    const periodParam = searchParams.get("period") as AnalyticsPeriod | null;
+    const startParam = searchParams.get("start") ?? undefined;
+    const endParam = searchParams.get("end") ?? undefined;
+    const activePeriod =
+      periodParam && PERIOD_OPTIONS.some((o) => o.id === periodParam)
+        ? periodParam
+        : period;
+    if (activePeriod === "custom" && startParam && endParam) {
+      navigate(buildAnalyticsHref("custom", startParam, endParam));
+      return;
+    }
+    startTransition(() => router.refresh());
+  };
 
   const authChart = [
     { name: "Guest visits", value: stats.authStats.guest, fill: "#94a3b8" },
     { name: "Logged-in", value: stats.authStats.loggedIn, fill: "#4f46e5" },
   ];
 
+  const xInterval =
+    stats.trafficGrowth.length > 20
+      ? Math.floor(stats.trafficGrowth.length / 8)
+      : stats.trafficGrowth.length > 12
+        ? 1
+        : 0;
+
   return (
     <div className="space-y-8">
       <AdminPageHeader
         title="Analytics"
-        description="Visitors, auth, tool usage, and revenue — last 30 days."
+        description={stats.query.description}
         actions={
           <button
             type="button"
@@ -146,30 +229,115 @@ export function AdminAnalyticsDashboard({ initialStats }: AdminAnalyticsDashboar
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Time period
+            </p>
+            <div className="mt-2 inline-flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+              {PERIOD_OPTIONS.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  disabled={pending}
+                  onClick={() => onPeriodChange(opt.id)}
+                  className={periodButtonClass(period === opt.id)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {period === "custom" ? (
+            <div className="flex flex-wrap items-end gap-3">
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs font-medium text-slate-500">From</span>
+                <input
+                  type="date"
+                  value={customStart}
+                  max={customEnd}
+                  onChange={(e) => setCustomStart(e.target.value)}
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 shadow-sm"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs font-medium text-slate-500">To</span>
+                <input
+                  type="date"
+                  value={customEnd}
+                  min={customStart}
+                  onChange={(e) => setCustomEnd(e.target.value)}
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 shadow-sm"
+                />
+              </label>
+              <button
+                type="button"
+                disabled={pending || !customStart || !customEnd}
+                onClick={applyCustomRange}
+                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-60"
+              >
+                <CalendarRange className="h-4 w-4" aria-hidden />
+                Apply range
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">
+              <span className="font-medium text-slate-700">
+                {stats.query.startDate}
+              </span>
+              {" → "}
+              <span className="font-medium text-slate-700">{stats.query.endDate}</span>
+            </p>
+          )}
+        </div>
+        {error ? (
+          <p className="mt-3 text-sm text-red-600" role="alert">
+            {error}
+          </p>
+        ) : null}
+        {pending ? (
+          <p className="mt-3 text-xs text-slate-500">Loading analytics…</p>
+        ) : null}
+      </section>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
         <SummaryCard
-          label="Total visitors"
+          label="Visitors"
           value={stats.summary.totalVisitors.toLocaleString()}
-          hint="Unique users + sessions (30d)"
+          hint="Unique in selected period"
           icon={Users}
         />
         <SummaryCard
-          label="Conversion rate"
+          label="Page views"
+          value={stats.summary.pageViews.toLocaleString()}
+          hint="In selected period"
+          icon={Eye}
+        />
+        <SummaryCard
+          label="Tool uses"
+          value={stats.summary.toolUses.toLocaleString()}
+          hint="Exports / downloads"
+          icon={Wrench}
+        />
+        <SummaryCard
+          label="Revenue"
+          value={formatInr(stats.summary.totalRevenue)}
+          hint="Captured payments in period"
+          icon={Wallet}
+        />
+        <SummaryCard
+          label="Conversion"
           value={`${stats.summary.conversionRate}%`}
-          hint="Sign-ups vs unique visitors"
+          hint={`${stats.summary.signups} sign-ups`}
           icon={Percent}
         />
         <SummaryCard
-          label="Active sessions"
+          label="Sessions (24h)"
           value={stats.summary.activeSessions24h.toLocaleString()}
-          hint="Events in last 24 hours"
+          hint="Always last 24 hours"
           icon={Activity}
-        />
-        <SummaryCard
-          label="Total revenue"
-          value={formatInr(stats.summary.totalRevenue)}
-          hint="Captured transactions"
-          icon={Wallet}
         />
         <SummaryCard
           label="Bounce rate"
@@ -178,29 +346,29 @@ export function AdminAnalyticsDashboard({ initialStats }: AdminAnalyticsDashboar
           icon={MousePointerClick}
         />
         <SummaryCard
-          label="Tool searches"
+          label="Searches"
           value={stats.summary.searchQueries.toLocaleString()}
-          hint="Search bar in tool grid"
+          hint="Tool grid searches"
           icon={Search}
         />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <ChartCard
-          title="Traffic growth"
-          description="Daily unique visitors — last 30 days"
+          title="Visitors over time"
+          description={`Unique visitors — ${stats.query.description}`}
           icon={TrendingUp}
         >
-          <div className="h-72 w-full">
+          <div className={`h-72 w-full ${pending ? "opacity-50" : ""}`}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={trafficChart} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+              <LineChart data={stats.trafficGrowth} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
                 <CartesianGrid stroke={GRID_STROKE} strokeDasharray="3 3" />
                 <XAxis
                   dataKey="label"
                   tick={{ fill: TICK_FILL, fontSize: 11 }}
                   axisLine={{ stroke: GRID_STROKE }}
                   tickLine={false}
-                  interval="preserveStartEnd"
+                  interval={xInterval}
                 />
                 <YAxis
                   tick={{ fill: TICK_FILL, fontSize: 11 }}
@@ -209,13 +377,24 @@ export function AdminAnalyticsDashboard({ initialStats }: AdminAnalyticsDashboar
                   allowDecimals={false}
                 />
                 <Tooltip contentStyle={TOOLTIP_STYLE} labelStyle={{ color: "#0f172a" }} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Line
                   type="monotone"
                   dataKey="visitors"
+                  name="Visitors"
                   stroke="#4f46e5"
                   strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 4, fill: "#4f46e5" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="pageViews"
+                  name="Page views"
+                  stroke="#059669"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4, fill: "#059669" }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -223,11 +402,77 @@ export function AdminAnalyticsDashboard({ initialStats }: AdminAnalyticsDashboar
         </ChartCard>
 
         <ChartCard
-          title="Auth stats"
-          description="Guest visits vs logged-in page views (30d)"
+          title="Revenue over time"
+          description={`Captured Razorpay payments — ${stats.query.description}`}
+          icon={Wallet}
+        >
+          <div className={`h-72 w-full ${pending ? "opacity-50" : ""}`}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stats.revenueGrowth} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+                <CartesianGrid stroke={GRID_STROKE} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fill: TICK_FILL, fontSize: 11 }}
+                  axisLine={{ stroke: GRID_STROKE }}
+                  tickLine={false}
+                  interval={xInterval}
+                />
+                <YAxis
+                  tick={{ fill: TICK_FILL, fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `₹${v}`}
+                />
+                <Tooltip
+                  contentStyle={TOOLTIP_STYLE}
+                  formatter={(value) => [
+                    formatInr(typeof value === "number" ? value : Number(value) || 0),
+                    "Revenue",
+                  ]}
+                />
+                <Bar dataKey="amount" name="Revenue" fill="#d97706" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+        <ChartCard
+          title="Tool activity"
+          description={`Tool uses per ${stats.query.granularity} — ${stats.query.description}`}
           icon={BarChart3}
         >
-          <div className="h-72 w-full">
+          <div className={`h-72 w-full ${pending ? "opacity-50" : ""}`}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stats.trafficGrowth} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+                <CartesianGrid stroke={GRID_STROKE} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fill: TICK_FILL, fontSize: 11 }}
+                  axisLine={{ stroke: GRID_STROKE }}
+                  tickLine={false}
+                  interval={xInterval}
+                />
+                <YAxis
+                  tick={{ fill: TICK_FILL, fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  allowDecimals={false}
+                />
+                <Tooltip contentStyle={TOOLTIP_STYLE} />
+                <Bar dataKey="toolUses" name="Tool uses" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+
+        <ChartCard
+          title="Auth stats"
+          description={`Guest vs logged-in page views — ${stats.query.description}`}
+          icon={BarChart3}
+        >
+          <div className={`h-72 w-full ${pending ? "opacity-50" : ""}`}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={authChart} layout="vertical" margin={{ top: 8, right: 24, left: 8, bottom: 0 }}>
                 <CartesianGrid stroke={GRID_STROKE} strokeDasharray="3 3" horizontal={false} />
@@ -260,14 +505,14 @@ export function AdminAnalyticsDashboard({ initialStats }: AdminAnalyticsDashboar
 
       <ChartCard
         title="Tool popularity"
-        description="Successful tool runs (downloads / exports) — 30d"
+        description={`Top tools in selected period`}
         icon={BarChart3}
       >
         {stats.toolPopularity.length === 0 ? (
-          <p className="py-12 text-center text-sm text-slate-500">No tool usage recorded yet.</p>
+          <p className="py-12 text-center text-sm text-slate-500">No tool usage recorded for this period.</p>
         ) : (
           <div
-            className="w-full"
+            className={`w-full ${pending ? "opacity-50" : ""}`}
             style={{ height: Math.max(280, stats.toolPopularity.length * 40) }}
           >
             <ResponsiveContainer width="100%" height="100%">
@@ -303,7 +548,7 @@ export function AdminAnalyticsDashboard({ initialStats }: AdminAnalyticsDashboar
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-100 px-5 py-4">
           <h2 className="text-sm font-semibold text-slate-900">Live event feed</h2>
-          <p className="mt-0.5 text-xs text-slate-500">Last 20 events — refresh to update</p>
+          <p className="mt-0.5 text-xs text-slate-500">Last 20 events site-wide — not filtered by date range</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">

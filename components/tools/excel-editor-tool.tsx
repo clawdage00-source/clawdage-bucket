@@ -7,17 +7,30 @@ import {
   FileSpreadsheet,
   FileText,
   Loader2,
+  Rows3,
   Trash2,
   Upload,
 } from "lucide-react";
-import Link from "next/link";
-import { useCallback, useId, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type Handsontable from "handsontable";
 import autoTable from "jspdf-autotable";
 import { jsPDF } from "jspdf";
 
-import { ExcelEditorGrid } from "@/components/tools/excel-editor-grid";
+import { ExcelEditorFormatBar } from "@/components/tools/excel-editor-format-bar";
+import { ExcelEditorFindReplace } from "@/components/tools/excel-editor-find-replace";
+import { ExcelEditorFormulaBar } from "@/components/tools/excel-editor-formula-bar";
+import { buildExcelColumns, ExcelEditorGrid } from "@/components/tools/excel-editor-grid";
+import { ExcelEditorRibbon } from "@/components/tools/excel-editor-ribbon";
 import { downloadBlob } from "@/lib/download-blob";
+import { CellFormatStore } from "@/lib/excel-editor/cell-format-store";
+import {
+  clearExcelEditorSession,
+  loadExcelEditorSession,
+  restoreFormatStore,
+  saveExcelEditorSession,
+} from "@/lib/excel-editor/session-storage";
+import { mergeSheet, splitHeaderRow } from "@/lib/excel-editor/sheet-utils";
 import { useHideSiteChrome } from "@/lib/hooks/use-hide-site-chrome";
 import * as XLSX from "xlsx";
 
@@ -33,9 +46,12 @@ function formatBytes(n: number): string {
 const ease = [0.25, 0.1, 0.25, 1] as const;
 
 export function ExcelEditorTool() {
+  const router = useRouter();
   const formId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const hotInstanceRef = useRef<Handsontable.Core | null>(null);
+  const formatStoreRef = useRef<CellFormatStore | null>(null);
+  const restoredOnceRef = useRef(false);
 
   const [fileData, setFileData] = useState<(string | number)[][]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
@@ -46,18 +62,184 @@ export function ExcelEditorTool() {
   const [fileSize, setFileSize] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  /** 1-based row used as column titles in the merged sheet, or 0 = no header row. */
+  const [headerRowChoice, setHeaderRowChoice] = useState(1);
+  const [findReplaceOpen, setFindReplaceOpen] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
 
-  const hasSheet = sheetKey != null && fileData.length > 0 && headers.length > 0;
+  const hasSheet = sheetKey != null && headers.length > 0;
 
   useHideSiteChrome(hasSheet);
 
-  const handleGridReady = useCallback((hot: Handsontable.Core) => {
-    hotInstanceRef.current = hot;
+  useEffect(() => {
+    const session = loadExcelEditorSession();
+    if (session) {
+      setHeaders(session.headers);
+      setFileData(session.fileData);
+      setHeaderRowChoice(session.headerRowChoice);
+      setOriginalFileName(session.originalFileName);
+      setFileSize(session.fileSize);
+      setSheetKey(session.sheetKey);
+      formatStoreRef.current = restoreFormatStore(session.formats);
+      restoredOnceRef.current = true;
+    }
+    setSessionReady(true);
   }, []);
+
+  useEffect(() => {
+    if (!sessionReady || !restoredOnceRef.current || !hasSheet) return;
+    setToast("Restored your last spreadsheet from this browser.");
+    const t = window.setTimeout(() => setToast(null), 3500);
+    restoredOnceRef.current = false;
+    return () => window.clearTimeout(t);
+  }, [sessionReady, hasSheet]);
+
+  const persistSession = useCallback(() => {
+    if (!sheetKey || headers.length === 0) return;
+
+    const hot = hotInstanceRef.current;
+    const nextHeaders = hot ? (hot.getColHeader() as string[]) : headers;
+    const nextData = hot ? (hot.getData() as (string | number)[][]) : fileData;
+
+    saveExcelEditorSession({
+      sheetKey,
+      headers: nextHeaders,
+      fileData: nextData,
+      headerRowChoice,
+      originalFileName,
+      fileSize,
+      formats: formatStoreRef.current?.exportState() ?? { cells: {}, rules: [] },
+    });
+  }, [
+    sheetKey,
+    headers,
+    fileData,
+    headerRowChoice,
+    originalFileName,
+    fileSize,
+  ]);
+
+  const schedulePersistSession = useCallback(() => {
+    window.setTimeout(() => persistSession(), 400);
+  }, [persistSession]);
+
+  useEffect(() => {
+    if (!hasSheet) return;
+    const id = window.setTimeout(() => persistSession(), 500);
+    return () => window.clearTimeout(id);
+  }, [hasSheet, fileData, headers, headerRowChoice, originalFileName, persistSession]);
+
+  useEffect(() => {
+    if (!hasSheet) return;
+    const onBeforeUnload = () => persistSession();
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [hasSheet, persistSession]);
+
+  useEffect(() => {
+    if (!hasSheet) return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        setFindReplaceOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [hasSheet]);
+
+  const handleGridReady = useCallback(
+    (hot: Handsontable.Core) => {
+      hotInstanceRef.current = hot;
+      if (hasSheet) schedulePersistSession();
+    },
+    [hasSheet, schedulePersistSession],
+  );
 
   const handleGridDestroy = useCallback(() => {
     hotInstanceRef.current = null;
   }, []);
+
+  const applySheetToGrid = useCallback(
+    (nextHeaders: string[], nextData: (string | number)[][], headerChoice: number) => {
+      setHeaders(nextHeaders);
+      setFileData(nextData);
+      setHeaderRowChoice(headerChoice);
+
+      const hot = hotInstanceRef.current;
+      if (hot) {
+        hot.updateSettings({
+          colHeaders: nextHeaders,
+          columns: buildExcelColumns(nextHeaders.length),
+          data: nextData,
+        });
+        hot.render();
+      }
+    },
+    [],
+  );
+
+  const applyHeaderRowChoice = useCallback(
+    (choice: number) => {
+      const hot = hotInstanceRef.current;
+      if (!hot) return;
+
+      const full = mergeSheet(hot.getColHeader() as string[], hot.getData() as (string | number)[][]);
+      const headerIndex = choice === 0 ? null : choice - 1;
+      const { headers: nextHeaders, data: nextData } = splitHeaderRow(full, headerIndex);
+      applySheetToGrid(nextHeaders, nextData, choice);
+      setToast(choice === 0 ? "Header row cleared — using Column 1, 2…" : `Row ${choice} set as header.`);
+      window.setTimeout(() => setToast(null), 2500);
+      schedulePersistSession();
+    },
+    [applySheetToGrid, schedulePersistSession],
+  );
+
+  const applyHeaderFromBodyRow = useCallback(
+    (bodyRowIndex: number) => {
+      applyHeaderRowChoice(bodyRowIndex + 2);
+    },
+    [applyHeaderRowChoice],
+  );
+
+  const handleDeleteSelectedRows = useCallback(() => {
+    const hot = hotInstanceRef.current;
+    if (!hot) return;
+
+    const selected = hot.getSelected();
+    if (!selected?.length) {
+      setError("Select one or more rows (click the row number), then delete.");
+      return;
+    }
+
+    const rowIndexes = new Set<number>();
+    for (const [r1, , r2] of selected) {
+      const from = Math.min(r1, r2);
+      const to = Math.max(r1, r2);
+      if (from < 0) continue;
+      for (let r = from; r <= to; r++) rowIndexes.add(r);
+    }
+
+    if (rowIndexes.size === 0) {
+      setError("Select data rows to delete (not the column header).");
+      return;
+    }
+
+    setError(null);
+    const sorted = [...rowIndexes].sort((a, b) => b - a);
+    for (const row of sorted) {
+      hot.alter("remove_row", row, 1);
+    }
+    const nextData = hot.getData() as (string | number)[][];
+    setFileData(nextData);
+    setHeaderRowChoice((prev) => {
+      if (prev === 0) return 0;
+      return Math.min(prev, nextData.length + 1);
+    });
+    setToast(sorted.length === 1 ? "1 row deleted." : `${sorted.length} rows deleted.`);
+    window.setTimeout(() => setToast(null), 2500);
+    schedulePersistSession();
+  }, [schedulePersistSession]);
 
   const parseFile = useCallback((file: File) => {
     const extension = file.name.split(".").pop()?.toLowerCase();
@@ -113,7 +295,19 @@ export function ExcelEditorTool() {
 
         setHeaders(newHeaders);
         setFileData(newData);
-        setSheetKey(`${file.name}-${Date.now()}`);
+        setHeaderRowChoice(1);
+        formatStoreRef.current = new CellFormatStore();
+        const nextKey = `${file.name}-${Date.now()}`;
+        setSheetKey(nextKey);
+        saveExcelEditorSession({
+          sheetKey: nextKey,
+          headers: newHeaders,
+          fileData: newData,
+          headerRowChoice: 1,
+          originalFileName: file.name,
+          fileSize: file.size,
+          formats: { cells: {}, rules: [] },
+        });
       } catch {
         setError("Failed to parse the file. Make sure it is a valid Excel or CSV file.");
       } finally {
@@ -202,17 +396,31 @@ export function ExcelEditorTool() {
     }
   };
 
-  const handleReset = () => {
+  const resetEditorState = useCallback(() => {
     hotInstanceRef.current = null;
     setSheetKey(null);
     setFileData([]);
     setHeaders([]);
+    formatStoreRef.current = null;
+    setHeaderRowChoice(1);
     setError(null);
     setToast(null);
     setOriginalFileName("");
     setFileSize(0);
+    setFindReplaceOpen(false);
     if (inputRef.current) inputRef.current.value = "";
-  };
+  }, []);
+
+  const handleReset = useCallback(() => {
+    clearExcelEditorSession();
+    resetEditorState();
+  }, [resetEditorState]);
+
+  const handleLeaveTool = useCallback(() => {
+    clearExcelEditorSession();
+    resetEditorState();
+    router.push("/#tools");
+  }, [resetEditorState, router]);
 
   const exportButtons = (
     <div className="flex flex-wrap items-center gap-2">
@@ -243,6 +451,15 @@ export function ExcelEditorTool() {
     </div>
   );
 
+  if (!sessionReady) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center px-4 text-sm text-muted-foreground">
+        <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden />
+        Loading Excel editor…
+      </div>
+    );
+  }
+
   if (hasSheet && sheetKey) {
     return (
       <motion.div
@@ -252,18 +469,47 @@ export function ExcelEditorTool() {
         transition={{ duration: 0.3, ease }}
       >
         <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-muted px-3 py-2 sm:gap-3 sm:px-4">
-          <Link
-            href="/#tools"
+          <button
+            type="button"
+            onClick={handleLeaveTool}
             className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-card hover:text-foreground sm:text-sm"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             <span className="hidden sm:inline">All tools</span>
-          </Link>
+          </button>
           <div className="min-w-0 flex-1 border-l border-border pl-2 sm:pl-3">
             <p className="truncate text-sm font-semibold text-foreground">{originalFileName}</p>
             <p className="truncate text-[11px] text-muted-foreground">
               {formatBytes(fileSize)} · {fileData.length} rows × {headers.length} cols · double-click to edit
             </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-border bg-card px-2 py-1.5 text-xs font-medium text-foreground">
+              <Rows3 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="hidden sm:inline">Header row</span>
+              <select
+                value={headerRowChoice}
+                onChange={(e) => applyHeaderRowChoice(Number(e.target.value))}
+                className="max-w-[5.5rem] cursor-pointer rounded-md border-0 bg-transparent py-0.5 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                aria-label="Title row for column headers"
+              >
+                {Array.from({ length: fileData.length + 1 }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    Row {n}
+                  </option>
+                ))}
+                <option value={0}>No header</option>
+              </select>
+            </label>
+            <button
+              type="button"
+              onClick={handleDeleteSelectedRows}
+              className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-2 text-xs font-semibold text-foreground transition hover:bg-muted"
+              title="Select rows, then delete"
+            >
+              <Trash2 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="hidden sm:inline">Delete rows</span>
+            </button>
           </div>
           {exportButtons}
           <button
@@ -287,7 +533,32 @@ export function ExcelEditorTool() {
           </p>
         ) : null}
 
+        <ExcelEditorRibbon
+          hotRef={hotInstanceRef}
+          sheetKey={sheetKey}
+          onOpenFindReplace={() => setFindReplaceOpen(true)}
+        />
+        <ExcelEditorFormatBar
+          hotRef={hotInstanceRef}
+          formatStoreRef={formatStoreRef}
+          onPersist={schedulePersistSession}
+          onToast={(msg) => {
+            setToast(msg);
+            window.setTimeout(() => setToast(null), 2500);
+          }}
+        />
+        <ExcelEditorFormulaBar hotRef={hotInstanceRef} sheetKey={sheetKey} />
+
         <div className="relative min-h-0 flex-1 w-full">
+          <ExcelEditorFindReplace
+            open={findReplaceOpen}
+            onClose={() => setFindReplaceOpen(false)}
+            hotRef={hotInstanceRef}
+            onToast={(msg) => {
+              setToast(msg);
+              window.setTimeout(() => setToast(null), 3000);
+            }}
+          />
           {isLoading ? (
             <motion.div
               className="absolute inset-0 z-10 flex items-center justify-center bg-card/80"
@@ -304,8 +575,11 @@ export function ExcelEditorTool() {
             sheetKey={sheetKey}
             data={fileData}
             headers={headers}
+            formatStoreRef={formatStoreRef}
             onReady={handleGridReady}
             onDestroy={handleGridDestroy}
+            onSetHeaderFromRow={applyHeaderFromBodyRow}
+            onSheetChange={schedulePersistSession}
           />
         </div>
       </motion.div>
@@ -326,13 +600,14 @@ export function ExcelEditorTool() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease }}
         >
-          <Link
-            href="/#tools"
+          <button
+            type="button"
+            onClick={handleLeaveTool}
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             All tools
-          </Link>
+          </button>
           <span className="rounded-full border border-border bg-card px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Utility
           </span>
@@ -418,8 +693,11 @@ export function ExcelEditorTool() {
                 <h2 className="text-sm font-bold text-foreground">How it works</h2>
                 <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-muted-foreground">
                   <li>Upload an Excel or CSV file</li>
-                  <li>Double-click a cell to edit</li>
-                  <li>Scroll to navigate large sheets</li>
+                  <li>Edit in cells or the formula bar — use =SUM(A1:A5) for formulas</li>
+                  <li>Use the Format bar for fonts, colors, borders, and number formats</li>
+                  <li>Copy, cut, paste, and undo/redo from the toolbar</li>
+                  <li>Drag the fill handle to AutoFill patterns</li>
+                  <li>Ctrl+F (Cmd+F) for find &amp; replace</li>
                   <li>Export to Excel, CSV, or PDF</li>
                 </ol>
               </motion.div>
@@ -431,7 +709,9 @@ export function ExcelEditorTool() {
                 <h2 className="text-sm font-bold text-foreground">Tips</h2>
                 <ul className="mt-3 list-disc space-y-2 pl-4 text-sm text-muted-foreground">
                   <li>Use arrow keys and Tab to move between cells</li>
-                  <li>Right-click for row/column actions</li>
+                  <li>Right-click for row actions and paste special</li>
+                  <li>Pick the header row from the toolbar dropdown</li>
+                  <li>Your sheet is saved in this browser until you close or remove it</li>
                   <li>Runs locally — nothing uploaded</li>
                 </ul>
               </motion.div>

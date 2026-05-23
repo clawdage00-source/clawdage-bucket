@@ -1,10 +1,19 @@
 "use client";
 
 import Handsontable from "handsontable";
+import type { MenuConfig } from "handsontable/plugins/contextMenu";
 import { getEditor } from "handsontable/editors/registry";
 import { TextEditor } from "handsontable/editors/textEditor";
 import { registerAllModules } from "handsontable/registry";
+import { HyperFormula } from "hyperformula";
 import { useEffect, useRef } from "react";
+
+import type { CellFormatStore } from "@/lib/excel-editor/cell-format-store";
+import { applyConditionalFormatting } from "@/lib/excel-editor/conditional-format";
+import { inferCellMeta } from "@/lib/excel-editor/cell-meta";
+import { buildFormatCellMeta } from "@/lib/excel-editor/format-meta";
+import "@/lib/excel-editor/formatted-renderer";
+import { safeAddHook, safeRemoveHook } from "@/lib/excel-editor/handsontable-hooks";
 
 import "handsontable/styles/handsontable.css";
 import "handsontable/styles/ht-theme-main.css";
@@ -16,12 +25,15 @@ registerAllModules();
 const DEFAULT_TEXT_EDITOR = getEditor("text");
 
 export type ExcelEditorGridProps = {
-  /** Change when a new workbook is loaded so the grid is recreated once. */
   sheetKey: string;
   data: (string | number)[][];
   headers: string[];
+  formatStoreRef: React.RefObject<CellFormatStore | null>;
   onReady: (hot: Handsontable.Core) => void;
   onDestroy: () => void;
+  onSetHeaderFromRow?: (bodyRowIndex: number) => void;
+  /** Fired after cell data changes (debounced persist in parent). */
+  onSheetChange?: () => void;
 };
 
 function measureHost(host: HTMLElement) {
@@ -38,7 +50,6 @@ function isValidEditorValue(
   return editor === false || typeof editor === "string" || typeof editor === "function";
 }
 
-/** Handsontable v17: cell meta `editor` must be false, a string alias, or an editor class — never boolean. */
 function normalizeCellEditor(
   _row: number,
   _col: number,
@@ -48,7 +59,7 @@ function normalizeCellEditor(
   cellProperties.editor = TextEditor;
 }
 
-function buildColumns(colCount: number): Handsontable.GridSettings["columns"] {
+export function buildExcelColumns(colCount: number): Handsontable.GridSettings["columns"] {
   return Array.from({ length: colCount }, (_, data) => ({
     data,
     type: "text",
@@ -57,7 +68,6 @@ function buildColumns(colCount: number): Handsontable.GridSettings["columns"] {
   }));
 }
 
-/** Guard against any invalid editor resolved from inherited/plugin meta (e.g. boolean `true`). */
 function patchGetCellEditor(hot: Handsontable.Core) {
   const original = hot.getCellEditor.bind(hot);
   hot.getCellEditor = ((rowOrMeta: number | Handsontable.CellMeta, column?: number) => {
@@ -71,26 +81,115 @@ function patchGetCellEditor(hot: Handsontable.Core) {
   }) as unknown as typeof hot.getCellEditor;
 }
 
-export function ExcelEditorGrid({ sheetKey, data, headers, onReady, onDestroy }: ExcelEditorGridProps) {
+function pasteWithMode(hot: Handsontable.Core, mode: "overwrite" | "shift_down" | "shift_right") {
+  const cp = hot.getPlugin("copyPaste");
+  const prev = cp.pasteMode;
+  cp.pasteMode = mode;
+  cp.paste();
+  cp.pasteMode = prev;
+}
+
+function buildContextMenu(
+  onSetHeaderFromRow?: (bodyRowIndex: number) => void,
+): Handsontable.GridSettings["contextMenu"] {
+  const base: MenuConfig = {
+    undo: {},
+    redo: {},
+    sp_undo: { name: "---------" },
+    row_above: {},
+    row_below: {},
+    remove_row: { name: "Delete row(s)" },
+    ...(onSetHeaderFromRow
+      ? {
+          sp_header: { name: "---------" },
+          set_header_row: {
+            name: "Use selected row as header",
+            callback(this: Handsontable.Core) {
+              const range = this.getSelectedRangeActive();
+              if (!range || range.from.row < 0) return;
+              onSetHeaderFromRow(range.from.row);
+            },
+            disabled(this: Handsontable.Core) {
+              const range = this.getSelectedRangeActive();
+              return !range || range.from.row < 0;
+            },
+          },
+        }
+      : {}),
+    sp_fmt: { name: "---------" },
+    alignment: {},
+    mergeCells: {},
+    sp_clip: { name: "---------" },
+    copy: {},
+    cut: {},
+    paste: {
+      name: "Paste",
+      callback(this: Handsontable.Core) {
+        this.getPlugin("copyPaste").paste();
+      },
+    },
+    paste_shift_down: {
+      name: "Paste — shift cells down",
+      callback(this: Handsontable.Core) {
+        pasteWithMode(this, "shift_down");
+      },
+    },
+    paste_shift_right: {
+      name: "Paste — shift cells right",
+      callback(this: Handsontable.Core) {
+        pasteWithMode(this, "shift_right");
+      },
+    },
+  };
+
+  return { items: base };
+}
+
+export function ExcelEditorGrid({
+  sheetKey,
+  data,
+  headers,
+  formatStoreRef,
+  onReady,
+  onDestroy,
+  onSetHeaderFromRow,
+  onSheetChange,
+}: ExcelEditorGridProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const hotRef = useRef<Handsontable.Core | null>(null);
   const onReadyRef = useRef(onReady);
   const onDestroyRef = useRef(onDestroy);
+  const onSetHeaderFromRowRef = useRef(onSetHeaderFromRow);
+  const onSheetChangeRef = useRef(onSheetChange);
+  const dataRef = useRef(data);
 
   onReadyRef.current = onReady;
   onDestroyRef.current = onDestroy;
+  onSetHeaderFromRowRef.current = onSetHeaderFromRow;
+  onSheetChangeRef.current = onSheetChange;
+  dataRef.current = data;
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
     const { width, height } = measureHost(host);
+    const formulaSheetName = `sheet_${sheetKey.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 48)}`;
+
+    const onAfterChange = () => {
+      const store = formatStoreRef.current;
+      const hotInstance = hotRef.current;
+      if (store && hotInstance && store.getRules().length) {
+        applyConditionalFormatting(hotInstance, store);
+      }
+      onSheetChangeRef.current?.();
+    };
 
     const hot = new Handsontable(host, {
       licenseKey: "non-commercial-and-evaluation",
       data,
       colHeaders: headers,
-      columns: buildColumns(headers.length),
+      columns: buildExcelColumns(headers.length),
       rowHeaders: true,
       width,
       height,
@@ -103,21 +202,55 @@ export function ExcelEditorGrid({ sheetKey, data, headers, onReady, onDestroy }:
       outsideClickDeselects: false,
       manualColumnResize: true,
       manualRowResize: true,
-      contextMenu: true,
+      allowInsertRow: true,
+      allowRemoveRow: true,
+      undo: true,
+      copyPaste: true,
+      mergeCells: true,
+      customBorders: true,
+      fillHandle: {
+        autoInsertRow: true,
+        direction: "vertical",
+      },
+      formulas: {
+        engine: HyperFormula,
+        sheetName: formulaSheetName,
+      },
+      search: {
+        searchResultClass: "htSearchResult",
+      },
+      contextMenu: buildContextMenu(onSetHeaderFromRowRef.current),
       columnSorting: true,
       renderAllRows: false,
       viewportRowRenderingOffset: 30,
       viewportColumnRenderingOffset: 10,
-      cells: () => ({
-        type: "text",
-        editor: TextEditor,
-        readOnly: false,
-      }),
+      cells(row, col) {
+        const val = dataRef.current[row]?.[col];
+        const store = formatStoreRef.current;
+        if (store) {
+          const fmt = store.get(row, col);
+          const hasFormat = Object.keys(fmt).length > 0;
+          if (hasFormat) {
+            return {
+              ...buildFormatCellMeta(row, col, val, fmt),
+              editor: TextEditor,
+              readOnly: false,
+            };
+          }
+        }
+        const inferred = inferCellMeta(val);
+        return {
+          ...inferred,
+          editor: TextEditor,
+          readOnly: false,
+        };
+      },
       beforeGetCellMeta: normalizeCellEditor,
       afterGetCellMeta: normalizeCellEditor,
     });
 
     patchGetCellEditor(hot);
+    safeAddHook(hot, "afterChange", onAfterChange);
 
     hotRef.current = hot;
     onReadyRef.current(hot);
@@ -143,11 +276,11 @@ export function ExcelEditorGrid({ sheetKey, data, headers, onReady, onDestroy }:
       window.clearTimeout(resizeTimer);
       window.removeEventListener("resize", scheduleResize);
       ro.disconnect();
+      safeRemoveHook(hot, "afterChange", onAfterChange);
+      onDestroyRef.current();
       hot.destroy();
       hotRef.current = null;
-      onDestroyRef.current();
     };
-    // Recreate only when user loads a different sheet
     // eslint-disable-next-line react-hooks/exhaustive-deps -- sheetKey gates full rebuild
   }, [sheetKey]);
 

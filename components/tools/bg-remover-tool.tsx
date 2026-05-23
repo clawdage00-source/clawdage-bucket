@@ -8,7 +8,6 @@ import {
   ImagePlus,
   Loader2,
   RefreshCw,
-  SlidersHorizontal,
   Sparkles,
   Trash2,
 } from "lucide-react";
@@ -123,8 +122,6 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
   const [error, setError] = useState<string | null>(null);
   const [comparePct, setComparePct] = useState(50);
   const [compareDragging, setCompareDragging] = useState(false);
-  const [compareMode, setCompareMode] = useState<"slider" | "toggle">("slider");
-  const [showAfterToggle, setShowAfterToggle] = useState(true);
   const [exportSolid, setExportSolid] = useState<(typeof EXPORT_SOLIDS)[number]["id"]>("transparent");
   const [eligibility, setEligibility] = useState(initialEligibility);
   const [upsellOpen, setUpsellOpen] = useState(false);
@@ -160,7 +157,6 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
     setError(null);
     setProgressMsg(null);
     setComparePct(50);
-    setShowAfterToggle(true);
     setExportSolid("transparent");
     if (fileInputRef.current) fileInputRef.current.value = "";
   }, [beforeUrl, afterUrl]);
@@ -300,14 +296,14 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
 
   const onComparePointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!afterUrl || compareMode !== "slider") return;
+      if (!afterUrl) return;
       e.preventDefault();
       compareDraggingRef.current = true;
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       setCompareDragging(true);
       setCompareFromClientX(e.clientX);
     },
-    [afterUrl, compareMode, setCompareFromClientX],
+    [afterUrl, setCompareFromClientX],
   );
 
   const onComparePointerMove = useCallback(
@@ -404,31 +400,9 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
             {beforeUrl ? (
               <>
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  {afterUrl ? (
-                    <div className="inline-flex rounded-lg border border-border p-0.5 text-xs font-medium">
-                      <button
-                        type="button"
-                        onClick={() => setCompareMode("slider")}
-                        className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 ${
-                          compareMode === "slider" ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"
-                        }`}
-                      >
-                        <SlidersHorizontal className="h-3.5 w-3.5" />
-                        Compare slider
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCompareMode("toggle")}
-                        className={`rounded-md px-2.5 py-1.5 ${
-                          compareMode === "toggle" ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"
-                        }`}
-                      >
-                        Before / After
-                      </button>
-                    </div>
-                  ) : (
-                    <p className="text-sm font-medium text-muted-foreground">Preview</p>
-                  )}
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {afterUrl ? "Drag the slider to compare" : "Preview"}
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     <label
                       htmlFor={formId}
@@ -494,14 +468,14 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                         </div>
                       ) : null}
                     </div>
-                  ) : beforeUrl && afterUrl && compareMode === "slider" ? (
+                  ) : beforeUrl && afterUrl ? (
                     <div
                       ref={compareTrackRef}
                       role="slider"
                       aria-valuenow={comparePct}
                       aria-valuemin={0}
                       aria-valuemax={100}
-                      aria-label="Drag to compare original and background removed"
+                      aria-label="Drag to compare before and after"
                       className="relative w-full cursor-ew-resize touch-none select-none"
                       onPointerDown={onComparePointerDown}
                       onPointerMove={onComparePointerMove}
@@ -509,17 +483,28 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                       onPointerCancel={onComparePointerUp}
                       onLostPointerCapture={endCompareDrag}
                     >
-                      <img src={beforeUrl} alt="" className="block w-full object-contain" draggable={false} />
                       <img
                         src={afterUrl}
-                        alt=""
-                        className="pointer-events-none absolute inset-0 h-full w-full object-contain"
+                        alt="Background removed"
+                        className="block max-h-[min(70vh,560px)] w-full object-contain"
+                        draggable={false}
+                      />
+                      <img
+                        src={beforeUrl}
+                        alt="Original"
+                        className="pointer-events-none absolute inset-0 h-full w-full max-h-[min(70vh,560px)] object-contain"
                         style={{
                           clipPath: `inset(0 ${100 - comparePct}% 0 0)`,
                           transition: clipTransition,
                         }}
                         draggable={false}
                       />
+                      <span className="pointer-events-none absolute left-3 top-3 z-[3] rounded-md bg-black/70 px-2 py-1 text-xs font-semibold text-white">
+                        Before
+                      </span>
+                      <span className="pointer-events-none absolute right-3 top-3 z-[3] rounded-md bg-black/70 px-2 py-1 text-xs font-semibold text-white">
+                        After
+                      </span>
                       <div
                         className="pointer-events-none absolute inset-y-0 z-[2] flex w-10 -translate-x-1/2 items-center justify-center"
                         style={{
@@ -540,55 +525,8 @@ export function BgRemoverTool({ initialEligibility }: BgRemoverToolProps) {
                         }}
                       />
                     </div>
-                  ) : beforeUrl && afterUrl ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowAfterToggle((v) => !v)}
-                      className="relative block w-full outline-none"
-                    >
-                      <img
-                        src={showAfterToggle ? afterUrl : beforeUrl}
-                        alt=""
-                        className="block w-full object-contain"
-                      />
-                      <span className="absolute bottom-3 left-3 rounded-md bg-black/75 px-2 py-1 text-xs font-medium text-white">
-                        Tap to show {showAfterToggle ? "original" : "removed background"}
-                      </span>
-                    </button>
                   ) : null}
                 </div>
-
-                {compareMode === "slider" && beforeUrl && afterUrl ? (
-                  <div className="space-y-2 px-0.5">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Original</span>
-                      <span>Background removed</span>
-                    </div>
-                    <label className="sr-only" htmlFor={`${formId}-compare`}>
-                      Compare position
-                    </label>
-                    <input
-                      id={`${formId}-compare`}
-                      type="range"
-                      min={0}
-                      max={100}
-                      value={comparePct}
-                      onPointerDown={() => {
-                        compareDraggingRef.current = true;
-                        setCompareDragging(true);
-                      }}
-                      onPointerUp={() => {
-                        compareDraggingRef.current = false;
-                        setCompareDragging(false);
-                      }}
-                      onChange={(e) => setComparePct(Number(e.target.value))}
-                      className="h-3 w-full cursor-pointer appearance-none rounded-full bg-muted accent-foreground [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-slate-900 [&::-webkit-slider-thumb]:shadow-md"
-                      style={{
-                        background: `linear-gradient(to right, rgb(15 23 42) 0%, rgb(15 23 42) ${comparePct}%, rgb(226 232 240) ${comparePct}%, rgb(226 232 240) 100%)`,
-                      }}
-                    />
-                  </div>
-                ) : null}
 
                 {afterUrl ? (
                   <div className="space-y-3 rounded-xl border border-border bg-muted/80 p-4">

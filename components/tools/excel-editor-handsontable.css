@@ -118,3 +118,38 @@
   color: oklch(0.65 0 0) !important;
   border-color: oklch(0.28 0 0) !important;
 }
+
+/* Find & replace highlights */
+.excel-editor-hot td.htSearchResult {
+  background: #fef9c3 !important;
+  outline: 2px solid #eab308;
+  outline-offset: -2px;
+}
+
+.dark .excel-editor-hot td.htSearchResult {
+  background: oklch(0.28 0.06 95) !important;
+  outline-color: oklch(0.75 0.15 95);
+}
+
+/* Autofill drag handle */
+.excel-editor-hot .wtBorder.fill {
+  border-color: #2563eb !important;
+}
+
+/* Alignment / wrap helpers */
+.excel-editor-hot td.htWrap {
+  white-space: normal !important;
+  word-break: break-word;
+}
+
+.excel-editor-hot td.htMiddle {
+  vertical-align: middle !important;
+}
+
+.excel-editor-hot td.htTop {
+  vertical-align: top !important;
+}
+
+.excel-editor-hot td.htBottom {
+  vertical-align: bottom !important;
+}
