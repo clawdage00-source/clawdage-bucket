@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, TrendingUp } from "lucide-react";
+import { ArrowRight, Sparkles, TrendingUp } from "lucide-react";
 
 import { IndiaTrustBadges } from "@/components/india-trust-badges";
 import { PlatformStats } from "@/components/platform-stats";
 import { EXAM_TOOLS } from "@/lib/seo/exam-tools";
 import { getExamSeasonTools, getTrendingTools } from "@/lib/seo/trending-tools";
-import { MVP_TOOLS } from "@/lib/tools-data";
+import { MVP_TOOLS, NEW_TOOL_SLUGS } from "@/lib/tools-data";
 
 export function HomeFeaturedSections() {
   const trending = getTrendingTools(undefined, 6);
@@ -14,8 +14,45 @@ export function HomeFeaturedSections() {
     ["id-resizer", "passport-photo", "compress-pdf", "e-sign", "image-compressor"].includes(t.slug),
   );
 
+  const newTools = MVP_TOOLS.filter((t) => NEW_TOOL_SLUGS.includes(t.slug as (typeof NEW_TOOL_SLUGS)[number]));
+
   return (
     <>
+      <section className="border-b border-border bg-emerald-50/40 px-6 py-12 sm:py-14">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                New tools
+              </p>
+              <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">Fresh PDF & business utilities</h2>
+              <p className="mt-2 max-w-xl text-muted-foreground">
+                Unlock PDFs, split pages, GST invoices, bank statements to Excel, signatures, and WhatsApp links — all in your browser.
+              </p>
+            </div>
+          </div>
+          <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {newTools.map((tool) => (
+              <li key={tool.slug}>
+                <Link
+                  href={`/tools/${tool.slug}`}
+                  className="group flex flex-col rounded-2xl border border-emerald-200/80 bg-card p-5 transition hover:border-emerald-400/60 hover:shadow-md"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="font-semibold text-foreground group-hover:text-emerald-800">{tool.name}</span>
+                    <span className="rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+                      New
+                    </span>
+                  </span>
+                  <span className="mt-1 text-sm text-muted-foreground">{tool.description}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       <section className="border-b border-border bg-background px-6 py-14 sm:py-16">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

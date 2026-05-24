@@ -1,8 +1,10 @@
 import { CellFormatStore } from "@/lib/excel-editor/cell-format-store";
 import type { CellFormat, ConditionalRule } from "@/lib/excel-editor/format-types";
+import type { NamedRange } from "@/lib/excel-editor/named-ranges-store";
+import type { ColumnValidation } from "@/lib/excel-editor/validation-store";
 
 const STORAGE_KEY = "clawdage:excel-editor-session";
-const SESSION_VERSION = 1;
+const SESSION_VERSION = 2;
 
 export type ExcelEditorSession = {
   version: typeof SESSION_VERSION;
@@ -16,6 +18,8 @@ export type ExcelEditorSession = {
     cells: Record<string, CellFormat>;
     rules: ConditionalRule[];
   };
+  columnValidations?: Record<string, ColumnValidation>;
+  namedRanges?: NamedRange[];
   updatedAt: number;
 };
 
@@ -27,7 +31,7 @@ export function loadExcelEditorSession(): ExcelEditorSession | null {
     if (!raw) return null;
 
     const parsed = JSON.parse(raw) as ExcelEditorSession;
-    if (parsed.version !== SESSION_VERSION) return null;
+    if (parsed.version !== SESSION_VERSION && parsed.version !== 1) return null;
     if (!parsed.sheetKey || !Array.isArray(parsed.headers)) return null;
     if (!Array.isArray(parsed.fileData)) return null;
 
@@ -38,6 +42,8 @@ export function loadExcelEditorSession(): ExcelEditorSession | null {
         Array.isArray(row) ? row.map((c) => (c === null || c === undefined ? "" : c)) : [],
       ),
       formats: parsed.formats ?? { cells: {}, rules: [] },
+      columnValidations: parsed.columnValidations,
+      namedRanges: parsed.namedRanges,
     };
   } catch {
     return null;

@@ -7,17 +7,23 @@ import { getToolBySlug, MVP_TOOL_SLUGS } from "@/lib/tools-data";
 
 /** Slugs that have `app/tools/<slug>/page.tsx` — do not duplicate under `[slug]`. */
 const DEDICATED_TOOL_SLUGS = new Set([
+  "bank-statement-to-excel",
   "bg-remover",
   "e-sign",
   "excel-editor",
   "id-resizer",
   "image-compressor",
+  "invoice-generator",
   "ocr",
   "passport-photo",
+  "pdf-split",
   "pdf-to-excel",
+  "pdf-unlock",
   "qr-generator",
+  "signature-maker",
   "image-to-pdf",
   "format-converter",
+  "whatsapp-link",
 ]);
 
 type ToolPageProps = {

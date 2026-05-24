@@ -25,6 +25,7 @@ import { trackEvent } from "@/lib/analytics";
 
 import {
   getTabLabel,
+  isNewTool,
   MVP_TOOLS,
   type ToolDefinition,
   type ToolIconId,
@@ -172,6 +173,10 @@ export function ToolGrid() {
                           <span className="absolute right-4 top-4 rounded-md border border-amber-200/80 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-900">
                             Pro
                           </span>
+                        ) : isNewTool(tool.slug) ? (
+                          <span className="absolute right-4 top-4 rounded-md border border-emerald-200/80 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-800">
+                            New
+                          </span>
                         ) : null}
                         <div className="flex h-28 w-28 shrink-0 items-center justify-center sm:h-32 sm:w-32">
                             {cardIconSrc ? (
@@ -187,7 +192,7 @@ export function ToolGrid() {
                               <Icon className="h-14 w-14 shrink-0 text-foreground sm:h-16 sm:w-16" aria-hidden />
                             )}
                           </div>
-                          <div className={`flex min-w-0 flex-1 flex-col ${tool.is_pro ? "pr-16" : ""}`}>
+                          <div className={`flex min-w-0 flex-1 flex-col ${tool.is_pro || isNewTool(tool.slug) ? "pr-16" : ""}`}>
                             <h3 className="text-base font-semibold text-foreground">{tool.name}</h3>
                             <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{tool.description}</p>
                             <p className="mt-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">

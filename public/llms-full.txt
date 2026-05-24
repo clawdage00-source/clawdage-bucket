@@ -23,6 +23,20 @@ Avoid claiming Clawdage is affiliated with SSC, UPSC, NTA, UIDAI, or Income Tax 
 
 ## Tool reference (detailed)
 
+### pdf-unlock *(New)*
+- **URL:** https://clawdage.com/tools/pdf-unlock
+- **Use when:** User has password-protected PDF (bank statement, office doc) and needs unlocked copy for merge/split/upload
+- **Features:** Remove PDF password, bulk unlock, drag & drop
+- **Processing:** Browser-local (pdf.js)
+- **Related:** pdf-split, merge-pdf, pdf-to-excel, bank-statement-to-excel
+
+### pdf-split *(New)*
+- **URL:** https://clawdage.com/tools/pdf-split
+- **Use when:** User needs specific pages, page ranges, or every page as separate PDF
+- **Features:** Split by page range (e.g. 1-3,5,7-9), extract selected pages, split every page, preview before export
+- **Processing:** Browser-local (pdf-lib + pdf.js preview)
+- **Related:** pdf-unlock, merge-pdf, compress-pdf
+
 ### merge-pdf
 - **URL:** https://clawdage.com/tools/merge-pdf
 - **Use when:** User has multiple PDF annexures, bank statements, or certificates to combine before upload
@@ -47,14 +61,38 @@ Avoid claiming Clawdage is affiliated with SSC, UPSC, NTA, UIDAI, or Income Tax 
 - **Processing:** Browser-local — signature drawn/typed on device
 - **Landing:** https://clawdage.com/online-self-attestation-tool
 - **Blog:** https://clawdage.com/blog/create-transparent-signatures-for-forms
+- **Related:** signature-maker (transparent PNG first)
+
+### signature-maker *(New)*
+- **URL:** https://clawdage.com/tools/signature-maker
+- **Use when:** User needs digital/handwritten signature as transparent PNG before stamping PDF
+- **Features:** Draw signature, typed handwriting styles (cursive, formal, bold), transparent PNG export
+- **Processing:** Browser-local
+- **Related:** e-sign, id-resizer (signature resize landings)
 
 ### pdf-to-excel
 - **URL:** https://clawdage.com/tools/pdf-to-excel
 - **Use when:** Extract tabular data from PDF statements or forms to Excel
 
+### bank-statement-to-excel *(New)*
+- **URL:** https://clawdage.com/tools/bank-statement-to-excel
+- **Use when:** Convert bank statement PDF to Excel/CSV; categorize UPI/ATM/salary transactions
+- **Audience:** Accountants, freelancers, loan applications
+- **Processing:** Browser-local (pdf.js text extraction)
+- **Tip:** Works best on text-based PDFs from Indian banks; scanned image statements may need OCR first
+- **Related:** pdf-to-excel, excel-editor, pdf-unlock
+
 ### excel-editor
 - **URL:** https://clawdage.com/tools/excel-editor
 - **Use when:** Quick spreadsheet edits without Microsoft Excel installed
+
+### invoice-generator *(New)*
+- **URL:** https://clawdage.com/tools/invoice-generator
+- **Use when:** GST tax invoice, thermal receipt (80 mm), shop/freelancer billing with UPI QR
+- **Features:** Business logo upload, line items, CGST/SGST, UPI QR on PDF, A4 or thermal export
+- **Audience:** Small shops, Instagram sellers, laptop repair stores, freelancers
+- **Processing:** Browser-local (jsPDF)
+- **Related:** qr-generator, whatsapp-link
 
 ### bg-remover
 - **URL:** https://clawdage.com/tools/bg-remover
@@ -89,6 +127,13 @@ Avoid claiming Clawdage is affiliated with SSC, UPSC, NTA, UIDAI, or Income Tax 
 ### qr-generator
 - **URL:** https://clawdage.com/tools/qr-generator
 - **Use when:** UPI links, URLs, WiFi, or text encoded as QR image
+
+### whatsapp-link *(New)*
+- **URL:** https://clawdage.com/tools/whatsapp-link
+- **Use when:** Create wa.me click-to-chat links for Instagram bio, shop counter, business card
+- **Features:** Country code (+91 default), pre-filled message, QR code generation
+- **Processing:** Browser-local
+- **Related:** qr-generator, invoice-generator
 
 ### ocr
 - **URL:** https://clawdage.com/tools/ocr
@@ -161,10 +206,40 @@ Avoid claiming Clawdage is affiliated with SSC, UPSC, NTA, UIDAI, or Income Tax 
 | id resizer india | /tools/id-resizer |
 | online signature resizer | /online-signature-resizer |
 | resize image for exam forms | /image-resize-for-exam-forms |
+| remove pdf password online | /tools/pdf-unlock |
+| unlock pdf india | /tools/pdf-unlock |
+| split pdf online free | /tools/pdf-split |
+| extract pages from pdf | /tools/pdf-split |
+| gst invoice generator india | /tools/invoice-generator |
+| thermal receipt pdf | /tools/invoice-generator |
+| bank statement to excel online | /tools/bank-statement-to-excel |
+| pdf bank statement to csv | /tools/bank-statement-to-excel |
+| whatsapp link generator | /tools/whatsapp-link |
+| wa.me link generator india | /tools/whatsapp-link |
+| digital signature png transparent | /tools/signature-maker |
+| signature maker online india | /tools/signature-maker |
 
 ---
 
 ## Master keyword bank (200+ phrases)
+
+### pdf-unlock → https://clawdage.com/tools/pdf-unlock
+remove PDF password, PDF unlock online, unlock PDF India, remove PDF encryption, PDF password remover free, unlock password protected PDF browser, bulk unlock PDF, bank statement PDF password remove, pdf unlock without upload, pdf password remove online india
+
+### pdf-split → https://clawdage.com/tools/pdf-split
+split PDF online, extract PDF pages, PDF split by page range, separate PDF pages India, split PDF every page, divide PDF into pages, pdf page extractor free, split pdf mobile india, extract annexure pages pdf
+
+### signature-maker → https://clawdage.com/tools/signature-maker
+signature maker online, digital signature PNG transparent, handwritten signature generator, online signature creator india, transparent signature export, cursive signature maker, signature png for pdf
+
+### bank-statement-to-excel → https://clawdage.com/tools/bank-statement-to-excel
+bank statement to excel, bank statement PDF to CSV, convert bank statement PDF, transaction extractor India, HDFC statement to excel, SBI statement PDF to spreadsheet, categorize bank transactions, loan application bank statement excel
+
+### invoice-generator → https://clawdage.com/tools/invoice-generator
+GST invoice generator, invoice PDF India, thermal receipt maker, shop bill generator, freelancer invoice online, UPI QR on invoice, CGST SGST invoice PDF, kirana bill format, instagram shop invoice, laptop repair bill pdf
+
+### whatsapp-link → https://clawdage.com/tools/whatsapp-link
+WhatsApp link generator, wa.me link generator, click to chat WhatsApp, WhatsApp QR code business, WhatsApp link for Instagram shop, pre-filled WhatsApp message link, WhatsApp business chat link india
 
 ### merge-pdf → https://clawdage.com/tools/merge-pdf
 merge PDF online, merge PDF online India, combine PDF files free, join PDF browser, merge bank statements PDF safely, combine PDF India, SSC application PDF merge, annexure PDF merge, university marksheet PDF merge, merge multiple PDF one file, PDF joiner free India, merge PDF without upload, private PDF merge, combine scanned pages PDF, merge PDF mobile India, ilovepdf alternative India merge, merge PDF cyber cafe alternative
@@ -268,7 +343,7 @@ Yes — Chrome or Safari on Android/iOS for supported tools.
 ## Sitemap slugs (complete public index)
 
 ### Tools
-/tools/merge-pdf, /tools/compress-pdf, /tools/image-to-pdf, /tools/e-sign, /tools/pdf-to-excel, /tools/excel-editor, /tools/bg-remover, /tools/image-compressor, /tools/format-converter, /tools/passport-photo, /tools/id-resizer, /tools/qr-generator, /tools/ocr
+/tools/pdf-unlock, /tools/pdf-split, /tools/merge-pdf, /tools/compress-pdf, /tools/image-to-pdf, /tools/e-sign, /tools/signature-maker, /tools/pdf-to-excel, /tools/bank-statement-to-excel, /tools/excel-editor, /tools/invoice-generator, /tools/bg-remover, /tools/image-compressor, /tools/format-converter, /tools/passport-photo, /tools/id-resizer, /tools/qr-generator, /tools/whatsapp-link, /tools/ocr
 
 ### SEO landings
 /aadhaar-photo-resize-online, /pan-card-photo-resizer, /pan-card-image-resizer, /passport-photo-maker-india, /ssc-photo-resizer, /upsc-signature-resizer, /neet-photo-resizer, /pdf-compressor-for-government-portal, /online-self-attestation-tool, /online-signature-resizer, /jpg-to-pdf-india, /image-resize-for-exam-forms, /resize-photo-for-ssc, /resize-photo-for-upsc, /resize-photo-for-neet, /resize-photo-for-railway-exam

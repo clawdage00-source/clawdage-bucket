@@ -483,6 +483,138 @@ export const TOOL_SEO_BY_SLUG: Record<string, ToolSeoEntry> = {
       },
     ],
   },
+  "pdf-unlock": {
+    metaTitle: "PDF Unlock Online — Remove PDF Password Free (India)",
+    metaDescription:
+      "Remove PDF password protection in your browser. Bulk unlock password-protected PDFs locally — no upload to cloud servers.",
+    keywords: ["remove PDF password", "PDF unlock online", "unlock PDF India", "remove PDF encryption"],
+    howToSteps: [
+      "Drop your password-protected PDF (or multiple files for bulk unlock).",
+      "Enter the document password if prompted.",
+      "Download unlocked PDFs ready to merge, split, or upload to portals.",
+    ],
+    whyTitle: "Why unlock PDFs locally?",
+    whyParagraph:
+      "Bank statements and office PDFs are often password-locked. Unlocking in-browser keeps account numbers and personal data off third-party servers.",
+    targetHeading: "Unlock bank statements and office PDFs safely",
+    targetBody:
+      "After unlocking, use Merge PDF or PDF to Excel on Clawdage for the next step. Always delete unlocked copies from shared computers.",
+    faqs: [
+      { question: "Is bulk unlock supported?", answer: "Yes — add multiple PDFs and unlock them one after another in your browser." },
+      { question: "Will unlocking reduce quality?", answer: "No — pages are copied without re-scanning or re-compression." },
+      { question: "What if I forgot the password?", answer: "This tool needs the correct password. It cannot crack unknown passwords." },
+    ],
+  },
+  "pdf-split": {
+    metaTitle: "PDF Split Online — Extract Pages & Split PDF Free",
+    metaDescription:
+      "Split PDF by page range, extract specific pages, or save every page as a separate file. Preview before export — 100% browser-side.",
+    keywords: ["split PDF online", "extract PDF pages", "PDF split India", "separate PDF pages"],
+    howToSteps: [
+      "Upload your PDF and preview pages.",
+      "Choose split by range, extract selected pages, or split every page.",
+      "Download the resulting PDF file(s) instantly.",
+    ],
+    whyTitle: "Why split PDFs on Clawdage?",
+    whyParagraph:
+      "Exam forms, leases, and bank bundles often need only a few pages. Split locally instead of emailing full documents to random online tools.",
+    targetHeading: "Extract annexures and statement pages",
+    targetBody:
+      "Use page ranges like 1-3,5,7-9 for multiple output files. Pair with PDF Unlock if your source file is password-protected.",
+    faqs: [
+      { question: "Can I preview before splitting?", answer: "Yes — scroll through page previews before you export." },
+      { question: "Split every page?", answer: "Yes — each page downloads as its own PDF file." },
+      { question: "Works on mobile?", answer: "Yes for smaller PDFs; large files are easier on desktop." },
+    ],
+  },
+  "invoice-generator": {
+    metaTitle: "Invoice Generator — GST Invoice & Thermal Receipt PDF India",
+    metaDescription:
+      "Create GST tax invoices and 80mm thermal receipts with logo, line items, CGST/SGST, and UPI QR payment. Export PDF for shops and freelancers.",
+    keywords: ["GST invoice generator", "thermal receipt maker", "invoice PDF India", "UPI invoice QR"],
+    howToSteps: [
+      "Enter business details, GSTIN, and customer info.",
+      "Add line items with HSN, qty, rate, and GST %.",
+      "Export A4 GST invoice or thermal receipt PDF with optional UPI QR.",
+    ],
+    whyTitle: "Why generate invoices in the browser?",
+    whyParagraph:
+      "Small shops and Instagram sellers need quick bills without expensive billing software. Everything runs locally — your customer list stays on your device.",
+    targetHeading: "Built for kirana stores, repair shops, and freelancers",
+    targetBody:
+      "Add your logo and UPI ID so customers can scan and pay. Use thermal mode for Bluetooth receipt printers that accept PDF or print from browser.",
+    faqs: [
+      { question: "Is GST calculation automatic?", answer: "Yes — CGST and SGST split from the GST % on each line item." },
+      { question: "Thermal receipt size?", answer: "80 mm width layout optimized for common thermal printers." },
+      { question: "Can I add UPI QR?", answer: "Yes — enter UPI ID and the QR is embedded on the invoice PDF." },
+    ],
+  },
+  "signature-maker": {
+    metaTitle: "Signature Maker — Digital Signature PNG Transparent",
+    metaDescription:
+      "Draw or type your signature, pick handwriting styles, and download transparent PNG. Stamp on PDFs with our E-Sign tool.",
+    keywords: ["digital signature maker", "transparent signature PNG", "online signature India", "handwritten signature generator"],
+    howToSteps: [
+      "Draw your signature on canvas or type your name with a style.",
+      "Preview on a transparent checkerboard background.",
+      "Download PNG and use with E-Sign or any document.",
+    ],
+    whyTitle: "Why make signatures locally?",
+    whyParagraph:
+      "Exam forms, job applications, and rental agreements need clean signatures. A transparent PNG works on any background without white boxes.",
+    targetHeading: "UPSC, SSC, and business document workflows",
+    targetBody:
+      "After exporting PNG, open the E-Sign tool to stamp directly on PDF. Typed styles mimic handwriting for quick approvals.",
+    faqs: [
+      { question: "Transparent background?", answer: "Yes — empty pixels are trimmed and exported as transparent PNG." },
+      { question: "Handwriting styles?", answer: "Cursive, formal, bold, and handwritten font presets are available." },
+      { question: "Use on PDF?", answer: "Yes — open E-Sign from the tool page to place your signature on PDFs." },
+    ],
+  },
+  "bank-statement-to-excel": {
+    metaTitle: "Bank Statement to Excel — PDF to XLSX Converter India",
+    metaDescription:
+      "Convert bank statement PDFs to Excel or CSV. Extract transactions, auto-categorize UPI/ATM/salary, export for accountants and loan applications.",
+    keywords: ["bank statement to excel", "PDF bank statement converter", "statement to CSV India", "transaction extractor"],
+    howToSteps: [
+      "Upload a text-based bank statement PDF.",
+      "Review extracted transactions and categories.",
+      "Export XLSX or CSV for Excel, Tally, or loan documentation.",
+    ],
+    whyTitle: "Why convert statements locally?",
+    whyParagraph:
+      "Accountants and freelancers shouldn't upload full bank statements to unknown servers. Browser extraction keeps IFSC, account, and UPI details private.",
+    targetHeading: "Accountants, freelancers, and loan applicants",
+    targetBody:
+      "Works best with digital PDFs from major Indian banks. Scanned image statements may need OCR first — then re-export as PDF.",
+    faqs: [
+      { question: "Which banks work?", answer: "Most text-based PDFs from HDFC, SBI, ICICI, Axis, and similar formats." },
+      { question: "Auto categories?", answer: "UPI, ATM, salary, bills, and transfers are tagged heuristically — review before filing." },
+      { question: "Scanned PDFs?", answer: "Image-only scans need OCR; text PDFs work best." },
+    ],
+  },
+  "whatsapp-link": {
+    metaTitle: "WhatsApp Click-to-Chat Link Generator — wa.me + QR",
+    metaDescription:
+      "Create WhatsApp click-to-chat links with country code, pre-filled message, and QR code. Free for Instagram bios, shop counters, and business cards.",
+    keywords: ["WhatsApp link generator", "wa.me link", "WhatsApp QR code", "click to chat WhatsApp India"],
+    howToSteps: [
+      "Select country code and enter WhatsApp number.",
+      "Add an optional pre-filled message for customers.",
+      "Copy wa.me link or download QR for print and social media.",
+    ],
+    whyTitle: "Why use a WhatsApp link generator?",
+    whyParagraph:
+      "Customers tap once to message you — no saving contacts first. Perfect for Instagram shops, laptop repair counters, and freelancer portfolios.",
+    targetHeading: "Instagram businesses and local shops",
+    targetBody:
+      "Default +91 India dial code. Pre-fill messages like product name or order ID so you know where the lead came from.",
+    faqs: [
+      { question: "Is the QR free?", answer: "Yes — generated instantly in your browser." },
+      { question: "India country code?", answer: "India (+91) is the default; other countries are supported." },
+      { question: "Works without saving contact?", answer: "Yes — wa.me opens chat directly in WhatsApp." },
+    ],
+  },
 };
 
 export function getToolSeoEntry(slug: string): ToolSeoEntry | undefined {

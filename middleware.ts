@@ -10,21 +10,22 @@ import {
   refreshAdminSessionActivity,
 } from "@/lib/admin/admin-session-cookie";
 import { getSupabaseEnv } from "@/lib/supabase/env";
+import {
+  hasSupabaseAuthCookie,
+  isAuthNetworkError,
+  isProtectedPath,
+  middlewareAuthFetch,
+  shouldLogAuthMiddlewareError,
+  shouldRefreshSupabaseSession,
+} from "@/lib/supabase/middleware-auth";
 
-/** Caps Edge wait when Supabase is slow or unreachable (avoids 10s+ `proxy` / middleware stalls). */
+/** Caps Edge wait when Supabase is slow or unreachable (avoids long middleware stalls). */
 const AUTH_GET_USER_TIMEOUT_MS = 2800;
-
-/** Prefixes that require an authenticated user (extend as you add routes). */
-const PROTECTED_PREFIXES = ["/dashboard", "/account", "/subscription", "/profile"];
 
 const ADMIN_PUBLIC_PATHS = ["/admin/login"];
 
 function skipSupabaseInMiddleware(): boolean {
   return process.env.NODE_ENV === "development" && process.env.SKIP_SUPABASE_MIDDLEWARE === "1";
-}
-
-function isProtectedPath(pathname: string) {
-  return PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
 function isAdminPath(pathname: string) {
@@ -86,29 +87,15 @@ async function handleAdminRoute(request: NextRequest, pathname: string) {
   return withAdminRouteHeader(response);
 }
 
-/** No session cookie yet — normal on /login, etc. */
-function isBenignMissingSessionError(err: unknown): boolean {
-  if (!err || typeof err !== "object") return false;
-  const authErr = err as { __isAuthError?: boolean; name?: string; message?: string };
-  if (authErr.__isAuthError !== true) return false;
-  return (
-    authErr.name === "AuthSessionMissingError" ||
-    String(authErr.message ?? "").toLowerCase().includes("auth session missing")
-  );
-}
-
-function shouldLogAuthMiddlewareError(pathname: string, err: unknown): boolean {
-  if (isBenignMissingSessionError(err)) {
-    return isProtectedPath(pathname);
-  }
-  return true;
-}
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (isAdminPath(pathname)) {
     return handleAdminRoute(request, pathname);
+  }
+
+  if (!shouldRefreshSupabaseSession(pathname, request)) {
+    return NextResponse.next({ request });
   }
 
   const env = getSupabaseEnv();
@@ -135,8 +122,12 @@ export async function middleware(request: NextRequest) {
   }
 
   let supabaseResponse = NextResponse.next({ request });
+  const hadAuthCookie = hasSupabaseAuthCookie(request);
 
   const supabase = createServerClient(env.url, env.anonKey, {
+    global: {
+      fetch: middlewareAuthFetch,
+    },
     cookies: {
       getAll() {
         return request.cookies.getAll();
@@ -152,6 +143,8 @@ export async function middleware(request: NextRequest) {
   });
 
   let user = null;
+  let authUnavailable = false;
+
   try {
     const { data, error } = await Promise.race([
       supabase.auth.getUser(),
@@ -162,14 +155,22 @@ export async function middleware(request: NextRequest) {
     if (error) throw error;
     user = data.user ?? null;
   } catch (err) {
-    if (process.env.NODE_ENV === "development" && shouldLogAuthMiddlewareError(pathname, err)) {
-      const reason =
-        err instanceof Error && err.message === "auth_get_user_timeout" ? "timed out" : "failed";
-      console.warn(`[middleware] Supabase auth.getUser() ${reason}. Continuing without a user.`, err);
+    authUnavailable = isAuthNetworkError(err);
+    if (process.env.NODE_ENV === "development") {
+      if (authUnavailable) {
+        console.warn(
+          `[middleware] Supabase unreachable (${pathname}) — skipped auth refresh. Check network or NEXT_PUBLIC_SUPABASE_URL.`,
+        );
+      } else if (shouldLogAuthMiddlewareError(pathname, err)) {
+        console.warn("[middleware] Supabase auth.getUser() failed. Continuing without a user.", err);
+      }
     }
   }
 
   if (isProtectedPath(pathname) && !user) {
+    if (authUnavailable && hadAuthCookie) {
+      return supabaseResponse;
+    }
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     redirectUrl.searchParams.set("redirectedFrom", pathname);
@@ -181,6 +182,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html|txt|ico)$).*)",
   ],
 };

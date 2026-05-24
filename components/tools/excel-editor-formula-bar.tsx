@@ -2,21 +2,40 @@
 
 import type Handsontable from "handsontable";
 import { FunctionSquare } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { formatCellAddress } from "@/lib/excel-editor/cell-address";
 import { getFormulaBarValue } from "@/lib/excel-editor/cell-value";
+import { buildFormulaSuggestions } from "@/lib/excel-editor/formula-suggestions";
 import { safeAddHook, safeRemoveHook } from "@/lib/excel-editor/handsontable-hooks";
+import type { NamedRangesStore } from "@/lib/excel-editor/named-ranges-store";
 
 type ExcelEditorFormulaBarProps = {
   hotRef: React.RefObject<Handsontable.Core | null>;
+  namedRangesRef: React.RefObject<NamedRangesStore | null>;
   sheetKey: string;
 };
 
-export function ExcelEditorFormulaBar({ hotRef, sheetKey }: ExcelEditorFormulaBarProps) {
+export function ExcelEditorFormulaBar({
+  hotRef,
+  namedRangesRef,
+  sheetKey,
+}: ExcelEditorFormulaBarProps) {
+  const listId = useId().replace(/:/g, "");
   const [address, setAddress] = useState("A1");
   const [draft, setDraft] = useState("");
   const editingRef = useRef(false);
+
+  const namedRangeNames = useMemo(
+    () => namedRangesRef.current?.list().map((r) => r.name) ?? [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refresh when sheet reloads
+    [namedRangesRef, sheetKey],
+  );
+
+  const suggestions = useMemo(
+    () => buildFormulaSuggestions(draft, namedRangeNames),
+    [draft, namedRangeNames],
+  );
 
   const syncFromSelection = useCallback(() => {
     const hot = hotRef.current;
@@ -75,6 +94,7 @@ export function ExcelEditorFormulaBar({ hotRef, sheetKey }: ExcelEditorFormulaBa
       <input
         type="text"
         value={draft}
+        list={suggestions.length > 0 ? listId : undefined}
         onChange={(e) => {
           editingRef.current = true;
           setDraft(e.target.value);
@@ -102,10 +122,17 @@ export function ExcelEditorFormulaBar({ hotRef, sheetKey }: ExcelEditorFormulaBa
           }
         }}
         className="min-w-0 flex-1 rounded-md border border-border bg-card px-3 py-1.5 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-        placeholder="Enter value or formula (e.g. =SUM(A1:A5))"
+        placeholder="=SUM(A1:A5) · AVERAGE · IF · VLOOKUP · XLOOKUP · COUNTIF"
         aria-label="Cell editor formula bar"
         spellCheck={false}
       />
+      {suggestions.length > 0 ? (
+        <datalist id={listId}>
+          {suggestions.map((s) => (
+            <option key={s} value={s} />
+          ))}
+        </datalist>
+      ) : null}
     </div>
   );
 }

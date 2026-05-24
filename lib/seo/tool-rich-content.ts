@@ -125,6 +125,30 @@ const OVERRIDES: Partial<Record<string, Partial<ToolRichContent>>> = {
   "e-sign": {
     heroSubheadline: "Self-attest PDFs with signature and date — for college, rent, and government copies.",
   },
+  "pdf-unlock": {
+    heroSubheadline: "Remove PDF passwords locally — bulk unlock bank statements and office PDFs before merge or upload.",
+    supportedFormats: ["PDF"],
+  },
+  "pdf-split": {
+    heroSubheadline: "Split PDFs by page range, extract pages, or save every page — with preview before export.",
+    supportedFormats: ["PDF"],
+  },
+  "invoice-generator": {
+    heroSubheadline: "GST invoices and 80mm thermal receipts with logo, line items, and UPI QR — for shops and freelancers.",
+    supportedFormats: ["PDF"],
+  },
+  "signature-maker": {
+    heroSubheadline: "Draw or type your signature and export a transparent PNG — then stamp on PDFs with E-Sign.",
+    supportedFormats: ["PNG"],
+  },
+  "bank-statement-to-excel": {
+    heroSubheadline: "Extract bank transactions from PDF statements and export categorized XLSX or CSV.",
+    supportedFormats: ["PDF", "XLSX", "CSV"],
+  },
+  "whatsapp-link": {
+    heroSubheadline: "Create wa.me links with country code, pre-filled message, and QR for Instagram shops and counters.",
+    supportedFormats: ["URL", "QR PNG"],
+  },
 };
 
 export function getToolRichContent(slug: string): ToolRichContent | null {

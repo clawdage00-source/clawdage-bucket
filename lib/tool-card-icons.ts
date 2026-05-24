@@ -17,6 +17,12 @@ export const TOOL_CARD_ICON_BY_SLUG: Record<string, string> = {
   "passport-photo-maker": "/tools-icon/passport-photo-maker.png",
   "id-resizer": "/tools-icon/aadhar-pancard-resizer.png",
   "qr-generator": "/tools-icon/qrcode-generator.png",
+  "pdf-unlock": "/tools-icon/pdf-unlock.png",
+  "pdf-split": "/tools-icon/pdf-split.png",
+  "invoice-generator": "/tools-icon/invoice-generator.png",
+  "signature-maker": "/tools-icon/signature-maker.png",
+  "bank-statement-to-excel": "/tools-icon/bankstatement-excel.png",
+  "whatsapp-link": "/tools-icon/whatsapp-link.png",
   "ocr": "/tools-icon/image-to-text.png",
   "image-to-text-ocr": "/tools-icon/image-to-text.png",
 };

@@ -20,7 +20,12 @@ export function buildGlobalKeywords(): string {
     "background remover free",
     "image compressor browser",
     "QR code generator UPI",
-    "PDF to image India",
+    "remove PDF password online",
+    "PDF split online India",
+    "GST invoice generator PDF",
+    "bank statement to Excel",
+    "WhatsApp click to chat link",
+    "digital signature PNG transparent",
   ];
   return [...toolPhrases, SITE_NAME, "free online tools", "browser PDF tools"].join(", ");
 }

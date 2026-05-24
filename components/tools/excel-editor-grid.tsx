@@ -9,6 +9,7 @@ import { HyperFormula } from "hyperformula";
 import { useEffect, useRef } from "react";
 
 import type { CellFormatStore } from "@/lib/excel-editor/cell-format-store";
+import type { ValidationStore } from "@/lib/excel-editor/validation-store";
 import { applyConditionalFormatting } from "@/lib/excel-editor/conditional-format";
 import { inferCellMeta } from "@/lib/excel-editor/cell-meta";
 import { buildFormatCellMeta } from "@/lib/excel-editor/format-meta";
@@ -29,6 +30,8 @@ export type ExcelEditorGridProps = {
   data: (string | number)[][];
   headers: string[];
   formatStoreRef: React.RefObject<CellFormatStore | null>;
+  validationStoreRef?: React.RefObject<ValidationStore | null>;
+  validationEpoch?: number;
   onReady: (hot: Handsontable.Core) => void;
   onDestroy: () => void;
   onSetHeaderFromRow?: (bodyRowIndex: number) => void;
@@ -150,6 +153,8 @@ export function ExcelEditorGrid({
   data,
   headers,
   formatStoreRef,
+  validationStoreRef,
+  validationEpoch = 0,
   onReady,
   onDestroy,
   onSetHeaderFromRow,
@@ -221,17 +226,46 @@ export function ExcelEditorGrid({
       },
       contextMenu: buildContextMenu(onSetHeaderFromRowRef.current),
       columnSorting: true,
+      filters: true,
+      dropdownMenu: {
+        items: {
+          filter_by_condition: {},
+          filter_by_value: {},
+          filter_action_bar: {},
+        },
+      },
       renderAllRows: false,
       viewportRowRenderingOffset: 30,
       viewportColumnRenderingOffset: 10,
       cells(row, col) {
         const val = dataRef.current[row]?.[col];
         const store = formatStoreRef.current;
+        const validation = validationStoreRef?.current?.get(col);
+
+        let base: Handsontable.CellMeta = { editor: TextEditor, readOnly: false };
+
+        if (validation?.type === "list" && validation.allowed.length > 0) {
+          base = {
+            ...base,
+            type: "dropdown",
+            source: [...validation.allowed],
+            strict: validation.strict ?? false,
+            allowInvalid: true,
+          };
+        } else if (validation?.type === "number") {
+          base = {
+            ...base,
+            type: "numeric",
+            allowInvalid: true,
+          };
+        }
+
         if (store) {
           const fmt = store.get(row, col);
           const hasFormat = Object.keys(fmt).length > 0;
           if (hasFormat) {
             return {
+              ...base,
               ...buildFormatCellMeta(row, col, val, fmt),
               editor: TextEditor,
               readOnly: false,
@@ -240,6 +274,7 @@ export function ExcelEditorGrid({
         }
         const inferred = inferCellMeta(val);
         return {
+          ...base,
           ...inferred,
           editor: TextEditor,
           readOnly: false,
@@ -283,6 +318,10 @@ export function ExcelEditorGrid({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- sheetKey gates full rebuild
   }, [sheetKey]);
+
+  useEffect(() => {
+    hotRef.current?.render();
+  }, [validationEpoch]);
 
   return <div ref={hostRef} className="excel-editor-hot ht-theme-main h-full w-full min-h-0" />;
 }

@@ -31,6 +31,22 @@ export type ToolDefinition = {
 
 export const MVP_TOOLS: ToolDefinition[] = [
   {
+    slug: "pdf-unlock",
+    name: "PDF Unlock",
+    description: "Remove PDF password protection locally — bulk unlock supported.",
+    category: "pdf",
+    is_pro: false,
+    icon: "file-archive",
+  },
+  {
+    slug: "pdf-split",
+    name: "PDF Split",
+    description: "Split by page range, extract pages, or save every page as a separate PDF.",
+    category: "pdf",
+    is_pro: false,
+    icon: "layers",
+  },
+  {
     slug: "merge-pdf",
     name: "Merge PDF",
     description: "Combine multiple PDFs into one clean document.",
@@ -120,6 +136,38 @@ export const MVP_TOOLS: ToolDefinition[] = [
     icon: "id-card",
   },
   {
+    slug: "bank-statement-to-excel",
+    name: "Bank Statement to Excel",
+    description: "Extract transactions from bank PDFs, categorize expenses, export XLSX/CSV.",
+    category: "pdf",
+    is_pro: false,
+    icon: "table",
+  },
+  {
+    slug: "invoice-generator",
+    name: "Invoice Generator",
+    description: "GST invoices and thermal receipts with logo, UPI QR, and PDF export.",
+    category: "utility",
+    is_pro: false,
+    icon: "clipboard",
+  },
+  {
+    slug: "signature-maker",
+    name: "Signature Maker",
+    description: "Draw or type signatures, export transparent PNG, use with E-Sign.",
+    category: "pdf",
+    is_pro: false,
+    icon: "file-signature",
+  },
+  {
+    slug: "whatsapp-link",
+    name: "WhatsApp Link Generator",
+    description: "Create wa.me click-to-chat links with country code, message, and QR.",
+    category: "utility",
+    is_pro: false,
+    icon: "qr-code",
+  },
+  {
     slug: "qr-generator",
     name: "QR Code Generator",
     description: "Encode URLs or text into a scannable QR image.",
@@ -155,6 +203,22 @@ export function getToolBySlug(slug: string): ToolDefinition | undefined {
 }
 
 export const MVP_TOOL_SLUGS = MVP_TOOLS.map((t) => t.slug);
+
+/** Recently launched tools — show "New" badge in catalog until rotated. */
+export const NEW_TOOL_SLUGS = [
+  "pdf-unlock",
+  "pdf-split",
+  "invoice-generator",
+  "signature-maker",
+  "bank-statement-to-excel",
+  "whatsapp-link",
+] as const;
+
+export type NewToolSlug = (typeof NEW_TOOL_SLUGS)[number];
+
+export function isNewTool(slug: string): boolean {
+  return (NEW_TOOL_SLUGS as readonly string[]).includes(slug);
+}
 
 export function toolMatchesSearch(tool: ToolDefinition, query: string): boolean {
   const q = query.trim().toLowerCase();

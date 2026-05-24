@@ -76,7 +76,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     types: {
-      "text/plain": [{ url: "/llms.txt", title: "LLM-readable site summary" }],
+      "text/plain": [
+        { url: "/llms.txt", title: "LLM-readable site summary" },
+        { url: "/llms-full.txt", title: "LLM extended tool reference" },
+      ],
     },
   },
   icons: {

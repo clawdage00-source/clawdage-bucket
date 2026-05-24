@@ -10,13 +10,19 @@ const RELATED_BY_SLUG: Record<string, string[]> = {
   "image-to-pdf": ["compress-pdf", "merge-pdf", "e-sign", "format-converter"],
   "format-converter": ["image-compressor", "id-resizer", "bg-remover", "image-to-pdf"],
   "bg-remover": ["passport-photo", "image-compressor", "format-converter", "id-resizer"],
-  "e-sign": ["image-to-pdf", "merge-pdf", "compress-pdf", "id-resizer"],
+  "e-sign": ["signature-maker", "image-to-pdf", "merge-pdf", "compress-pdf"],
   "ocr": ["pdf-to-excel", "excel-editor", "image-to-pdf", "compress-pdf"],
   "pdf-to-excel": ["excel-editor", "ocr", "compress-pdf", "merge-pdf"],
   "excel-editor": ["pdf-to-excel", "ocr", "image-to-pdf"],
   "qr-generator": ["image-compressor", "format-converter", "image-to-pdf"],
-  "merge-pdf": ["compress-pdf", "image-to-pdf", "e-sign"],
-  "compress-pdf": ["merge-pdf", "image-to-pdf", "e-sign"],
+  "merge-pdf": ["compress-pdf", "pdf-split", "pdf-unlock", "image-to-pdf"],
+  "compress-pdf": ["merge-pdf", "pdf-unlock", "pdf-split", "image-to-pdf"],
+  "pdf-unlock": ["pdf-split", "merge-pdf", "compress-pdf", "pdf-to-excel"],
+  "pdf-split": ["pdf-unlock", "merge-pdf", "compress-pdf", "e-sign"],
+  "invoice-generator": ["qr-generator", "whatsapp-link", "e-sign", "excel-editor"],
+  "signature-maker": ["e-sign", "pdf-unlock", "passport-photo", "id-resizer"],
+  "bank-statement-to-excel": ["pdf-to-excel", "excel-editor", "pdf-unlock", "ocr"],
+  "whatsapp-link": ["qr-generator", "invoice-generator", "image-compressor", "format-converter"],
 };
 
 export function getRelatedTools(slug: string, limit = 4): ToolDefinition[] {

@@ -14,9 +14,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type Handsontable from "handsontable";
-import autoTable from "jspdf-autotable";
-import { jsPDF } from "jspdf";
 
+import { ExcelEditorDataPanel } from "@/components/tools/excel-editor-data-panel";
 import { ExcelEditorFormatBar } from "@/components/tools/excel-editor-format-bar";
 import { ExcelEditorFindReplace } from "@/components/tools/excel-editor-find-replace";
 import { ExcelEditorFormulaBar } from "@/components/tools/excel-editor-formula-bar";
@@ -24,12 +23,16 @@ import { buildExcelColumns, ExcelEditorGrid } from "@/components/tools/excel-edi
 import { ExcelEditorRibbon } from "@/components/tools/excel-editor-ribbon";
 import { downloadBlob } from "@/lib/download-blob";
 import { CellFormatStore } from "@/lib/excel-editor/cell-format-store";
+import { buildExportPayload, buildExportPayloadFromState } from "@/lib/excel-editor/export-values";
+import { NamedRangesStore } from "@/lib/excel-editor/named-ranges-store";
+import { exportSheetToPdf } from "@/lib/excel-editor/pdf-export";
 import {
   clearExcelEditorSession,
   loadExcelEditorSession,
   restoreFormatStore,
   saveExcelEditorSession,
 } from "@/lib/excel-editor/session-storage";
+import { ValidationStore } from "@/lib/excel-editor/validation-store";
 import { mergeSheet, splitHeaderRow } from "@/lib/excel-editor/sheet-utils";
 import { useHideSiteChrome } from "@/lib/hooks/use-hide-site-chrome";
 import * as XLSX from "xlsx";
@@ -51,7 +54,10 @@ export function ExcelEditorTool() {
   const inputRef = useRef<HTMLInputElement>(null);
   const hotInstanceRef = useRef<Handsontable.Core | null>(null);
   const formatStoreRef = useRef<CellFormatStore | null>(null);
+  const validationStoreRef = useRef<ValidationStore | null>(null);
+  const namedRangesRef = useRef<NamedRangesStore | null>(null);
   const restoredOnceRef = useRef(false);
+  const [validationEpoch, setValidationEpoch] = useState(0);
 
   const [fileData, setFileData] = useState<(string | number)[][]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
@@ -81,6 +87,8 @@ export function ExcelEditorTool() {
       setFileSize(session.fileSize);
       setSheetKey(session.sheetKey);
       formatStoreRef.current = restoreFormatStore(session.formats);
+      validationStoreRef.current = ValidationStore.importState(session.columnValidations);
+      namedRangesRef.current = NamedRangesStore.importState(session.namedRanges);
       restoredOnceRef.current = true;
     }
     setSessionReady(true);
@@ -109,6 +117,8 @@ export function ExcelEditorTool() {
       originalFileName,
       fileSize,
       formats: formatStoreRef.current?.exportState() ?? { cells: {}, rules: [] },
+      columnValidations: validationStoreRef.current?.exportState(),
+      namedRanges: namedRangesRef.current?.exportState(),
     });
   }, [
     sheetKey,
@@ -297,6 +307,8 @@ export function ExcelEditorTool() {
         setFileData(newData);
         setHeaderRowChoice(1);
         formatStoreRef.current = new CellFormatStore();
+        validationStoreRef.current = new ValidationStore();
+        namedRangesRef.current = new NamedRangesStore();
         const nextKey = `${file.name}-${Date.now()}`;
         setSheetKey(nextKey);
         saveExcelEditorSession({
@@ -307,6 +319,8 @@ export function ExcelEditorTool() {
           originalFileName: file.name,
           fileSize: file.size,
           formats: { cells: {}, rules: [] },
+          columnValidations: {},
+          namedRanges: [],
         });
       } catch {
         setError("Failed to parse the file. Make sure it is a valid Excel or CSV file.");
@@ -344,21 +358,15 @@ export function ExcelEditorTool() {
     if (f) acceptFile(f);
   };
 
-  const getExportPayload = (): { headers: string[]; rows: (string | number)[][] } | null => {
-    const hot = hotInstanceRef.current;
-    if (hot) {
-      return {
-        headers: hot.getColHeader() as string[],
-        rows: hot.getData() as (string | number)[][],
-      };
-    }
-    if (hasSheet) return { headers, rows: fileData };
-    return null;
-  };
-
   const handleExport = (format: "xlsx" | "csv" | "pdf") => {
-    const payload = getExportPayload();
-    if (!payload) {
+    const hot = hotInstanceRef.current;
+    const payload = hot
+      ? buildExportPayload(hot, formatStoreRef.current)
+      : hasSheet
+        ? buildExportPayloadFromState(headers, fileData, formatStoreRef.current)
+        : null;
+
+    if (!payload || payload.headers.length === 0) {
       setError("No data to export.");
       return;
     }
@@ -370,10 +378,8 @@ export function ExcelEditorTool() {
       const stem = originalFileName.replace(/\.(xlsx|xls|csv)$/i, "") || "export";
 
       if (format === "pdf") {
-        const doc = new jsPDF({ orientation: h.length > 6 ? "landscape" : "portrait" });
-        autoTable(doc, { head: [h], body: rows.map((r) => r.map(String)) });
-        doc.save(`${stem}.pdf`);
-        setToast("PDF downloaded.");
+        exportSheetToPdf(payload, `${stem}.pdf`);
+        setToast("PDF downloaded with aligned columns and computed formulas.");
       } else if (format === "xlsx") {
         const worksheet = XLSX.utils.aoa_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
@@ -402,6 +408,8 @@ export function ExcelEditorTool() {
     setFileData([]);
     setHeaders([]);
     formatStoreRef.current = null;
+    validationStoreRef.current = null;
+    namedRangesRef.current = null;
     setHeaderRowChoice(1);
     setError(null);
     setToast(null);
@@ -538,6 +546,20 @@ export function ExcelEditorTool() {
           sheetKey={sheetKey}
           onOpenFindReplace={() => setFindReplaceOpen(true)}
         />
+        <ExcelEditorDataPanel
+          hotRef={hotInstanceRef}
+          validationStoreRef={validationStoreRef}
+          namedRangesRef={namedRangesRef}
+          onToast={(msg) => {
+            setToast(msg);
+            window.setTimeout(() => setToast(null), 2500);
+          }}
+          onPersist={schedulePersistSession}
+          onValidationChange={() => {
+            setValidationEpoch((n) => n + 1);
+            hotInstanceRef.current?.render();
+          }}
+        />
         <ExcelEditorFormatBar
           hotRef={hotInstanceRef}
           formatStoreRef={formatStoreRef}
@@ -547,7 +569,11 @@ export function ExcelEditorTool() {
             window.setTimeout(() => setToast(null), 2500);
           }}
         />
-        <ExcelEditorFormulaBar hotRef={hotInstanceRef} sheetKey={sheetKey} />
+        <ExcelEditorFormulaBar
+          hotRef={hotInstanceRef}
+          namedRangesRef={namedRangesRef}
+          sheetKey={sheetKey}
+        />
 
         <div className="relative min-h-0 flex-1 w-full">
           <ExcelEditorFindReplace
@@ -573,9 +599,11 @@ export function ExcelEditorTool() {
           ) : null}
           <ExcelEditorGrid
             sheetKey={sheetKey}
+            validationEpoch={validationEpoch}
             data={fileData}
             headers={headers}
             formatStoreRef={formatStoreRef}
+            validationStoreRef={validationStoreRef}
             onReady={handleGridReady}
             onDestroy={handleGridDestroy}
             onSetHeaderFromRow={applyHeaderFromBodyRow}
@@ -693,12 +721,13 @@ export function ExcelEditorTool() {
                 <h2 className="text-sm font-bold text-foreground">How it works</h2>
                 <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-muted-foreground">
                   <li>Upload an Excel or CSV file</li>
-                  <li>Edit in cells or the formula bar — use =SUM(A1:A5) for formulas</li>
+                  <li>Edit in cells or the formula bar — SUM, AVERAGE, IF, VLOOKUP, XLOOKUP, COUNTIF</li>
+                  <li>Data toolbar: sort, filter, tables, validation, remove duplicates, named ranges</li>
                   <li>Use the Format bar for fonts, colors, borders, and number formats</li>
                   <li>Copy, cut, paste, and undo/redo from the toolbar</li>
                   <li>Drag the fill handle to AutoFill patterns</li>
                   <li>Ctrl+F (Cmd+F) for find &amp; replace</li>
-                  <li>Export to Excel, CSV, or PDF</li>
+                  <li>Export to Excel, CSV, or PDF (PDF uses computed formulas &amp; column alignment)</li>
                 </ol>
               </motion.div>
               <motion.div

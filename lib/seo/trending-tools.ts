@@ -2,9 +2,12 @@ import { MVP_TOOLS, type ToolDefinition } from "@/lib/tools-data";
 
 /** Seasonal / high-intent tools for India — rotate by exam calendar in future */
 const TRENDING_SLUGS = [
+  "pdf-unlock",
+  "pdf-split",
   "id-resizer",
   "passport-photo",
   "compress-pdf",
+  "invoice-generator",
   "image-compressor",
   "e-sign",
   "image-to-pdf",

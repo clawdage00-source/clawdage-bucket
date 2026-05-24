@@ -9,6 +9,7 @@ import { useState } from "react";
 import { getToolCardIconSrc } from "@/lib/tool-card-icons";
 import {
   MVP_TOOLS,
+  isNewTool,
   TOOL_TAB_IDS,
   getTabLabel,
   type ToolCategory,
@@ -114,6 +115,10 @@ export function ServicesMegaPanel({ onNavigate }: ServicesMegaPanelProps) {
                             <span className="text-[10px] font-medium uppercase tracking-wide text-amber-700">
                               Pro
                             </span>
+                          ) : isNewTool(tool.slug) ? (
+                            <span className="text-[10px] font-medium uppercase tracking-wide text-emerald-700">
+                              New
+                            </span>
                           ) : null}
                         </span>
                       </Link>
@@ -158,6 +163,8 @@ export function MobileServicesTools({ onNavigate }: { onNavigate: () => void }) 
                 {tool.name}
                 {tool.is_pro ? (
                   <span className="ml-2 text-xs font-semibold uppercase text-amber-700">Pro</span>
+                ) : isNewTool(tool.slug) ? (
+                  <span className="ml-2 text-xs font-semibold uppercase text-emerald-700">New</span>
                 ) : null}
               </Link>
             </li>
