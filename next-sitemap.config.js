@@ -71,6 +71,8 @@ module.exports = {
     const hubs = [
       { loc: "/exam-tools", changefreq: "weekly", priority: 0.85, lastmod: new Date().toISOString() },
       { loc: "/contact", changefreq: "monthly", priority: 0.5, lastmod: new Date().toISOString() },
+      { loc: "/llms.txt", changefreq: "monthly", priority: 0.4, lastmod: new Date().toISOString() },
+      { loc: "/llms-full.txt", changefreq: "monthly", priority: 0.3, lastmod: new Date().toISOString() },
     ];
     return [...landing, ...blog, ...compare, ...hubs];
   },

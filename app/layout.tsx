@@ -74,6 +74,11 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: DEFAULT_DESCRIPTION,
   },
+  alternates: {
+    types: {
+      "text/plain": [{ url: "/llms.txt", title: "LLM-readable site summary" }],
+    },
+  },
   icons: {
     icon: [{ url: "/web-tab-logo.png", type: "image/png", sizes: "any" }],
     apple: [{ url: "/web-tab-logo.png", type: "image/png" }],
