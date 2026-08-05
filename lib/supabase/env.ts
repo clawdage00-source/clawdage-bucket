@@ -28,6 +28,19 @@ export function getSupabaseEnv(): SupabaseEnv {
     };
   }
 
+  // Treat local template placeholders as unset so analytics/auth can skip quietly in dev.
+  const placeholderUrl =
+    /your-project|placeholder|example\.supabase|xxxx\.supabase/i.test(url);
+  const placeholderKey =
+    /^(your-anon-key|your[_-]?key|anon[_-]?key|placeholder|changeme)$/i.test(anonKey);
+  if (placeholderUrl || placeholderKey) {
+    return {
+      ok: false,
+      message:
+        "NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY still use template placeholders. Replace them with your real Supabase project values in .env.local.",
+    };
+  }
+
   if (!isValidHttpUrl(url)) {
     return {
       ok: false,

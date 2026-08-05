@@ -16,6 +16,7 @@ const DEDICATED_TOOL_SLUGS = new Set([
   "invoice-generator",
   "ocr",
   "passport-photo",
+  "pdf-page-numbers",
   "pdf-split",
   "pdf-to-excel",
   "pdf-unlock",

@@ -47,6 +47,14 @@ export const MVP_TOOLS: ToolDefinition[] = [
     icon: "layers",
   },
   {
+    slug: "pdf-page-numbers",
+    name: "Add Page Numbers to PDF",
+    description: "Add custom page numbers to any PDF with a live preview and flexible positioning.",
+    category: "pdf",
+    is_pro: false,
+    icon: "file-signature",
+  },
+  {
     slug: "merge-pdf",
     name: "Merge PDF",
     description: "Combine multiple PDFs into one clean document.",
@@ -206,6 +214,7 @@ export const MVP_TOOL_SLUGS = MVP_TOOLS.map((t) => t.slug);
 
 /** Recently launched tools — show "New" badge in catalog until rotated. */
 export const NEW_TOOL_SLUGS = [
+  "pdf-page-numbers",
   "pdf-unlock",
   "pdf-split",
   "invoice-generator",

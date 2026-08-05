@@ -3,6 +3,7 @@
 import type { Json } from "@/types/database";
 
 import { createClient } from "@/lib/supabase/client";
+import { getSupabaseEnv } from "@/lib/supabase/env";
 
 const SESSION_KEY = "clawdage_analytics_session";
 
@@ -58,6 +59,9 @@ export async function trackEvent(
   metadata?: AnalyticsMetadata,
 ): Promise<void> {
   if (typeof window === "undefined") return;
+
+  // Skip quietly when Supabase isn't configured (common in local .env.local).
+  if (!getSupabaseEnv().ok) return;
 
   try {
     const supabase = createClient();
