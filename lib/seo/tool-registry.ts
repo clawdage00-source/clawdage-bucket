@@ -505,6 +505,42 @@ export const TOOL_SEO_BY_SLUG: Record<string, ToolSeoEntry> = {
       { question: "What if I forgot the password?", answer: "This tool needs the correct password. It cannot crack unknown passwords." },
     ],
   },
+  "pdf-page-numbers": {
+    metaTitle: "Add Page Numbers to PDF Online — Free & Private",
+    metaDescription:
+      "Add page numbers to a PDF online with custom position, style, colour, and starting number. Preview every page and download privately from your browser.",
+    keywords: [
+      "add page numbers to PDF",
+      "number PDF pages online",
+      "PDF page numbering free",
+      "insert page numbers PDF",
+    ],
+    howToSteps: [
+      "Drag and drop a PDF or choose one from your device.",
+      "Select the page number style, position, colour, and starting page.",
+      "Preview the result, then download your numbered PDF.",
+    ],
+    whyTitle: "Why add PDF page numbers on Clawdage?",
+    whyParagraph:
+      "Number long applications, assignments, agreements, and annexures without uploading sensitive files to a remote server. Processing happens locally in your browser.",
+    targetHeading: "Clear page order for forms, assignments, and document bundles",
+    targetBody:
+      "Page numbers make printed and scanned bundles easier to review. Skip a cover page, begin from any number, and place labels in the header or footer before submitting the final PDF.",
+    faqs: [
+      {
+        question: "Can I skip the cover page?",
+        answer: "Yes. Set “Start on page” to 2 or any later page, then choose the first number.",
+      },
+      {
+        question: "Can I use “Page 1” or “1 of 10”?",
+        answer: "Yes. Choose plain numbers, Page 1 style, or number-of-total style.",
+      },
+      {
+        question: "Is my PDF uploaded?",
+        answer: "No. Page numbering and export run locally in your browser.",
+      },
+    ],
+  },
   "pdf-split": {
     metaTitle: "PDF Split Online — Extract Pages & Split PDF Free",
     metaDescription:

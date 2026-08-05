@@ -42,7 +42,8 @@ import {
   type SavedSignature,
 } from "@/lib/e-sign-saved-signatures";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// react-pdf ships pdfjs 5.4.x; top-level /pdf.worker.min.mjs is 5.7.x — keep them separate.
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.react-pdf.min.mjs";
 
 const MAX_PDF_BYTES = 18 * 1024 * 1024;
 const DEFAULT_ATTEST = "Self attested";

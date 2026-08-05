@@ -129,6 +129,18 @@ const OVERRIDES: Partial<Record<string, Partial<ToolRichContent>>> = {
     heroSubheadline: "Remove PDF passwords locally — bulk unlock bank statements and office PDFs before merge or upload.",
     supportedFormats: ["PDF"],
   },
+  "pdf-page-numbers": {
+    heroSubheadline: "Add page numbers with your preferred style, position, colour, and starting page — entirely in your browser.",
+    supportedFormats: ["PDF"],
+    example: {
+      title: "Number a document while keeping its cover clean",
+      beforeLabel: "Original PDF",
+      afterLabel: "Numbered PDF",
+      beforeValue: "10 pages · no page labels",
+      afterValue: "Cover skipped · pages 1–9 numbered",
+      note: "Use the live preview to confirm placement before downloading.",
+    },
+  },
   "pdf-split": {
     heroSubheadline: "Split PDFs by page range, extract pages, or save every page — with preview before export.",
     supportedFormats: ["PDF"],

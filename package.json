@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:sync-tools": "tsx scripts/sync-mvp-tools.ts",
-    "postinstall": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.mjs"
+    "postinstall": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.mjs && cp node_modules/react-pdf/node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.react-pdf.min.mjs"
   },
   "dependencies": {
     "@handsontable/react-wrapper": "^17.0.1",

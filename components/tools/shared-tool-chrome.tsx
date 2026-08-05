@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Shield } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useState, type DragEvent, type ReactNode } from "react";
 
 export function ToolChrome({
   title,
@@ -54,8 +54,34 @@ export function DropZone({
   label: string;
   hint?: string;
 }) {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDrop = (event: DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    if (event.dataTransfer.files.length) onFiles(event.dataTransfer.files);
+  };
+
   return (
-    <label className="flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-white px-6 py-8 text-center transition hover:border-blue-400 hover:bg-blue-50/40">
+    <label
+      onDragEnter={(event) => {
+        event.preventDefault();
+        setIsDragging(true);
+      }}
+      onDragOver={(event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+      }}
+      onDragLeave={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsDragging(false);
+      }}
+      onDrop={handleDrop}
+      className={`flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed bg-white px-6 py-8 text-center transition ${
+        isDragging
+          ? "border-blue-500 bg-blue-50"
+          : "border-slate-300 hover:border-blue-400 hover:bg-blue-50/40"
+      }`}
+    >
       <input
         type="file"
         accept={accept}

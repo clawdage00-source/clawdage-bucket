@@ -14,7 +14,8 @@ import {
   splitEveryPage,
 } from "@/lib/pdf-split";
 
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+// react-pdf ships pdfjs 5.4.x; top-level /pdf.worker.min.mjs is 5.7.x — keep them separate.
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.react-pdf.min.mjs";
 
 type SplitMode = "range" | "extract" | "every";
 
